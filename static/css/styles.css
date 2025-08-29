@@ -1,0 +1,101 @@
+/* styles.css */
+html, body {
+    background-color: #c4d3da !important;
+    text-align: center;
+}
+
+.container-custom h3 {
+    display: block;
+    width: 100%;
+}
+
+.container-custom {
+    max-width: 100% !important; 
+    width: 100% !important;
+    margin: 0 auto !important;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.header {
+    background-color: #2484a196;
+    color: white;
+    padding: 1rem;
+    box-shadow: 0px 5px 5px 0px white;
+    margin-bottom: 8px;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    margin-right: 1rem;
+}
+
+.header a:hover {
+    text-decoration: underline;
+}
+
+.table-container {
+    margin: 2rem auto;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+header {
+    background-color: #6890ac;
+    color: #afbec5;
+    padding: 15px;
+    text-align: center;
+}
+
+footer {
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    margin: 5px;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+
+.logout-button {
+    background-color: #ff5733; /* Kolor tła */
+    color: white; /* Kolor tekstu */
+    border: none; /* Brak obramowania */
+    padding: 5px 20px; /* Wewnętrzny margines */
+    font-size: 16px; /* Rozmiar czcionki */
+    cursor: pointer; /* Kursor w postaci ręki */
+    border-radius: 5px; /* Zaokrąglone rogi */
+    transition: background-color 0.4s; /* Płynna zmiana koloru */
+}
+.login-button {
+    background-color: #7bc265; /* Kolor tła */
+    color: rgb(0, 0, 0); /* Kolor tekstu */
+    border: none; /* Brak obramowania */
+    padding: 5px 20px; /* Wewnętrzny margines */
+    font-size: 16px; /* Rozmiar czcionki */
+    cursor: pointer; /* Kursor w postaci ręki */
+    border-radius: 5px; /* Zaokrąglone rogi */
+    transition: background-color 0.4s; /* Płynna zmiana koloru */
+}
+.logout-button:hover {
+    background-color: #ff2a00; /* Zmiana koloru przy hover */
+}
+
+.logout-button:active {
+    background-color: #e60000; /* Zmiana koloru przy kliknięciu */
+}
+
+.login-button:hover {
+    background-color: #14ee14bb; /* Zmiana koloru przy hover */
+}
+
+.login-button:active {
+    background-color: #00e6c7; /* Zmiana koloru przy kliknięciu */
+}
