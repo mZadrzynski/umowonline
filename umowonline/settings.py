@@ -26,19 +26,18 @@ SECRET_KEY = 'django-insecure-d!9hf(xz)3^i(@%t1b6fj75146__@h^)2(uk^5nnvu3r7g^(b7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['umowzdalnie.pl', 'www.umowzdalnie.pl', '127.0.0.1']
 
 
 # Application definition
-
 INSTALLED_APPS = [
+    'account.apps.AccountConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'calendar',
 ]
 
@@ -84,6 +83,9 @@ DATABASES = {
 }
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -126,13 +128,18 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/'   # po zalogowaniu wróci na stronę główną
-LOGOUT_REDIRECT_URL = '/'  # po wylogowaniu wróci na stronę główną
 
+LOGOUT_REDIRECT_URL = '/'  # po wylogowaniu wróci na stronę główną
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
 
 

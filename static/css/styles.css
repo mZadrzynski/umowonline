@@ -99,3 +99,57 @@ nav a {
 .login-button:active {
     background-color: #00e6c7; /* Zmiana koloru przy kliknięciu */
 }
+
+.umow-zdalnie {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fcfcfc; /* kolor primary bootstrapowy */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.umow-zdalnie i {
+  font-size: 1.8rem;
+  color: #198754; /* zielony bootstrap */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Efekt hover */
+.umow-zdalnie:hover {
+  color: #fd9b6d; /* fiolet */
+  cursor: pointer;
+}
+
+.umow-zdalnie:hover i {
+  transform: rotate(10deg) scale(1.2);
+  color: #c2672a; /* czerwony */
+}
+
+.menu {
+  list-style: none;       /* usuwa kropki */
+  margin: 0;
+  padding: 0;
+  display: flex;          /* ustawia elementy w poziomie */
+  gap: 20px;              /* odstępy między elementami */
+}
+
+.menu li {
+  display: inline-block;  /* każdy element w jednej linii */
+}
+
+.menu a {
+  text-decoration: none;  /* usuwa podkreślenie */
+  color: #f7f7f7;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.menu a:hover {
+  color: #0d6efd; /* efekt hover */
+}
+s {
+  all: unset;
+}

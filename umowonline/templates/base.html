@@ -16,20 +16,40 @@
     <div class="wrapper">
            <!-- Header -->
     <nav class="header d-flex justify-content-between align-items-center">
-        <h3 class="ms-3">umow zdalnie!</h3> 
+        <h2 class="umow-zdalnie">
+            <i class="bi bi-laptop"></i> umów zdalnie
+        </h2>
         <div class="me-3">
-            <a href="/dashboard/">Mój Kalendarz</a>
-	        <a href="/dashboard/hierarchy">Panel</a>
-            <a href="/dashboard/">Kontakt</a>
-            <!--<a href="/dashboard/dashboard_test">Test</a> -->
-            <!--<a href="/admin/">Admin Panel</a>
-            {% if user.is_authenticated %}
-                <p>Witaj, {{ user.username }}!</p>
-                <a href="{% url 'logout' %}">Wyloguj się</a>
-            {% else %}
-                <a href="{% url 'login' %}">Zaloguj się</a>
-            {% endif %}-->
-        </div>
+            <span>
+                <ul class="menu">
+
+                {% if request.user.is_authenticated %}
+                    Hello {{ request.user.first_name|default:request.user.username }}
+                    <li>
+                        <a href="{% url "dashboard" %}">My dashboard</a>
+                    </li>
+                {% endif %}
+                
+                    <li><a href="/dashboard/">Mój Kalendarz</a></li>
+                    <li><a href="/dashboard/hierarchy">Panel</a></li>
+                    <li><a href="/dashboard/">Kontakt</a></li>
+
+          
+                <span class="user">
+                {% if request.user.is_authenticated %}
+                        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                            {% csrf_token %}
+                        </form>
+
+                        <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">
+                            Wyloguj
+                        </a>
+                {% else %}
+                <a href="{% url "login" %}">Zaloguj</a>
+                <s/span>
+            {% endif %}
+            </ul>
+            </span>
     </nav>
     </div>
     <div>
