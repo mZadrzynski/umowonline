@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-d!9hf(xz)3^i(@%t1b6fj75146__@h^)2(uk^5nnvu3r7g^(b7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['umowzdalnie.pl', 'www.umowzdalnie.pl', '127.0.0.1']
+ALLOWED_HOSTS = ['umowzdalnie.pl', 'www.umowzdalnie.pl', '127.0.0.1', '217.154.245.148']
 
 
 # Application definition

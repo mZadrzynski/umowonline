@@ -176,28 +176,35 @@ s {
 }
 
 
-    /* MOBILE */
-    @media (max-width: 768px) {
-      .menu {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: none;
-        flex-direction: column;
-        background: #0f343fcb;
-        text-align: center;
-      }
+/* MOBILE */
+@media (max-width: 768px) {
+  .menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    background: #0f343fcb;
+    text-align: center;
+  }
+  .menu.active {
+    display: flex;
+  }
+  .hamburger {
+    display: flex;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+}
+.umow-zdalnie-link {
+  display: block;
+  text-align: left;
+}
 
-      .menu.active {
-        display: flex;
-      }
-
-      .hamburger {
-        display: flex;
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1000;
-      }
-    }
+.umow-zdalnie {
+  margin: 0;
+  text-align: left;
+}
