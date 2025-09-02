@@ -111,7 +111,7 @@ nav a {
   font-weight: 600;
   color: #fcfcfc; /* kolor primary bootstrapowy */
   display: flex;
-  align-items: center;
+  align-items: left;
   gap: 10px;
   transition: all 0.3s ease;
 }
@@ -159,3 +159,45 @@ s {
   all: unset;
 }
 
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 15px;
+  background: #ff000000
+}
+.hamburger span {
+  height: 3px;
+  width: 25px;
+  background: white;
+  margin: 4px 0;
+}
+
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: none;
+        flex-direction: column;
+        background: #0f343fcb;
+        text-align: center;
+      }
+
+      .menu.active {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+      }
+    }
