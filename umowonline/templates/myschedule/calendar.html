@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}calendar{% endblock %}
+
+{% block content %}
+<h2>Kalendarz użytkownika {{ request.user.username }}</h2>
+
+<table border="1">
+  <tr>
+    <th>Pn</th><th>Wt</th><th>Śr</th><th>Cz</th><th>Pt</th><th>Sb</th><th>Nd</th>
+  </tr>
+  <tr>
+    {% for day in month_days %}
+      <td>{{ day }}</td>
+      {% if forloop.counter|divisibleby:7 %}
+        </tr><tr>
+      {% endif %}
+    {% endfor %}
+  </tr>
+</table>
+
+<h3>Twoja dostępność:</h3>
+<ul>
+  {% for a in availabilities %}
+    <li>{{ a.date }}: {{ a.start_time }} - {{ a.end_time }}</li>
+  {% empty %}
+    <li>Brak dostępności</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'add_availability' %}">Dodaj dostępność</a>
+{% endblock %}

@@ -7,14 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}umow zdalnie{% endblock %}</title>
 
+    <link rel="stylesheet" type="text/css" href="{% static 'css/account.css' %}">
+
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="{% static 'js/clock.js' %}"></script>
 </head>
 <body class = "body">
-    <div class="wrapper">
-           <!-- Header -->
+    <!-- Header -->
     <nav class="header d-flex justify-content-between align-items-center">
         <h2 class="umow-zdalnie">
             <i class="bi bi-laptop"></i> umów zdalnie
@@ -30,9 +31,8 @@
                     </li>
                 {% endif %}
                 
-                    <li><a href="/dashboard/">Mój Kalendarz</a></li>
-                    <li><a href="/dashboard/hierarchy">Panel</a></li>
-                    <li><a href="/dashboard/">Kontakt</a></li>
+                    <li><a href="{% url 'my_calendar' %}">Mój kalendarz</a></li>
+                    <li><a href="/contact/">Kontakt</a></li>
 
           
                 <span class="user">
@@ -46,12 +46,11 @@
                         </a>
                 {% else %}
                 <a href="{% url "login" %}">Zaloguj</a>
-                <s/span>
+                </span>
             {% endif %}
             </ul>
             </span>
     </nav>
-    </div>
     <div>
         <div>
 		 {% block content %}{% endblock %}

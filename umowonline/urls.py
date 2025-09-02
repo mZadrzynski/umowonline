@@ -24,4 +24,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('account/', include('account.urls')),
     path('dashboad/', views.dashboard, name='dashboard'),
+    path("myschedule/", include("myschedule.urls")),
+    path("contact/", views.contact, name="contact"),
+
 ]
+

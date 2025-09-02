@@ -14,3 +14,6 @@ def dashboard(request):
             'account/dashboard.html',
             {'section': 'dashboard'}
             )
+
+def contact(request):
+    return render(request, "contact.html")
