@@ -1,0 +1,3 @@
+<h2>Masz już rezerwację na ten termin!</h2>
+<p>Wizyta: {{ availability.title }} — {{ availability.date }} {{ availability.start_time }}–{{ availability.end_time }}</p>
+<a href="{% url 'my_bookings' %}">Zobacz swoje rezerwacje</a>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+
+<section id="sidebar" class="section">
+  <div class="sidebar_container">
+    <aside class="sidebar">
+      <h3>Lines</h3>
+      <ul>
+        <li><a href="{% url 'add_availability' %}">Dodaj dostępność</a></li>
+        <li><a href="{% url 'add_service' %}">Dodaj usługe</a></li>
+      </ul>
+    </aside>
+
+    <section class="calendar-week-section">
+      {% block calendar_week %}{% endblock %}
+    </section>
+  </div>
+</section>
+
+
+{% endblock %}

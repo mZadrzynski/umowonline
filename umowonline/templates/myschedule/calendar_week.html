@@ -1,0 +1,73 @@
+{% extends "myschedule/calendar_sidemenu.html" %}
+
+{% block title %}Kalendarz tygodniowy{% endblock %}
+
+{% block calendar_week %}
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/myschedule.css' %}">
+</head>
+<h2>Kalendarz tygodniowy użytkownika {{ request.user.username }}</h2>
+
+<div>
+  <a href="?week={{ selected_week|date:'W'|add:-1 }}">Poprzedni tydzień</a> |
+  <a href="?week={{ selected_week|date:'W'|add:1 }}">Następny tydzień</a>
+</div>
+
+<table class="calendar-table">
+  <tr>
+    <th>Pon</th><th>Wt</th><th>Śr</th><th>Cz</th><th>Pt</th><th>Sob</th><th>Nd</th>
+  </tr>
+  <tr>
+  {% for day, availabilities in availabilities_by_day_items %}
+    <td>
+      <div class="calendar-day">{{ day|date:"d-m-Y" }}</div>
+      {% if availabilities %}
+        {% for info in availabilities %}
+          <div class="availability-item">
+            <div class="availability-title">{{ info.availability.title }}</div>
+            <div class="availability-time">{{ info.availability.start_time|time:"H:i" }} - {{ info.availability.end_time|time:"H:i" }}</div>
+            
+            {% if info.busy_slots %}
+              <div class="busy-slots">
+                <div class="busy-slots-label">⚠️ Zajęte sloty:</div>
+                {% for start, end in info.busy_slots %}
+                  <span class="busy-slot">{{ start|time:"H:i" }}-{{ end|time:"H:i" }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            
+            <div class="booking-actions">
+              {% if info.busy_slots %}
+                <a href="{% url 'book_availability' info.availability.id %}" class="book-link partial">📅 Zarezerwuj pozostały czas</a>
+              {% else %}
+                <a href="{% url 'book_availability' info.availability.id %}" class="book-link available">✅ Zarezerwuj</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+        
+      {% else %}
+        <div class="no-availability">Brak dostępności</div>
+      {% endif %}
+      
+    </td>
+  {% endfor %}
+  </tr>
+</table>
+
+<h3>Twoja dostępność w tym tygodniu:</h3>
+<ul>
+<h3>Twoja dostępność:</h3>
+<ul>
+  {% for a in availabilities %}
+    <li>{{ a.date }}: {{ a.start_time }} - {{ a.end_time }}</li>
+  {% empty %}
+    <li>Brak dostępności</li>
+  {% endfor %}
+</ul>
+  
+</ul>
+
+
+{% endblock %}

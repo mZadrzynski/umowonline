@@ -1,0 +1,23 @@
+{% extends "myschedule/calendar_sidemenu.html" %}
+
+{% block title %}Moje rezerwacje{% endblock %}
+
+{% block content %}
+<h2>Twoje rezerwacje</h2>
+
+{% if bookings %}
+  <ul>
+    {% for booking in bookings %}
+      <li>
+        Data: {{ booking.availability.date }}<br>
+        Godzina: {{ booking.availability.start_time|time:"H:i" }} - {{ booking.availability.end_time|time:"H:i" }}
+        Usługa: {{ booking.service_type.name }}<br>
+        Dodano: {{ booking.booked_at|date:"Y-m-d H:i" }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Nie masz jeszcze żadnych rezerwacji.</p>
+{% endif %}
+
+{% endblock %}

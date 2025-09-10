@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h2>Rezerwacja wizyty</h2>
+<p>Dostępność: {{ availability.title }}<br>
+Data: {{ availability.date }}<br>
+Dostępne godziny: {{ availability.start_time }} – {{ availability.end_time }}</p>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        {{ form.service_type.label_tag }}
+        {{ form.service_type }}
+        <small class="form-text text-muted">{{ form.service_type.help_text }}</small>
+    </div>
+    
+    <div class="form-group">
+        {{ form.start_time.label_tag }}
+        {{ form.start_time }}
+        <small class="form-text text-muted">{{ form.start_time.help_text }}</small>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Zarezerwuj wizytę</button>
+    <a href="{% url 'my_calendar' %}" class="btn btn-secondary">Anuluj</a>
+</form>
+
+<div id="service-info" style="display:none;">
+    <h4>Informacje o wybranych usługach:</h4>
+    {% for service in service_types %}
+        <div data-service="{{ service.id }}" style="display:none;">
+            <strong>{{ service.name }}</strong> - {{ service.duration_minutes }} minut<br>
+            {{ service.description }}
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+document.getElementById('id_service_type').addEventListener('change', function() {
+    const selectedId = this.value;
+    const infoDiv = document.getElementById('service-info');
+    const serviceInfos = infoDiv.querySelectorAll('[data-service]');
+    
+    serviceInfos.forEach(info => info.style.display = 'none');
+    
+    if (selectedId) {
+        infoDiv.style.display = 'block';
+        const selectedInfo = infoDiv.querySelector(`[data-service="${selectedId}"]`);
+        if (selectedInfo) selectedInfo.style.display = 'block';
+    } else {
+        infoDiv.style.display = 'none';
+    }
+});
+</script>
+
+{% endblock %}

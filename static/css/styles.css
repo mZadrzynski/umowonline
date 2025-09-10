@@ -208,3 +208,29 @@ s {
   margin: 0;
   text-align: left;
 }
+.sidebar_container {
+  display: flex;
+  align-items: flex-start;  /* Wyrównanie do góry */
+  gap: 20px;                /* Odstęp między sidebar i main */
+  padding: 10px;
+}
+
+.sidebar_container {
+  display: flex;           /* Ustaw układ poziomy */
+  align-items: flex-start; /* Elementy wyrównane do góry */
+  gap: 20px;               /* Odstęp między sidebar i zawartością */
+  padding: 10px;
+}
+
+.sidebar {
+  width: 220px;            /* Stała szerokość sidebaru */
+  background-color: #f0f0f0;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+
+.calendar-week-section {
+  flex-grow: 1;            /* Zajmuje pozostałą szerokość obok sidebaru */
+  padding: 10px;
+}
