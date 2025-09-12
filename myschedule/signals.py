@@ -6,6 +6,7 @@ from .models import Calendar
 
 User = get_user_model()
 
+#sprawdza czy user jest premium jesli tak to tworzy kalendarz
 @receiver(post_save, sender=User)
 def create_calendar_for_premium(sender, instance, created, **kwargs):
     if created:

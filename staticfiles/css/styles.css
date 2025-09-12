@@ -1,0 +1,236 @@
+/* styles.css */
+html, body {
+    background-color: #c4d3da !important;
+    text-align: center;
+    overflow-x: auto;
+}
+
+body {
+    padding-top: 90px; /* dopasuj do wysokości nagłówka */
+}
+
+.container-custom h3 {
+    display: block;
+}
+
+.container-custom {
+
+    margin: 0 auto !important;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.header {
+    overflow-x: auto;
+    background-color: #2484a196;
+    color: white;
+    padding: 1rem;
+    box-shadow: 0px 5px 5px 0px white;
+    margin-bottom: 8px;
+    width: 100vw;
+    display: flex;
+    position: fixed;/* albo fixed */
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    white-space: nowrap;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    margin-right: 1rem;
+}
+
+.header a:hover {
+    text-decoration: underline;
+}
+
+.table-container {
+    margin: 2rem auto;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+footer {
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    margin: 5px;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+
+.logout-button {
+    background-color: #ff5733; /* Kolor tła */
+    color: white; /* Kolor tekstu */
+    border: none; /* Brak obramowania */
+    padding: 5px 20px; /* Wewnętrzny margines */
+    font-size: 16px; /* Rozmiar czcionki */
+    cursor: pointer; /* Kursor w postaci ręki */
+    border-radius: 5px; /* Zaokrąglone rogi */
+    transition: background-color 0.4s; /* Płynna zmiana koloru */
+}
+.login-button {
+    background-color: #7bc265; /* Kolor tła */
+    color: rgb(0, 0, 0); /* Kolor tekstu */
+    border: none; /* Brak obramowania */
+    padding: 5px 20px; /* Wewnętrzny margines */
+    font-size: 16px; /* Rozmiar czcionki */
+    cursor: pointer; /* Kursor w postaci ręki */
+    border-radius: 5px; /* Zaokrąglone rogi */
+    transition: background-color 0.4s; /* Płynna zmiana koloru */
+}
+.logout-button:hover {
+    background-color: #ff2a00; /* Zmiana koloru przy hover */
+}
+
+.logout-button:active {
+    background-color: #e60000; /* Zmiana koloru przy kliknięciu */
+}
+
+.login-button:hover {
+    background-color: #14ee14bb; /* Zmiana koloru przy hover */
+}
+
+.login-button:active {
+    background-color: #00e6c7; /* Zmiana koloru przy kliknięciu */
+}
+
+.umow-zdalnie {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fcfcfc; /* kolor primary bootstrapowy */
+  display: flex;
+  align-items: left;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.umow-zdalnie i {
+  font-size: 1.8rem;
+  color: #198754; /* zielony bootstrap */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Efekt hover */
+.umow-zdalnie:hover {
+  color: #fd9b6d; /* fiolet */
+  cursor: pointer;
+}
+
+.umow-zdalnie:hover i {
+  transform: rotate(10deg) scale(1.2);
+  color: #c2672a; /* czerwony */
+}
+
+.menu {
+  list-style: none;       /* usuwa kropki */
+  margin: 0;
+  padding: 0;
+  display: flex;          /* ustawia elementy w poziomie */
+  gap: 20px;              /* odstępy między elementami */
+}
+
+.menu li {
+  display: inline-block;  /* każdy element w jednej linii */
+}
+
+.menu a {
+  text-decoration: none;  /* usuwa podkreślenie */
+  color: #f7f7f7;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.menu a:hover {
+  color: #0d6efd; /* efekt hover */
+}
+s {
+  all: unset;
+}
+
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 15px;
+  background: #ff000000
+}
+.hamburger span {
+  height: 3px;
+  width: 25px;
+  background: white;
+  margin: 4px 0;
+}
+
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    background: #0f343fcb;
+    text-align: center;
+  }
+  .menu.active {
+    display: flex;
+  }
+  .hamburger {
+    display: flex;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+}
+.umow-zdalnie-link {
+  display: block;
+  text-align: left;
+}
+
+.umow-zdalnie {
+  margin: 0;
+  text-align: left;
+}
+.sidebar_container {
+  display: flex;
+  align-items: flex-start;  /* Wyrównanie do góry */
+  gap: 20px;                /* Odstęp między sidebar i main */
+  padding: 10px;
+}
+
+.sidebar_container {
+  display: flex;           /* Ustaw układ poziomy */
+  align-items: flex-start; /* Elementy wyrównane do góry */
+  gap: 20px;               /* Odstęp między sidebar i zawartością */
+  padding: 10px;
+}
+
+.sidebar {
+  width: 220px;            /* Stała szerokość sidebaru */
+  background-color: #f0f0f0;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+
+.calendar-week-section {
+  flex-grow: 1;            /* Zajmuje pozostałą szerokość obok sidebaru */
+  padding: 10px;
+}

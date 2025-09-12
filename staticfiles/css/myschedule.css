@@ -1,0 +1,82 @@
+/* Tabela kalendarza */
+.calendar-table {
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid #000;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.calendar-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+/* Dzień w kalendarzu */
+.calendar-day {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Kontener dostępności */
+.availability-item {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
+
+.availability-title {
+    font-weight: bold;
+}
+
+.availability-time {
+    font-size: 0.9em;
+}
+
+/* Zajęte sloty */
+.busy-slots {
+    margin-top: 5px;
+}
+
+.busy-slots-label {
+    color: red;
+    font-size: small;
+}
+
+.busy-slot {
+    color: red;
+    font-size: 0.8em;
+    background: #ffe6e6;
+    padding: 1px 3px;
+    border-radius: 2px;
+    margin-right: 3px;
+}
+
+/* Akcje rezerwacji */
+.booking-actions {
+    margin-top: 5px;
+}
+
+.book-link {
+    font-size: 0.8em;
+    text-decoration: none;
+}
+
+.book-link.available {
+    color: green;
+}
+
+.book-link.partial {
+    color: #333;
+}
+
+/* Brak dostępności */
+.no-availability {
+    color: gray;
+    font-size: small;
+}

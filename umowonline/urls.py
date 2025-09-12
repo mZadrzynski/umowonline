@@ -26,6 +26,9 @@ urlpatterns = [
     path('dashboad/', views.dashboard, name='dashboard'),
     path("myschedule/", include("myschedule.urls")),
     path("contact/", views.contact, name="contact"),
-
+    path(
+        'social-auth/',
+        include('social_django.urls', namespace='social')
+    ),
 ]
 
