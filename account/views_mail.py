@@ -6,7 +6,7 @@ def send_test_email(request):
         subject='Testowy mail z Django',
         message='Cześć! Wysłano maila z widoku.',
         from_email=None,
-        recipient_list=['e.zadrzynska@int.pl'],
+        recipient_list=['marcinzadrzynski@gmail.com'],
         fail_silently=False,
     )
     return HttpResponse('Mail został wysłany!')

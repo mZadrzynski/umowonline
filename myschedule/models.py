@@ -9,7 +9,7 @@ def default_valid_until():
 
 class Calendar(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="calendar")
-    share_token = models.CharField(max_length=12, default=shortuuid.uuid, unique=True, editable=False)
+    share_token = models.CharField(max_length=12, default=lambda: shortuuid.uuid()[:12], unique=True, editable=False)
     valid_from = models.DateField(default=date.today)  # od kiedy kalendarz aktywny
     valid_until = models.DateField(default=default_valid_until, null=True, blank=True)
  # do kiedy (opcjonalne)

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
     'social_django',
     'myschedule',
     'schedule',
@@ -109,9 +110,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_FROM_NAME = config('EMAIL_FROM_NAME', default='')
+DEFAULT_FROM_EMAIL = (
+    f'{EMAIL_FROM_NAME} <{EMAIL_HOST_USER}>'
+    if EMAIL_FROM_NAME else EMAIL_HOST_USER
+)
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True                    # STARTTLS
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_USE_TLS = True                  
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

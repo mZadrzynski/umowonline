@@ -23,9 +23,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('account/', include('account.urls')),
-    path('dashboad/', views.dashboard, name='dashboard'),
+    path('dashboard/', include('dashboard.urls')),
     path("myschedule/", include("myschedule.urls")),
-    path("contact/", views.contact, name="contact"),
+    path('captcha/', include('captcha.urls')),
+
     path(
         'social-auth/',
         include('social_django.urls', namespace='social')

@@ -40,12 +40,16 @@
                 {% if request.user.is_authenticated %}
                     Hello {{ request.user.first_name|default:request.user.username }}
                     <li>
-                        <a href="{% url "dashboard" %}">My dashboard</a>
+                        <a href="/dashboad/"></a>
                     </li>
                 {% endif %}
-                
+                    <li><a href="/">Strona główna</a></li>
                     <li><a href="{% url 'my_calendar_week' %}">Mój kalendarz</a></li>
-                    <li><a href="/contact/">Kontakt</a></li>
+                    <li><a href="{% url 'my_calendar_week' %}">Ulubione</a></li>
+                    <li><a href="/dashboard/help/">Pomoc</a></li>
+                    <!--<li><a href="/contact/">Blog</a></li>-->
+                    <li><a href="/dashboard/rules/">Regulamin</a></li>
+                    <li><a href="/dashboard/contact/">Kontakt</a></li>
 
           
                 <span class="user">

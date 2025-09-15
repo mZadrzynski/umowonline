@@ -12,6 +12,7 @@ def create_calendar_for_premium(sender, instance, created, **kwargs):
     if created:
         try:
             premium_group = Group.objects.get(name="Premium")
+
             if premium_group in instance.groups.all():
                 Calendar.objects.create(user=instance)
         except Group.DoesNotExist:

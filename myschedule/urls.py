@@ -9,5 +9,5 @@ urlpatterns = [
     path('calendar/add-service/', views.add_service, name='add_service'),
     path('book/<int:availability_id>/', views.book_availability, name='book_availability'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
-    path('public/<uuid:token>/', views.public_calendar_week, name='public_calendar_week'),
+    path('public/<str:token>/', views.public_calendar_week, name='public_calendar_week'),
 ]
