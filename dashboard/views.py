@@ -43,3 +43,6 @@ def help(request):
 
 def rules(request):
     return render(request, 'dashboard/rules.html')
+
+def offert(request):
+    return render(request, 'dashboard/offert.html')

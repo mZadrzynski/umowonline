@@ -1,0 +1,66 @@
+html, body {
+    text-align: center;
+    overflow-x: auto;
+}
+
+.forms-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px; /* odstęp między formularzami */
+}
+
+.form-box {
+    max-width: 400px;       /* ustawia maksymalną szerokość */
+    width: 50%;            /* wypełnia dostępne miejsce w granicach max-width */
+    box-sizing: border-box; /* padding i border wliczony w max-width */
+    word-break: break-word; /* łamanie wyrazów przy braku miejsca */
+    overflow-wrap: break-word; /* wyrazy łamane zgodnie z szerokością */
+}
+
+.small-text {
+    font-size: 0.7rem;
+    font-weight: normal;
+    color: #666666;
+    line-height: 1.3;
+    text-align: justify;
+}
+
+form label {
+    display: none;
+}
+
+
+
+.btn-custom-soft {
+    background-color: #3d91da; /* stonowany szary */
+    color: white;
+    font-size: 0.9rem;         /* mniejszy tekst */
+    padding: 0.35rem 0.75rem;  /* mniejsze wymiary */
+    border-radius: 6px;        /* lekko zaokrąglone rogi */
+    border: none;              /* bez widocznej ramki */
+    box-shadow: none;          /* bez cienia */
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom-soft:hover {
+    background-color: #65d646; /* ciemniejszy odcień po najechaniu */
+    color: white;
+    cursor: pointer;
+}
+
+p {
+    font-size: 1rem;           /* rozmiar czcionki */
+    color: #333333;            /* kolor tekstu */
+    line-height: 1.5;          /* wysokość linii, dla lepszej czytelności */
+    text-align: justify;       /* justowanie tekstu */
+    margin-bottom: 1rem;       /* odstęp poniżej paragrafu */
+    font-family: Arial, sans-serif; /* czcionka */
+}
+
+.captcha {
+    margin-right: 40px;
+
+    height: auto;
+}
+

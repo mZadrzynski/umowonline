@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/offert.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>umowzdalnie.pl - System zarządzania kalendarzem i rezerwacjami</title>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero__content">
+                <h1 class="hero__title">
+                    Zarządzaj terminami <br>
+                    <span class="hero__title--highlight">jak profesjonalista</span>
+                </h1>
+                <p class="hero__subtitle">
+                    Kompleksowy system rezerwacji i kalendarz online dla Twojego biznesu
+                </p>
+                
+                <div class="hero__offer">
+                    <div class="offer-badge">
+                        <span class="offer-badge__text">Pierwsze 30 dni</span>
+                        <span class="offer-badge__highlight">ZA DARMO</span>
+                    </div>
+                    <p class="hero__offer-text">
+                        Potem tylko <strong>20 PLN za miesiąc</strong> - bez dodatkowych opłat i ukrytych kosztów
+                    </p>
+                </div>
+
+                <div class="hero__actions">
+                    <a href="{% url 'login' %}" class="btn btn--primary btn--lg">Rozpocznij darmowy okres próbny</a>
+                    <button class="btn btn--outline btn--lg" id="learnMoreBtn">
+                        Dowiedz się więcej
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section__title">Przejrzysty cennik</h2>
+            <div class="pricing__card">
+                <div class="pricing__header">
+                    <h3 class="pricing__plan">Plan Podstawowy</h3>
+                    <div class="pricing__trial">
+                        <span class="pricing__trial-text">30 dni za darmo</span>
+                    </div>
+                </div>
+                <div class="pricing__price">
+                    <span class="pricing__amount">20</span>
+                    <span class="pricing__currency">PLN/miesiąc</span>
+                </div>
+                <div class="pricing__features">
+                    <div class="feature">
+                        <span class="feature__icon">✓</span>
+                        <span class="feature__text">Nieograniczone rezerwacje</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature__icon">✓</span>
+                        <span class="feature__text">Kalendarz online 24/7</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature__icon">✓</span>
+                        <span class="feature__text">Automatyczne przypomnienia</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature__icon">✓</span>
+                        <span class="feature__text">Brak dodatkowych opłat</span>
+                    </div>
+                </div>
+
+                <a href="{% url 'login' %}"  class="btn btn--primary btn--full-width">Wybierz plan</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" id="korzyści">
+        <div class="container">
+            <h2 class="section__title">Dlaczego warto wybrać umowzdalnie.pl?</h2>
+            <div class="benefits__grid">
+                <div class="benefit-card">
+                    <div class="benefit-card__icon">📅</div>
+                    <h3 class="benefit-card__title">Łatwe zarządzanie terminami</h3>
+                    <p class="benefit-card__description">Intuicyjny kalendarz online</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card__icon">🔄</div>
+                    <h3 class="benefit-card__title">System rezerwacji</h3>
+                    <p class="benefit-card__description">Automatyczne potwierdzenia i przypomnienia</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card__icon">🕒</div>
+                    <h3 class="benefit-card__title">Dostęp 24/7</h3>
+                    <p class="benefit-card__description">Zarządzaj terminami o każdej porze</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card__icon">💼</div>
+                    <h3 class="benefit-card__title">Profesjonalny wygląd</h3>
+                    <p class="benefit-card__description">Buduj zaufanie klientów</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-card__icon">💰</div>
+                    <h3 class="benefit-card__title">Brak ukrytych kosztów</h3>
+                    <p class="benefit-card__description">Przejrzysta struktura płatności</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+        <script src="{static 'js/app_offert.js'}"></script>
+</body>
+</html>
+
+
+{% endblock %}

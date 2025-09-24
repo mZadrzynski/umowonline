@@ -3,25 +3,15 @@
 
 {% block content %}
 
-<main class= "container-custom">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Django + AJAX Live Table</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard_style.css' %}">
+  
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}">
 
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-    <!-- DataTables Buttons CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
 
     <!-- DataTables Buttons JS -->
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
@@ -35,27 +25,131 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vfs-fonts/1.0.2/vfs_fonts.js"></script>
 
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UmówZdalnie.pl - Zarządzaj wizytami online</title>
+
 </head>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>📅 Załóż swój kalendarz i zacznij wygodnie zarządzać wizytami!</h1>
+                    <p class="hero-subtitle">Profesjonalna platforma do zarządzania terminami online. Pozwól swoim klientom umawiać się samodzielnie, a Ty oszczędź czas na rozwój swojego biznesu.</p>
+                    <div class="hero-cta">
+                        <a href="{% url 'login' %}" class="btn btn--primary btn--lg">Rozpocznij darmowy okres próbny</a>
+                        <p class="trial-note">✨ Pierwsze 30 dni całkowicie za darmo!</p>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/seedream_images/a97842ab-6af6-4964-988d-5e8e13cf03f4.png" alt="Profesjonalna osoba umawiająca wizytę przy komputerze">
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2>Wszystko czego potrzebujesz do zarządzania wizytami</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Intuicyjny interfejs</h3>
+                    <p>Prosty w obsłudze kalendarz, który opanujesz w kilka minut</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📧</div>
+                    <h3>Powiadomienia SMS i e-mail</h3>
+                    <p>Automatyczne przypomnienia dla Ciebie i Twoich klientów</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Synchronizacja z Twoim telefonem</h3>
+                    <p>Wszystkie terminy dostępne w Twoim kalendarzu mobilnym</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Możliwość ustawienia dostępności i przerw</h3>
+                    <p>Pełna kontrola nad swoim czasem pracy i przerwami</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌙</div>
+                    <h3>Dostęp 24/7 dla klientów</h3>
+                    <p>Twoi klienci mogą umawiać się o każdej porze dnia i nocy</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Automatyczne przypomnienia</h3>
+                    <p>Zmniejsz liczbę nieobecności dzięki przypomnieniom</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<section class="hero-section" style="padding: 40px; text-align: center;">
-  <h1 style="font-size: 2.5rem; color: #ff6600; margin-bottom: 20px;">
-    📅 Załóż swój kalendarz i zacznij wygodnie zarządzać wizytami!
-  </h1>
-  <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto 20px; color: #333;">
-    Masz własny biznes? Teraz możesz zapomnieć o chaosie w terminarzu i nieodebranych telefonach.
-    Nasza platforma pozwala Ci stworzyć <strong>własny, profesjonalny kalendarz online</strong>, dzięki któremu Twoi klienci mogą
-    <strong>szybko i wygodnie umawiać wizyty</strong> — 24/7, bez zbędnych formalności.
-  </p>
-  <ul style="list-style: none; padding: 0; margin: 20px auto; max-width: 600px; color: #444;">
-    <li>✅ Intuicyjny interfejs</li>
-    <li>✅ Powiadomienia SMS i e-mail</li>
-    <li>✅ Synchronizacja z Twoim telefonem</li>
-    <li>✅ Możliwość ustawienia dostępności i przerw</li>
-  </ul>
-  <p style="font-size: 1.2rem; color: #333; margin-top: 20px;">
-    Nie trać czasu na ręczne zapisy — <strong>zacznij już dziś</strong> i zobacz, jak łatwo można uporządkować swój dzień pracy.
-  </p>
-</section>
+    <!-- Pricing Section -->
+    <section class="pricing">
+        <div class="container">
+            <div class="pricing-header">
+                <h2>Prosty i przejrzysty cennik</h2>
+                <p>Bez ukrytych kosztów, bez długoterminowych zobowiązań</p>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-highlight">PIERWSZE 30 DNI ZA DARMO!</div>
+                <div class="pricing-main">
+                    <div class="price">
+                        <span class="currency">20</span>
+                        <span class="period">PLN/miesiąc</span>
+                    </div>
+                    <p class="pricing-description">Po okresie próbnym</p>
+                </div>
+                <ul class="pricing-features">
+                    <li>✅ Bez opłat instalacyjnych</li>
+                    <li>✅ Możliwość rezygnacji w każdym momencie</li>
+                    <li>✅ Pełny dostęp do wszystkich funkcji</li>
+                    <li>✅ Wsparcie techniczne</li>
+                    <li>✅ Aktualizacje i nowe funkcje</li>
+                </ul>
+                <a href="{% url 'login' %}" class="btn btn--primary btn--lg">Rozpocznij darmowy okres próbny</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <h2>Oszczędź czas i zacznij zarabiać więcej</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <h3>⏱️ Zaoszczędź czas</h3>
+                    <p>Koniec z odbieraniem telefonów tylko po to, żeby umówić wizytę. Twoi klienci zrobią to sami online.</p>
+                </div>
+                <div class="benefit-item">
+                    <h3>📞 Mniej nieodebranych połączeń</h3>
+                    <p>Klienci mogą się umówić nawet gdy jesteś zajęty. Nie tracisz już potencjalnych zleceń.</p>
+                </div>
+                <div class="benefit-item">
+                    <h3>💼 Profesjonalny wizerunek</h3>
+                    <p>Pokażesz klientom, że idziesz z duchem czasu i ułatwiasz im życie.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Gotowy na zmianę?</h2>
+                <p>Dołącz do tysięcy przedsiębiorców, którzy już oszczędzają czas dzięki UmówZdalnie.pl</p>
+                <a href="{% url 'login' %}" class="btn btn--primary btn--lg">Rozpocznij darmowy okres próbny</a>
+                <p class="cta-note">Pierwszych 30 dni to 0 PLN. Możesz zrezygnować w każdej chwili.</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="{static 'js/app.js'}"></script>
+
 
 {% endblock %}
