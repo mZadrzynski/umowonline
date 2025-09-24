@@ -2,12 +2,70 @@
 {% load static %}
 
 {% block content %}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contact.css' %}">
+</head>
+<div class="forms-wrapper">
+
 <h1> 
-    Contact site
+    Zapraszamy do kontaktu!
 </h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Wyślij</button>
-</form>
+</div>
+<div class="forms-wrapper">
+
+    <form method="post" class="form-box">
+        <h3>Napisz do nas</h3>
+        <p>Jeśli masz pytania zapraszamy do kontaktu!
+        wykorzystaj poniższy formularz kontaktowy
+        Postaramy się odpowiedzieć jak najszybciej!</p>
+
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="email">
+        {{ form_email.as_p }}
+        <button type="submit" class="btn btn-custom-soft">
+            Wyślij e-mail
+        </button><br>
+        <p class="small-text"><br>
+            Administratorem Państwa danych osobowych jest Marcin Zadrzyński. 
+            Dane osobowe przetwarzane będą wyłącznie w prawnie usprawiedliwionych 
+            celach administratora danych polegających na udzieleniu odpowiedzi na Państwa wiadomość. 
+            Podanie przez Państwa danych osobowych jest dobrowolne, ale też niezbędne do nawiązania z Państwem kontaktu za pomocą formularza kontaktowego. 
+            Szczegółowe informacje na temat przetwarzania Państwa danych osobowych mogą Państwo znaleźć w naszej Polityce prywatności na temat zasad przetwarzania danych osobowych
+        </p>
+   
+    </form>
+
+    <form method="post" class="form-box">
+        <h3>Zamów rozmowę</h3>
+        <p>
+            Jeśli chcesz uzyskać odpowiedzi na swoje pytania telefonicznie, jesteśmy do Twoje dyspozycji! Wpisz poniżej numer i zamów rozmowę.
+            Zadzwonimy tak szybko, jak to możliwe!
+        </p>
+
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="phone">
+        {{ form_phone.as_p }}
+        <button type="submit" class="btn btn-custom-soft">
+            Zamów rozmowe
+        </button><br>
+            <p class="small-text"><br>
+            Administratorem Państwa danych osobowych jest Marcin Zadrzyński. 
+            Dane osobowe przetwarzane będą wyłącznie w prawnie usprawiedliwionych 
+            celach administratora danych polegających na udzieleniu odpowiedzi na Państwa wiadomość. 
+            Podanie przez Państwa danych osobowych jest dobrowolne, ale też niezbędne do nawiązania z Państwem kontaktu za pomocą formularza kontaktowego. 
+            Szczegółowe informacje na temat przetwarzania Państwa danych osobowych mogą Państwo znaleźć w naszej Polityce prywatności na temat zasad przetwarzania danych osobowych
+        </p>
+        <h3>Dane Adresowe</h3>
+        <p>
+            Marcin Zadrzyński<br>
+            Szpora 3<br>
+            80-809 Gdańsk<br>
+            Polska<br>
+            Mail: kontakt@umowzdalnie.pl<br>
+            Telefon: 696-211-154
+        </p>
+    </form>
+</div>
+
 {% endblock %}

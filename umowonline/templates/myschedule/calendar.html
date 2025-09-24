@@ -1,32 +1,93 @@
-{% extends "base.html" %}
+{% extends "myschedule/calendar_sidemenu.html" %}
 
-{% block title %}calendar{% endblock %}
+{% block title %}Kalendarz miesieczny{% endblock %}
 
-{% block content %}
-<h2>Kalendarz użytkownika {{ request.user.username }}</h2>
+{% block calendar %}
 
-<table border="1">
-  <tr>
-    <th>Pn</th><th>Wt</th><th>Śr</th><th>Cz</th><th>Pt</th><th>Sb</th><th>Nd</th>
-  </tr>
-  <tr>
-    {% for day in month_days %}
-      <td>{{ day }}</td>
-      {% if forloop.counter|divisibleby:7 %}
-        </tr><tr>
-      {% endif %}
+{% load static calendar_extras %}
+
+
+<head>
+  <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+</head>
+<body>
+  <h2>{{ month_name }} {{ year }}</h2>
+  <div class="nav">
+    <a href="?month={{ month_offset|add:'-1' }}">&laquo; Poprzedni miesiąc</a>
+    <a href="?month={{ month_offset|add:'1' }}">Następny miesiąc &raquo;</a>
+  </div>
+  
+  
+
+<table class="calendar-month">
+      <thead>
+      <tr>
+        <th>Pon</th><th>Wt</th><th>Śr</th><th>Cz</th>
+        <th>Pt</th><th>Sob</th><th>Nd</th>
+      </tr>
+      </thead>
+  <tbody>
+    {% for week, offset in weeks_with_offset %}
+    <tr>
+      {% for day in week %}
+      <td class="{% if day.month == start_of_month.month %}current-month{% else %}other-month{% endif %}">
+        <div class="cell-content">
+          <div class="day-number">
+            <a href="{% url 'my_calendar_week' %}?week={{ offset }}">
+              {{ day.day }}
+            </a>
+            
+            {% with visit_count=visits_by_day|get_item:day %}
+              {% if visit_count %}
+                ilosc wizyt:
+                <span class="badge bg-info ms-2" title="Liczba wizyt tego dnia">{{ visit_count }}</span>
+              {% endif %}
+            {% endwith %}
+
+          </div>
+
+          {% with day_avs=av_by_day|get_item:day %}
+            {% if day_avs %}
+              <p>dostepnosc:</p>
+              <ul class="list-unstyled availability-summary mb-0">
+                {% for info in day_avs|slice:":2" %}
+                <li>
+                  <span class="badge bg-success me-1">
+                    {{ info.availability.start_time|time:"H:i" }}–{{ info.availability.end_time|time:"H:i" }}
+                  </span>
+                </li>
+                {% endfor %}
+                {% if day_avs|length > 2 %}
+                <li>
+                  <a href="{% url 'my_calendar_week' %}?week={{ offset }}" class="small">
+                    +{{ day_avs|length|add:"-2" }} więcej…
+                  </a>
+                </li>
+                
+                {% endif %}
+              </ul>
+            {% else %}
+              <div class="no-availability">Brak dostępności</div>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </td>
+      {% endfor %}
+    </tr>
     {% endfor %}
-  </tr>
+  </tbody>
 </table>
 
-<h3>Twoja dostępność:</h3>
-<ul>
-  {% for a in availabilities %}
-    <li>{{ a.date }}: {{ a.start_time }} - {{ a.end_time }}</li>
-  {% empty %}
-    <li>Brak dostępności</li>
-  {% endfor %}
-</ul>
 
-<a href="{% url 'add_availability' %}">Dodaj dostępność</a>
+    <h2>Udostępnij kalendarz</h2>
+    <div class="share-calendar">
+    <p>Udostępnij swój kalendarz innym, kopiując poniższy adres:</p>
+    <input
+      type="text"
+      class="form-control"
+      readonly
+      value="{{ public_calendar_url }}"
+    >
+  </div>
+</body>
 {% endblock %}

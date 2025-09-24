@@ -2,16 +2,17 @@
 
 {% block title %}Kalendarz tygodniowy{% endblock %}
 
-{% block calendar_week %}
+{% block calendar %}
 {% load static %}
 <head>
     <link rel="stylesheet" type="text/css" href="{% static 'css/myschedule.css' %}">
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 </head>
 <h2>Kalendarz tygodniowy użytkownika {{ request.user.username }}</h2>
 
 <div>
-  <a href="?week={{ selected_week|date:'W'|add:-1 }}">Poprzedni tydzień</a> |
-  <a href="?week={{ selected_week|date:'W'|add:1 }}">Następny tydzień</a>
+  <a href="?week={{ week_offset|add:"-1" }}">Poprzedni tydzień</a> |
+  <a href="?week={{ week_offset|add:"1" }}">Następny tydzień</a>
 </div>
 
 <table class="calendar-table">
@@ -24,10 +25,21 @@
       <div class="calendar-day">{{ day|date:"d-m-Y" }}</div>
       {% if availabilities %}
         {% for info in availabilities %}
+
+
+        <div class="cell-content">
           <div class="availability-item">
             <div class="availability-title">{{ info.availability.title }}</div>
-            <div class="availability-time">{{ info.availability.start_time|time:"H:i" }} - {{ info.availability.end_time|time:"H:i" }}</div>
+            <div class="availability-time">{{ info.availability.start_time|time:"H:i" }} - {{ info.availability.end_time|time:"H:i" }}
             
+            <!-- POPRAWKA: użyj info.availability.id zamiast availability.id -->
+            <a href="{% url 'delete_availability' info.availability.id %}" 
+              class="btn btn-sm btn-outline-danger" 
+              title="Usuń dostępność"
+              onclick="return confirm('Czy na pewno chcesz usunąć tę dostępność?')">
+              <i class="fas fa-trash"></i>
+            </a>
+            </div>
             {% if info.busy_slots %}
               <div class="busy-slots">
                 <div class="busy-slots-label">⚠️ Zajęte sloty:</div>
@@ -50,7 +62,8 @@
       {% else %}
         <div class="no-availability">Brak dostępności</div>
       {% endif %}
-      
+        </div>
+
     </td>
   {% endfor %}
   </tr>

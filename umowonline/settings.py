@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d!9hf(xz)3^i(@%t1b6fj75146__@h^)2(uk^5nnvu3r7g^(b7'
 
 
-ALLOWED_HOSTS = ['umowzdalnie.pl', 'www.umowzdalnie.pl', '127.0.0.1', '217.154.245.148', 'umowzdalnie2.pl']
+ALLOWED_HOSTS = ['umowzdalnie.pl', 'www.umowzdalnie.pl', '127.0.0.1', '217.154.245.148']
 
 
 # Application definition
@@ -176,8 +176,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 LOGOUT_REDIRECT_URL = '/'  # po wylogowaniu wróci na stronę główną
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
 
+CAPTCHA_IMAGE_SIZE = (180, 70)  # szerokość i wysokość w pikselach (domyślnie mniejsze)
+CAPTCHA_FONT_SIZE = 50

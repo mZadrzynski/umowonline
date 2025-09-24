@@ -11,9 +11,10 @@
 <h2>Kalendarz tygodniowy użytkownika {{ calendar_owner.username }}</h2>
 
 <div>
-  <a href="?week={{ selected_week|date:'W'|add:-1 }}">Poprzedni tydzień</a> |
-  <a href="?week={{ selected_week|date:'W'|add:1 }}">Następny tydzień</a>
+  <a href="?week={{ week_offset|add:"-1" }}">Poprzedni tydzień</a> |
+  <a href="?week={{ week_offset|add:"1" }}">Następny tydzień</a>
 </div>
+
 
 <table class="calendar-table">
   <tr>

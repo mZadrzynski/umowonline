@@ -1,8 +1,190 @@
 {% extends "base.html" %}
 {% load static %}
 
+
+
 {% block content %}
-<h1> 
-    REGULAMIN    
-</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contact.css' %}">
+    <title>Regulamin serwisu umowzdalnie.pl</title>
+</head>
+<body>
+    <div class="container">
+        <h1>REGULAMIN SERWISU UMOWZDALNIE.PL</h1>
+        
+        <div class="section">
+            <h2>§ 1. POSTANOWIENIA OGÓLNE</h2>
+            <p>1. Niniejszy Regulamin określa zasady świadczenia usług drogą elektroniczną przez serwis internetowy umowzdalnie.pl, zwanego dalej "Serwisem".</p>
+            <p>2. Właścicielem i administratorem Serwisu jest Marcin Zadrzyński, zwany dalej "Usługodawcą".</p>
+            <p>3. Serwis umożliwia użytkownikom tworzenie i zarządzanie kalendarzami oraz umawianie wizyt drogą elektroniczną.</p>
+            <p>4. Korzystanie z Serwisu jest równoznaczne z akceptacją postanowień niniejszego Regulaminu.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 2. DEFINICJE</h2>
+            <p>1. <strong>Serwis</strong> – serwis internetowy dostępny pod adresem umowzdalnie.pl wraz z wszystkimi podstronami i funkcjonalnościami.</p>
+            <p>2. <strong>Użytkownik</strong> – osoba fizyczna, prawna lub jednostka organizacyjna nieposiadająca osobowości prawnej, korzystająca z usług Serwisu.</p>
+            <p>3. <strong>Konto</strong> – indywidualna przestrzeń Użytkownika w Serwisie, utworzona po rejestracji.</p>
+            <p>4. <strong>Kalendarz</strong> – narzędzie dostępne w Serwisie umożliwiające zarządzanie terminami i wizytami.</p>
+            <p>5. <strong>Wizyta</strong> – termin zarezerwowany przez klienta Użytkownika w jego kalendarzu.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 3. REJESTRACJA I KONTO UŻYTKOWNIKA</h2>
+            <p>1. Aby korzystać z pełnej funkcjonalności Serwisu, Użytkownik musi założyć Konto poprzez wypełnienie formularza rejestracyjnego.</p>
+            <p>2. Rejestracja wymaga podania:</p>
+            <ul>
+                <li>adresu e-mail</li>
+                <li>hasła</li>
+                <li>danych kontaktowych</li>
+            </ul>
+            <p>3. Użytkownik zobowiązuje się do podania prawdziwych i aktualnych danych.</p>
+            <p>4. Użytkownik jest odpowiedzialny za zachowanie poufności danych logowania.</p>
+            <p>5. Użytkownik może w każdym czasie usunąć swoje Konto, składając odpowiednią dyspozycję.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 4. ŚWIADCZONE USŁUGI</h2>
+            <p>1. Serwis udostępnia następujące funkcjonalności:</p>
+            <ul>
+                <li>tworzenie i personalizację kalendarzy</li>
+                <li>zarządzanie dostępnością terminów</li>
+                <li>przyjmowanie rezerwacji wizyt od klientów</li>
+                <li>powiadomienia e-mail o nowych rezerwacjach</li>
+                <li>zarządzanie danymi klientów</li>
+            </ul>
+            <p>2. Usługodawca dołoży wszelkich starań, aby Serwis był dostępny 24 godziny na dobę, jednak nie gwarantuje nieprzerwanego dostępu.</p>
+            <p>3. Usługodawca zastrzega sobie prawo do czasowego wyłączenia Serwisu w celu przeprowadzenia prac technicznych.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 5. OPŁATY I PŁATNOŚCI</h2>
+            <div class="highlight">
+                <p>1. <strong class="free-trial">Okres próbny:</strong> Każdy nowy Użytkownik ma prawo do 30-dniowego bezpłatnego okresu próbnego, liczącego się od daty rejestracji.</p>
+                <p>2. <strong class="price">Opłata miesięczna:</strong> Po zakończeniu okresu próbnego pobierana jest opłata w wysokości 20,00 zł brutto miesięcznie.</p>
+            </div>
+            <p>3. Opłaty są pobierane z góry za każdy rozpoczęty miesiąc kalendarzowy.</p>
+            <p>4. Płatności realizowane są poprzez:</p>
+            <ul>
+                <li>przelewy bankowe</li>
+                <li>płatności online</li>
+                <li>inne formy akceptowane przez Usługodawcę</li>
+            </ul>
+            <p>5. Brak opłaty w terminie skutkuje zawieszeniem dostępu do Serwisu.</p>
+            <p>6. Zwrot opłat możliwy jest wyłącznie w przypadkach przewidzianych prawem.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 6. PRAWA I OBOWIĄZKI UŻYTKOWNIKA</h2>
+            
+            <h3>Prawa Użytkownika:</h3>
+            <ul>
+                <li>Korzystanie z wszystkich funkcjonalności Serwisu zgodnie z Regulaminem</li>
+                <li>Kontakt z obsługą klienta w sprawach technicznych</li>
+                <li>Usunięcie Konta w każdym czasie</li>
+            </ul>
+
+            <h3>Obowiązki Użytkownika:</h3>
+            <ul>
+                <li>Korzystanie z Serwisu zgodnie z prawem i Regulaminem</li>
+                <li>Nieprzekazywanie danych logowania osobom trzecim</li>
+                <li>Niezwłoczne informowanie o nieuprawnnym dostępie do Konta</li>
+                <li>Terminowe uregulowanie opłat</li>
+            </ul>
+
+            <h3>Zakazy:</h3>
+            <ul>
+                <li>Wykorzystywanie Serwisu w sposób sprzeczny z prawem</li>
+                <li>Wprowadzanie treści obraźliwych, nielegalnych lub naruszających prawa osób trzecich</li>
+                <li>Podejmowanie działań mogących zakłócić pracę Serwisu</li>
+                <li>Kopiowanie, modyfikowanie lub rozpowszechnianie materiałów Serwisu bez zgody</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>§ 7. ODPOWIEDZIALNOŚĆ</h2>
+            <p>1. Usługodawca nie ponosi odpowiedzialności za:</p>
+            <ul>
+                <li>szkody wynikające z nieprawidłowego korzystania z Serwisu</li>
+                <li>utratę danych spowodowaną działaniem osób trzecich</li>
+                <li>skutki niedostępności Serwisu z przyczyn technicznych</li>
+            </ul>
+            <p>2. Odpowiedzialność Usługodawcy ograniczona jest do wysokości opłat uiszczonych przez Użytkownika w ciągu 12 miesięcy poprzedzających zdarzenie.</p>
+            <p>3. Użytkownik ponosi pełną odpowiedzialność za treści publikowane w Serwisie.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 8. REKLAMACJE</h2>
+            <p>1. Reklamacje można składać:</p>
+            <ul>
+                <li>e-mailem na adres: [EMAIL KONTAKTOWY]</li>
+                <li>listownie na adres siedziby Usługodawcy</li>
+            </ul>
+            <p>2. Reklamacja powinna zawierać:</p>
+            <ul>
+                <li>dane kontaktowe Użytkownika</li>
+                <li>opis problemu</li>
+                <li>żądanie Użytkownika</li>
+            </ul>
+            <p>3. Reklamacje są rozpatrywane w terminie 14 dni roboczych.</p>
+            <p>4. Odpowiedź na reklamację jest wysyłana na adres e-mail podany przez Użytkownika.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 9. OCHRONA DANYCH OSOBOWYCH</h2>
+            <p>1. Administratorem danych osobowych jest Usługodawca.</p>
+            <p>2. Dane osobowe są przetwarzane zgodnie z obowiązującymi przepisami prawa, w szczególności RODO.</p>
+            <p>3. Szczegółowe informacje o przetwarzaniu danych osobowych zawiera Polityka Prywatności.</p>
+            <p>4. Użytkownik ma prawo do:</p>
+            <ul>
+                <li>dostępu do swoich danych</li>
+                <li>ich sprostowania</li>
+                <li>usunięcia</li>
+                <li>ograniczenia przetwarzania</li>
+                <li>przenoszenia danych</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>§ 10. ZMIANY REGULAMINU</h2>
+            <p>1. Usługodawca zastrzega sobie prawo do wprowadzenia zmian w Regulaminie.</p>
+            <p>2. O zmianach Użytkownicy będą informowani z 7-dniowym wyprzedzeniem poprzez:</p>
+            <ul>
+                <li>powiadomienie e-mail</li>
+                <li>informację w Serwisie</li>
+            </ul>
+            <p>3. Brak sprzeciwu w terminie 7 dni od powiadomienia jest równoznaczny z akceptacją zmian.</p>
+            <p>4. W przypadku sprzeciwu wobec zmian, Użytkownik może wypowiedzieć umowę ze skutkiem natychmiastowym.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 11. WYPOWIEDZENIE UMOWY</h2>
+            <p>1. Użytkownik może wypowiedzieć umowę w każdym czasie bez podania przyczyny.</p>
+            <p>2. Wypowiedzenie następuje poprzez usunięcie Konta lub pisemne oświadczenie.</p>
+            <p>3. Usługodawca może wypowiedzieć umowę w przypadku:</p>
+            <ul>
+                <li>naruszenia Regulaminu przez Użytkownika</li>
+                <li>nieregulowania opłat</li>
+                <li>działań szkodzących Serwisowi</li>
+            </ul>
+            <p>4. W przypadku wypowiedzenia przez Usługodawcę, Użytkownik otrzymuje 7-dniowe wyprzedzenie.</p>
+        </div>
+
+        <div class="section">
+            <h2>§ 12. POSTANOWIENIA KOŃCOWE</h2>
+            <p>1. W sprawach nieuregulowanych Regulaminem stosuje się przepisy prawa polskiego.</p>
+            <p>2. Ewentualne spory będą rozstrzygane przez sąd właściwy dla siedziby Usługodawcy.</p>
+            <p>3. W przypadku, gdy którekolwiek z postanowień Regulaminu okaże się nieważne, pozostałe postanowienia zachowują moc obowiązującą.</p>
+            <p>4. Regulamin wchodzi w życie z dniem publikacji w Serwisie.</p>
+            <p>5. Aktualna wersja Regulaminu jest zawsze dostępna w Serwisie.</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>Data ostatniej aktualizacji:</strong> 24.09.2025</p>
+            <p><strong>Kontakt:</strong> kontakt@umowzdalnie.pl</p>
+        </div>
+    </div>
+</body>
 {% endblock %}

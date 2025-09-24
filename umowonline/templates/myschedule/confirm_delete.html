@@ -1,0 +1,13 @@
+<div class="container">
+    <h2>Potwierdź usunięcie</h2>
+    <p>Czy na pewno chcesz usunąć dostępność na dzień <strong>{{ availability.date }}</strong> 
+       od {{ availability.start_time }} do {{ availability.end_time }}?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Tak, usuń
+        </button>
+        <a href="{% url 'my_calendar' %}" class="btn btn-secondary">Anuluj</a>
+    </form>
+</div>

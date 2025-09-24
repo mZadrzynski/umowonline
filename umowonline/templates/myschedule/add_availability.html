@@ -1,14 +1,57 @@
-{% extends "base.html" %}
+{% extends "myschedule/calendar_sidemenu.html" %}
 
-{% block title %}calendar{% endblock %}
+{% block title %}dodaj dostepnosc{% endblock %}
 
-{% block content %}
+{% block calendar %}
+{% load static %}
 
-<h2>Dodaj dostępność</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Zapisz</button>
-</form>
+  <h1>Dodaj dostępność</h1>
+  
+  <div class="tabs">
+    <button onclick="showForm('single')" class="tab-button active" id="single-tab">Pojedyncza dostępność</button>
+    <button onclick="showForm('bulk')" class="tab-button" id="bulk-tab">Dodaj hurtowo</button>
+  </div>
 
+  <!-- Formularz pojedynczy -->
+  <div id="single-form" class="form-container">
+    <h2>Dodaj pojedynczą dostępność</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ single_form.as_p }}
+      <button type="submit" name="submit_single">Dodaj pojedynczą</button>
+    </form>
+  </div>
+
+  <!-- Formularz hurtowy -->
+  <div id="bulk-form" class="form-container" style="display: none;">
+    <h2>Dodaj dostępność hurtowo</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ bulk_form.as_p }}
+      <button type="submit" name="submit_bulk">Dodaj hurtowo</button>
+    </form>
+  </div>
+
+  <script>
+    function showForm(formType) {
+      // Ukryj wszystkie formularze
+      document.getElementById('single-form').style.display = 'none';
+      document.getElementById('bulk-form').style.display = 'none';
+      
+      // Usuń active z wszystkich tabów
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      
+      // Pokaż wybrany formularz i zaznacz tab
+      document.getElementById(formType + '-form').style.display = 'block';
+      document.getElementById(formType + '-tab').classList.add('active');
+    }
+  </script>
+
+  <style>
+    .tabs { margin-bottom: 20px; }
+    .tab-button { padding: 10px 20px; margin-right: 5px; cursor: pointer; }
+    .tab-button.active { background-color: #007cba; color: white; }
+    .form-container { padding: 20px; border: 1px solid #ddd; }
+  </style>
 {% endblock %}
+

@@ -58,9 +58,9 @@ body {
 
 
 footer {
-    color: rgb(255, 255, 255);
-    padding: 10px;
-    text-align: center;
+    color: rgb(255, 255, 255) !important;
+    padding: 10px !important;
+    text-align: center !important;
 }
 
 nav a {
@@ -234,3 +234,5 @@ s {
   flex-grow: 1;            /* Zajmuje pozostałą szerokość obok sidebaru */
   padding: 10px;
 }
+
+

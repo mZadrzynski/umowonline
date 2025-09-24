@@ -3,30 +3,16 @@ from datetime import date, datetime, timedelta
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from .forms import AvailabilityForm, ServiceTypeForm, BookingForm
+from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm, BookingForm
 from datetime import timedelta
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
-from .models import Availability, Booking, ServiceType, Calendar
+from .models import Availability, Booking, ServiceType
 from django.contrib import messages
 from django.urls import reverse
 
 
-
-@login_required
-def my_calendar(request):
-    if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza (tylko Premium ma dostęp)")
-
-    today = date.today()
-    cal = calendar.Calendar()
-    month_days = cal.itermonthdates(today.year, today.month)
-
-    return render(request, "myschedule/calendar.html", {
-        "month_days": month_days,
-        "today": today,
-        "availabilities": request.user.calendar.availabilities.all(),
-    })
+import holidays
 
 
 def my_calendar_week(request):
@@ -39,6 +25,7 @@ def my_calendar_week(request):
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
     end_of_week = start_of_week + timedelta(days=6)
     week_days = [start_of_week + timedelta(days=i) for i in range(7)]
+
 
     public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
     public_url = request.build_absolute_uri(public_path)
@@ -79,42 +66,131 @@ def my_calendar_week(request):
         "selected_week": start_of_week,
         "availabilities_by_day_items": availabilities_by_day_items,
         "public_calendar_url": public_url,
+        "week_offset": week_offset, 
 
     })
-
 
 
 @login_required
 def add_availability(request):
     if not hasattr(request.user, "calendar"):
         return HttpResponse("Nie masz kalendarza (tylko Premium może dodać dostępność)")
-
+    
+    single_form = SingleAvailabilityForm(prefix='single', calendar=request.user.calendar)
+    bulk_form = BulkAvailabilityForm(prefix='bulk')
+    
     if request.method == "POST":
-        form = AvailabilityForm(request.POST)
-        if form.is_valid():
-            availability = form.save(commit=False)
-            availability.calendar = request.user.calendar
-            availability.save()
-            return redirect("my_calendar")
-    else:
-        form = AvailabilityForm()
+        if 'submit_single' in request.POST:
+            single_form = SingleAvailabilityForm(
+                request.POST, 
+                prefix='single', 
+                calendar=request.user.calendar
+            )
+            if single_form.is_valid():
+                availability = single_form.save(commit=False)
+                availability.calendar = request.user.calendar
+                availability.save()
+                messages.success(request, "Dostępność została dodana.")
+                return redirect("my_calendar")
+                    
+        elif 'submit_bulk' in request.POST:
+            bulk_form = BulkAvailabilityForm(request.POST, prefix='bulk')
+            if bulk_form.is_valid():
+                cal = request.user.calendar
+                start = bulk_form.cleaned_data["start_date"]
+                end = bulk_form.cleaned_data["end_date"]
+                days = [int(d) for d in bulk_form.cleaned_data["weekdays"]]
+                start_time = bulk_form.cleaned_data["start_time"]
+                end_time = bulk_form.cleaned_data["end_time"]
+                
+                pl_holidays = holidays.Poland(years=range(start.year, end.year + 1))
+                
+                current = start
+                created_count = 0
+                conflict_count = 0
+                conflicts = []
+                
+                while current <= end:
+                    if current.weekday() in days and current not in pl_holidays:
+                        # Sprawdź nakładanie dla każdego dnia
+                        overlapping = Availability.objects.filter(
+                            calendar=cal,
+                            date=current,
+                            start_time__lt=end_time,
+                            end_time__gt=start_time
+                        )
+                        
+                        if not overlapping.exists():
+                            Availability.objects.create(
+                                calendar=cal,
+                                date=current,
+                                start_time=start_time,
+                                end_time=end_time
+                            )
+                            created_count += 1
+                        else:
+                            existing = overlapping.first()
+                            conflicts.append(
+                                f"{current.strftime('%d.%m.%Y')} "
+                                f"({existing.start_time.strftime('%H:%M')}-{existing.end_time.strftime('%H:%M')})"
+                            )
+                            conflict_count += 1
+                    
+                    current += timedelta(days=1)
+                
+                if created_count > 0:
+                    messages.success(request, f"Dodano {created_count} dostępności.")
+                
+                if conflict_count > 0:
+                    conflicts_str = ', '.join(conflicts[:5])
+                    if len(conflicts) > 5:
+                        conflicts_str += f" i {len(conflicts)-5} innych"
+                    messages.warning(
+                        request, 
+                        f"Pominięto {conflict_count} nakładających się terminów: {conflicts_str}"
+                    )
+                
+                return redirect("my_calendar_week")
+    
+    return render(request, "myschedule/add_availability.html", {
+        "single_form": single_form,
+        "bulk_form": bulk_form,
+    })
 
-    return render(request, "myschedule/add_availability.html", {"form": form})
+
+@login_required
+def delete_availability(request, availability_id):
+    availability = get_object_or_404(
+        Availability, 
+        id=availability_id, 
+        calendar=request.user.calendar
+    )
+    
+    if request.method == 'POST':
+        availability.delete()
+        messages.success(request, "Dostępność została usunięta.")
+        return redirect("my_calendar")
+    
+    return render(request, 'myschedule/confirm_delete.html', {
+        'availability': availability
+    })
 
 
 @login_required
 def add_service(request):
     if not hasattr(request.user, "calendar"):
         return HttpResponse("Nie masz kalendarza (tylko Premium może dodać wydarzenia)")
+    
     if request.method == "POST":
         form = ServiceTypeForm(request.POST)
         if form.is_valid():
-            event = form.save(commit=False)
-            event.calendar = request.user.calendar
-            event.save()
-            return redirect("my_calendar")
+            service = form.save(commit=False)
+            service.calendar = request.user.calendar
+            service.save()
+            return redirect("my_calendar_week")
     else:
         form = ServiceTypeForm()
+    
     return render(request, "myschedule/add_service.html", {"form": form})
 
 
@@ -217,22 +293,102 @@ def book_availability(request, availability_id):
     })
 
 
-def public_calendar_week(request, token):
-    calendar = get_object_or_404(Calendar, share_token=token)
+@login_required
+def my_calendar(request):
+    if not hasattr(request.user, "calendar"):
+        return HttpResponse("Nie masz kalendarza (tylko Premium ma dostęp)")
+    
+    # miesiąc
+    month_offset = int(request.GET.get("month", 0))
+    today = date.today().replace(day=1)
+    year = today.year + (today.month - 1 + month_offset) // 12
+    month = (today.month - 1 + month_offset) % 12 + 1
+    start_of_month = date(year, month, 1)
+    last_day = calendar.monthrange(year, month)[1]
+    end_of_month = date(year, month, last_day)
+    
+    # siatka dni
+    first_weekday = start_of_month.weekday()
+    grid_start = start_of_month - timedelta(days=first_weekday)
+    total_cells = ((first_weekday + last_day - 1) // 7 + 1) * 7
+    all_days = [grid_start + timedelta(days=i) for i in range(total_cells)]
+    
+    # oblicz start aktualnego tygodnia
+    current_week_start = date.today() - timedelta(days=date.today().weekday())
+    
+    # zbuduj listę tygodni z offsetem
+    weeks_with_offset = []
+    for i in range(0, len(all_days), 7):
+        week_days = all_days[i:i+7]
+        week_start = week_days[0]
+        week_offset = (week_start - current_week_start).days // 7
+        weeks_with_offset.append((week_days, week_offset))
+    
+    # publiczny URL
+    public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
+    public_url = request.build_absolute_uri(public_path)
+    
+    # dostępności i zajęcia
+    avail_qs = request.user.calendar.availabilities.filter(
+        date__range=[start_of_month, end_of_month]
+    ).order_by('date', 'start_time')
+    bookings = Booking.objects.filter(availability__in=avail_qs).select_related('service_type')
+    
+    bookings_by_av = {}
+    for b in bookings:
+        slots = bookings_by_av.setdefault(b.availability_id, [])
+        start = b.start_datetime.time()
+        end = (b.start_datetime + timedelta(minutes=b.service_type.duration_minutes)).time()
+        slots.append((start, end))
+    
+    av_by_day = {}
+    for av in avail_qs:
+        av_by_day.setdefault(av.date, []).append({
+            "availability": av,
+            "busy_slots": bookings_by_av.get(av.id, [])
+        })
+
+    visits_by_day = {}
+    for b in bookings:
+        booking_date = b.availability.date
+        visits_by_day[booking_date] = visits_by_day.get(booking_date, 0) + 1
+    
+    return render(request, "myschedule/calendar.html", {
+        "weeks_with_offset": weeks_with_offset,
+        "start_of_month": start_of_month,
+        "month_offset": month_offset,
+        "public_calendar_url": public_url,
+        "av_by_day": av_by_day,
+        "month_name": calendar.month_name[month],
+        "year": year,
+        "visits_by_day": visits_by_day, 
+    })
+
+def my_calendar_week(request):
+    #jezeli user nie ma kalandarza to nie zobaczy widoku tylko napis(sprawdzanie grupy premium w signals)
+    if not hasattr(request.user, "calendar"):
+        return HttpResponse("Nie masz kalendarza (tylko Premium ma dostęp)")
+
     today = date.today()
-    week_offset = int(request.GET.get('week', 0))
+    week_offset = int(request.GET.get("week", 0))
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
     end_of_week = start_of_week + timedelta(days=6)
     week_days = [start_of_week + timedelta(days=i) for i in range(7)]
 
-    availabilities = calendar.availabilities.filter(
+
+    public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
+    public_url = request.build_absolute_uri(public_path)
+    #wyszukuje wszystkie dostepnosci w danym tygodsniu
+    availabilities = request.user.calendar.availabilities.filter(
         date__range=[start_of_week, end_of_week]
     ).order_by('date', 'start_time')
 
+    # Pobierz wszystkie Bookingi przypisane do tych Availability
     bookings = Booking.objects.filter(
         availability__in=availabilities
     ).select_related('service_type')
 
+    # Przygotuj strukturę mapującą Availability na zajęte sloty z Booking
     bookings_by_availability = {}
     for booking in bookings:
         slots = bookings_by_availability.setdefault(booking.availability_id, [])
@@ -240,18 +396,25 @@ def public_calendar_week(request, token):
         end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
         slots.append((start, end))
 
-    avail_by_day = {day: [] for day in week_days}
-    for availability in availabilities:
-        busy = bookings_by_availability.get(availability.id, [])
-        avail_by_day[availability.date].append({
-            "availability": availability,
-            "busy_slots": busy
-        })
+    # Przydziel Availability z informacją o zajętych slotach do dni
+    availabilities_by_day = {day: [] for day in week_days}
 
-    context = {
+    for availability in availabilities:
+        busy_slots = bookings_by_availability.get(availability.id, [])
+        info = {
+            "availability": availability,
+            "busy_slots": busy_slots  # lista tuple (start, end) zajętych godzin
+        }
+        if availability.date in availabilities_by_day:
+            availabilities_by_day[availability.date].append(info)
+
+    availabilities_by_day_items = [(day, availabilities_by_day.get(day, [])) for day in week_days]
+
+    return render(request, "myschedule/calendar_week.html", {
         "week_days": week_days,
         "selected_week": start_of_week,
-        "availabilities_by_day_items": [(d, avail_by_day[d]) for d in week_days],
-        "calendar_owner": calendar.user,
-    }
-    return render(request, "myschedule/public_calendar_week.html", context)
+        "availabilities_by_day_items": availabilities_by_day_items,
+        "public_calendar_url": public_url,
+        "week_offset": week_offset, 
+
+    })

@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from datetime import date, timedelta
+from django.core.exceptions import ValidationError
+
 import shortuuid
 
 def default_valid_until():
@@ -27,6 +29,16 @@ class Availability(models.Model):
     date = models.DateField()  
     start_time = models.TimeField()
     end_time = models.TimeField()
+        
+    class Meta:
+        ordering = ['date', 'start_time']
+        # Możesz dodać podstawowe ograniczenie unikalności
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(start_time__lt=models.F('end_time')),
+                name='start_time_before_end_time'
+            )
+        ]
 
     def __str__(self):
         return f"{self.start_time.date()} {self.start_time.time()} - {self.end_time.time()}"
