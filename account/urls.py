@@ -8,4 +8,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('edit/', views.edit, name='edit'),
     path('send-mail/', views_mail.send_test_email, name='send_mail'),
-    ]
+    path('favorites/', views.favorite_calendars, name='favorite_calendars'),
+    path('favorites/add/', views.add_favorite_calendar, name='add_favorite_calendar'),
+    path('favorites/remove/<int:favorite_id>/', views.remove_favorite_calendar, name='remove_favorite_calendar')
+]
+    

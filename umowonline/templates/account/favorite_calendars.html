@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-heart text-danger"></i> Ulubione kalendarze</h2>
+        <a href="{% url 'add_favorite_calendar' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Dodaj kalendarz
+        </a>
+    </div>
+
+    {% if favorites %}
+        <div class="row">
+            {% for favorite in favorites %}
+            <div class="col-md-6 mb-3">
+                <div class="card {% if not favorite.is_active %}border-warning{% endif %}">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ favorite.calendar_name }}
+                            {% if not favorite.is_active %}
+                                <span class="badge badge-warning">Nieaktywny</span>
+                            {% endif %}
+                        </h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Właściciel: {{ favorite.owner_name|default:favorite.real_owner }}
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Dodano: {{ favorite.added_at|date:"d.m.Y H:i" }}
+                            </small>
+                        </p>
+                        
+                        <div class="btn-group" role="group">
+                            {% if favorite.is_active %}
+                                <a href="{{ favorite.calendar_url }}" class="btn btn-success btn-sm" target="_blank">
+                                    <i class="fas fa-calendar"></i> Zobacz kalendarz
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'remove_favorite_calendar' favorite.id %}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i> Usuń
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <h4>Brak ulubionych kalendarzy</h4>
+            <p>Nie masz jeszcze żadnych ulubionych kalendarzy. Dodaj pierwszy!</p>
+            <a href="{% url 'add_favorite_calendar' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Dodaj kalendarz
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

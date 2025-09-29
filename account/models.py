@@ -47,3 +47,40 @@ class Subscription(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.status}"
+    
+
+class FavoriteCalendar(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_calendars')
+    calendar_url = models.URLField(help_text="Link do publicznego kalendarza")
+    calendar_name = models.CharField(max_length=100, help_text="Nazwa kalendarza (opcjonalnie)")
+    owner_name = models.CharField(max_length=100, blank=True, help_text="Nazwa właściciela")
+    added_at = models.DateTimeField(auto_now_add=True)
+    
+    # Wyciągnij token z URL-a automatycznie przy zapisie
+    calendar_token = models.CharField(max_length=12, blank=True, editable=False)
+    
+    class Meta:
+        unique_together = ('user', 'calendar_token')  # użytkownik nie może dodać tego samego kalendarza dwukrotnie
+        ordering = ['-added_at']
+    
+    def save(self, *args, **kwargs):
+        # Wyciągnij token z URL-a (np. z https://twoja-domena.com/myschedule/public/abcd1234efgh/)
+        import re
+        if self.calendar_url:
+            match = re.search(r'/public/([a-zA-Z0-9]+)/?', self.calendar_url)
+            if match:
+                self.calendar_token = match.group(1)
+        super().save(*args, **kwargs)
+    
+    def get_calendar_object(self):
+        """Zwraca obiekt Calendar na podstawie tokenu (jeśli istnieje)"""
+        from myschedule.models import Calendar
+        try:
+            return Calendar.objects.get(share_token=self.calendar_token)
+        except Calendar.DoesNotExist:
+            return None
+    
+    def __str__(self):
+        return f"{self.user.username} -> {self.calendar_name or self.calendar_token}"
+    
+

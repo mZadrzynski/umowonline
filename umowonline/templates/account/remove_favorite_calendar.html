@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Usuń z ulubionych</h4>
+                </div>
+                <div class="card-body">
+                    <p>Czy na pewno chcesz usunąć kalendarz <strong>"{{ favorite.calendar_name }}"</strong> z ulubionych?</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Tak, usuń
+                        </button>
+                        <a href="{% url 'favorite_calendars' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Anuluj
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

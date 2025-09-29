@@ -308,6 +308,8 @@ def my_calendar(request):
         "visits_by_day": visits_by_day, 
     })
 
+
+@login_required 
 def my_calendar_week(request):
     #jezeli user nie ma kalandarza to nie zobaczy widoku tylko napis(sprawdzanie grupy premium w signals)
     try:

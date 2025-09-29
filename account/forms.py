@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-
+from .models import FavoriteCalendar
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -31,3 +31,33 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ['first_name', 'last_name', 'email']
+
+
+
+class FavoriteCalendarForm(forms.ModelForm):
+    class Meta:
+        model = FavoriteCalendar
+        fields = ['calendar_url', 'calendar_name', 'owner_name']
+        widgets = {
+            'calendar_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://umowzdalnie.pl/myschedule/public/abcd1234efgh/',
+                'required': True
+            }),
+            'calendar_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nazwa kalendarza (opcjonalnie)'
+            }),
+            'owner_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nazwa właściciela (opcjonalnie)'
+            })
+        }
+        
+    def clean_calendar_url(self):
+        url = self.cleaned_data['calendar_url']
+        # Sprawdź czy URL zawiera prawidłowy token
+        import re
+        if not re.search(r'/public/[a-zA-Z0-9]+/?', url):
+            raise forms.ValidationError("Nieprawidłowy link do kalendarza. URL powinien zawierać /public/TOKEN/")
+        return url

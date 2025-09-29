@@ -9,6 +9,7 @@ urlpatterns = [
     path("rules/", views.rules, name="rules"),
     path("offert/", views.offert, name="offert"),
 
+
 ]
 
 
