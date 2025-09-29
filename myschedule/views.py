@@ -10,65 +10,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Availability, Booking, ServiceType
 from django.contrib import messages
 from django.urls import reverse
-
-
+from account.models import Subscription
 import holidays
 
-
-def my_calendar_week(request):
-    #jezeli user nie ma kalandarza to nie zobaczy widoku tylko napis(sprawdzanie grupy premium w signals)
-    if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza (tylko Premium ma dostęp)")
-
-    today = date.today()
-    week_offset = int(request.GET.get("week", 0))
-    start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
-    end_of_week = start_of_week + timedelta(days=6)
-    week_days = [start_of_week + timedelta(days=i) for i in range(7)]
-
-
-    public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
-    public_url = request.build_absolute_uri(public_path)
-    #wyszukuje wszystkie dostepnosci w danym tygodsniu
-    availabilities = request.user.calendar.availabilities.filter(
-        date__range=[start_of_week, end_of_week]
-    ).order_by('date', 'start_time')
-
-    # Pobierz wszystkie Bookingi przypisane do tych Availability
-    bookings = Booking.objects.filter(
-        availability__in=availabilities
-    ).select_related('service_type')
-
-    # Przygotuj strukturę mapującą Availability na zajęte sloty z Booking
-    bookings_by_availability = {}
-    for booking in bookings:
-        slots = bookings_by_availability.setdefault(booking.availability_id, [])
-        start = booking.start_datetime.time()
-        end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
-        slots.append((start, end))
-
-    # Przydziel Availability z informacją o zajętych slotach do dni
-    availabilities_by_day = {day: [] for day in week_days}
-
-    for availability in availabilities:
-        busy_slots = bookings_by_availability.get(availability.id, [])
-        info = {
-            "availability": availability,
-            "busy_slots": busy_slots  # lista tuple (start, end) zajętych godzin
-        }
-        if availability.date in availabilities_by_day:
-            availabilities_by_day[availability.date].append(info)
-
-    availabilities_by_day_items = [(day, availabilities_by_day.get(day, [])) for day in week_days]
-
-    return render(request, "myschedule/calendar_week.html", {
-        "week_days": week_days,
-        "selected_week": start_of_week,
-        "availabilities_by_day_items": availabilities_by_day_items,
-        "public_calendar_url": public_url,
-        "week_offset": week_offset, 
-
-    })
 
 
 @login_required
@@ -296,7 +240,7 @@ def book_availability(request, availability_id):
 @login_required
 def my_calendar(request):
     if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza (tylko Premium ma dostęp)")
+            return render(request, "no_calendar.html")
     
     # miesiąc
     month_offset = int(request.GET.get("month", 0))
@@ -366,55 +310,70 @@ def my_calendar(request):
 
 def my_calendar_week(request):
     #jezeli user nie ma kalandarza to nie zobaczy widoku tylko napis(sprawdzanie grupy premium w signals)
-    if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza (tylko Premium ma dostęp)")
+    try:
+        subscription = request.user.subscription
+        if not subscription.is_active():
+            return render(request, "dashboard/subscription_expired.html")
+            
+        # Sprawdź czy kalendarz istnieje (twój oryginalny kod)
+        if not hasattr(request.user, "calendar"):
+            return render(request, "dashboard/no_calendar.html")
+        today = date.today()
+        week_offset = int(request.GET.get("week", 0))
+        start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+        end_of_week = start_of_week + timedelta(days=6)
+        week_days = [start_of_week + timedelta(days=i) for i in range(7)]
 
-    today = date.today()
-    week_offset = int(request.GET.get("week", 0))
-    start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
-    end_of_week = start_of_week + timedelta(days=6)
-    week_days = [start_of_week + timedelta(days=i) for i in range(7)]
 
+        public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
+        public_url = request.build_absolute_uri(public_path)
+        #wyszukuje wszystkie dostepnosci w danym tygodsniu
+        availabilities = request.user.calendar.availabilities.filter(
+            date__range=[start_of_week, end_of_week]
+        ).order_by('date', 'start_time')
 
-    public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
-    public_url = request.build_absolute_uri(public_path)
-    #wyszukuje wszystkie dostepnosci w danym tygodsniu
-    availabilities = request.user.calendar.availabilities.filter(
-        date__range=[start_of_week, end_of_week]
-    ).order_by('date', 'start_time')
+        # Pobierz wszystkie Bookingi przypisane do tych Availability
+        bookings = Booking.objects.filter(
+            availability__in=availabilities
+        ).select_related('service_type')
 
-    # Pobierz wszystkie Bookingi przypisane do tych Availability
-    bookings = Booking.objects.filter(
-        availability__in=availabilities
-    ).select_related('service_type')
+        # Przygotuj strukturę mapującą Availability na zajęte sloty z Booking
+        bookings_by_availability = {}
+        for booking in bookings:
+            slots = bookings_by_availability.setdefault(booking.availability_id, [])
+            start = booking.start_datetime.time()
+            end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
+            slots.append((start, end))
 
-    # Przygotuj strukturę mapującą Availability na zajęte sloty z Booking
-    bookings_by_availability = {}
-    for booking in bookings:
-        slots = bookings_by_availability.setdefault(booking.availability_id, [])
-        start = booking.start_datetime.time()
-        end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
-        slots.append((start, end))
+        # Przydziel Availability z informacją o zajętych slotach do dni
+        availabilities_by_day = {day: [] for day in week_days}
 
-    # Przydziel Availability z informacją o zajętych slotach do dni
-    availabilities_by_day = {day: [] for day in week_days}
+        for availability in availabilities:
+            busy_slots = bookings_by_availability.get(availability.id, [])
+            info = {
+                "availability": availability,
+                "busy_slots": busy_slots  # lista tuple (start, end) zajętych godzin
+            }
+            if availability.date in availabilities_by_day:
+                availabilities_by_day[availability.date].append(info)
 
-    for availability in availabilities:
-        busy_slots = bookings_by_availability.get(availability.id, [])
-        info = {
-            "availability": availability,
-            "busy_slots": busy_slots  # lista tuple (start, end) zajętych godzin
-        }
-        if availability.date in availabilities_by_day:
-            availabilities_by_day[availability.date].append(info)
+        availabilities_by_day_items = [(day, availabilities_by_day.get(day, [])) for day in week_days]
 
-    availabilities_by_day_items = [(day, availabilities_by_day.get(day, [])) for day in week_days]
+        return render(request, "myschedule/calendar_week.html", {
+            "week_days": week_days,
+            "selected_week": start_of_week,
+            "availabilities_by_day_items": availabilities_by_day_items,
+            "public_calendar_url": public_url,
+            "week_offset": week_offset, 
 
-    return render(request, "myschedule/calendar_week.html", {
-        "week_days": week_days,
-        "selected_week": start_of_week,
-        "availabilities_by_day_items": availabilities_by_day_items,
-        "public_calendar_url": public_url,
-        "week_offset": week_offset, 
+        })
+    
+    except Subscription.DoesNotExist:
+        return render(request, "dashboard/subscription_expired.html")
 
-    })
+def subscription_expired(request):
+    """Widok dla użytkowników z wygasłą subskrypcją"""
+    context = {
+        'hotpay_form_url': 'https://panel.hotpay.pl/twoj_link_do_formularza'
+    }
+    return render(request, "dashboard/subscription_expired.html", context)

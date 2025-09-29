@@ -5,5 +5,3 @@ class MyscheduleConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'myschedule'
     
-    def ready(self):
-        import myschedule.signals

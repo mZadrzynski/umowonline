@@ -11,5 +11,6 @@ urlpatterns = [
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('public/<str:token>/', views_public.public_calendar_week, name='public_calendar_week'),
     path('availability/delete/<int:availability_id>/', views.delete_availability, name='delete_availability'),
+    path('subscription/expired/', views.subscription_expired, name='subscription_expired'),
 
 ]

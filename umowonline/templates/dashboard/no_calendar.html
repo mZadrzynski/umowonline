@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <p>Nie masz kalendarza (tylko Premium ma dostęp). Za 10 sekund zostaniesz przekierowany.</p>
+    <meta http-equiv="refresh" content="10;url={% url 'offert' %}">
+{% endblock %}
