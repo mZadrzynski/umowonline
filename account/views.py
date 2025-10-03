@@ -200,9 +200,7 @@ def hotpay_webhook(request):
     # Pobierz wszystkie wartości
         kwota = request.POST.get('KWOTA', '')
         id_platnosci = request.POST.get('ID_PLATNOSCI', '')
-        id_zamowienia = request.POST.get('ID_ZAMOWIENIA', '')
         status = request.POST.get('STATUS', '')
-        secure = request.POST.get('SECURE', '')      # <— dodaj
         sekret = request.POST.get('SEKRET', '').rstrip(',')
         
         # Logowanie dla debugowania
@@ -222,9 +220,7 @@ def hotpay_webhook(request):
 
         logger.info("kwota = %r", kwota)
         logger.info("id_platnosci = %r", id_platnosci)
-        logger.info("id_zamowienia = %r", id_zamowienia)
         logger.info("status = %r", status)
-        logger.info("secure = %r", secure)
         logger.info("sekret = %r", sekret)
         logger.info("notification_password = %r", settings.HOTPAY_NOTIFICATION_PASSWORD)
                 
