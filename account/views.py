@@ -181,7 +181,7 @@ def create_payment(request):
         'ID_PLATNOSCI': payment_id,
         'EMAIL': user.email,
         'NAZWA': f"{user.first_name} {user.last_name}" if user.first_name else user.username,
-        'RETURN_URL': request.build_absolute_uri('/account/payment/success/'),
+        'RETURN_URL': request.build_absolute_uri('/ac/payment/success/'),
         'RETURN_URLC': request.build_absolute_uri('/account/payment/webhook/'),
     }
     
@@ -202,8 +202,9 @@ def hotpay_webhook(request):
         id_platnosci = request.POST.get('ID_PLATNOSCI', '')
         status = request.POST.get('STATUS', '')
         sekret = request.POST.get('SEKRET', '').rstrip(',')
-        hash_string = f"{kwota};{id_platnosci};{sekret};{status}"
-                # Logowanie dla debugowania
+        hash_value = request.POST.get('HASH', '')
+        
+        # Logowanie dla debugowania
         logger.info(f"HotPay webhook received: {dict(request.POST)}")
         
         # Weryfikacja hash
