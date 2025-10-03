@@ -24,8 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d!9hf(xz)3^i(@%t1b6fj75146__@h^)2(uk^5nnvu3r7g^(b7'
 
 
-ALLOWED_HOSTS = ['umowzdalnie.pl', 'www.umowzdalnie.pl', '127.0.0.1', '217.154.245.148']
+ALLOWED_HOSTS = [
+    'umowzdalnie.pl',
+    'www.umowzdalnie.pl',
+    '127.0.0.1',
+    '217.154.245.148',
+    'ip217-154-245-148.pbiaas.com',
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://umowzdalnie.pl',
+    'https://www.umowzdalnie.pl',
+    'https://ip217-154-245-148.pbiaas.com',  # ta linijka
+]
 
 # Application definition
 INSTALLED_APPS = [
