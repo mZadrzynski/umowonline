@@ -201,10 +201,9 @@ def hotpay_webhook(request):
         kwota = request.POST.get('KWOTA', '')
         id_platnosci = request.POST.get('ID_PLATNOSCI', '')
         status = request.POST.get('STATUS', '')
-        sekret = request.POST.get('SEKRET', '')
-        hash_value = request.POST.get('HASH', '')
-        
-        # Logowanie dla debugowania
+        sekret = request.POST.get('SEKRET', '').rstrip(',')
+        hash_string = f"{kwota};{id_platnosci};{sekret};{status}"
+                # Logowanie dla debugowania
         logger.info(f"HotPay webhook received: {dict(request.POST)}")
         
         # Weryfikacja hash
