@@ -13,6 +13,10 @@ class ContactForm(forms.Form):
                     required=True,
                     widget=forms.Textarea(attrs={'placeholder': 'Treść wiadomości'}))
     captcha = CaptchaField()
+    accept_terms = forms.BooleanField(
+        required=True, label='akceptuje regulamin',  # label pusty → dodasz w szablonie
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,7 +30,10 @@ class ContactFormPhone(forms.Form):
     phone = forms.CharField(required=True,
                     widget=forms.TextInput(attrs={'placeholder': 'Wprowadz numer telefonu'}))
     captcha = CaptchaField()
-    
+    accept_terms = forms.BooleanField(
+        required=True, label='akceptuje regulamin',  # label pusty → dodasz w szablonie
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

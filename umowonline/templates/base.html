@@ -44,15 +44,11 @@
                     <li><a href="/">Strona główna</a></li>
                     <li><a href="/dashboard/offert/">Oferta</a></li>
                     <li><a href="{% url 'my_calendar_week' %}">Mój kalendarz</a></li>
-                    <li>
-                    <a href="{% url 'calendar_bookings' %}" class="nav-link">
-                        <i class="fas fa-list"></i> Moje rezerwacje
-                        </a>
-                    </li>
+                    <li><a href="{% url 'calendar_bookings' %}">Moje rezerwacje</a></li>
                     <li><a href="{% url 'favorite_calendars' %}">Ulubione</a></li>
                     <li><a href="/dashboard/contact/">Pomoc</a></li>
                     <!--<li><a href="/contact/">Blog</a></li>-->
-                    <li><a href="/dashboard/rules/">Regulamin</a></li>
+                    <li><a href="{% url 'terms_of_service' %}">Regulamin</a></li>
                     <li><a href="/dashboard/contact/">Kontakt</a></li>
 
           
@@ -79,25 +75,13 @@
         </div>
 
            <!-- Footer -->
-    <footer class="footer" id="kontakt">
-        <div class="container">
-            <div class="footer__content">
-                <div class="footer__brand">
-                    <h3 class="footer__logo">umowzdalnie.pl</h3>
-                    <p class="footer__description">
-                        Profesjonalny system zarządzania kalendarzem i rezerwacjami dla Twojego biznesu.
-                    </p>
-                </div>
-                
-            </div>
-            
-            <div class="footer__bottom">
-                <p class="footer__copyright">
-                    © 2025 umowzdalnie.pl. Wszystkie prawa zastrzeżone.
-                </p>
-            </div>
-        </div>
-    </footer>
+<footer class="site-footer text-center text-white py-3">
+  <p>
+    &copy; 2025 umowonline.pl
+    <a href="{% url 'terms_of_service' %}" class="footer-link">Regulamin serwisu</a> |
+    <a href="{% url 'privacy_policy' %}" class="footer-link">Polityka prywatności</a>
+  </p>
+</footer>
     </div>
 <script>
     function toggleMenu() {

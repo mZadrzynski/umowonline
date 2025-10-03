@@ -139,7 +139,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 AUTHENTICATION_BACKENDS = [
  'social_core.backends.google.GoogleOAuth2',
- 'django.contrib.auth.backends.ModelBackend',  
+ 'django.contrib.auth.backends.ModelBackend', 
+ 'account.backends.UsernameOrEmailBackend', 
 ]
 
 AUTH_USER_MODEL = 'account.CustomUser'
@@ -190,3 +191,26 @@ HOTPAY_SECRET_KEY = config('HOTPAY_SECRET_KEY')
 HOTPAY_NOTIFICATION_PASSWORD = config('HOTPAY_NOTIFICATION_PASSWORD') 
 HOTPAY_API_URL = 'https://platnosc.hotpay.pl/'
 HOTPAY_TEST_MODE = config('HOTPAY_TEST_MODE', default=False, cast=bool)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'hotpay_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'hotpay.log',
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'hotpay': {
+            'handlers': ['hotpay_file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

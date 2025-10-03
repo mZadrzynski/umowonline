@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Płatność zakończona - umowonline{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white text-center">
+                    <h4><i class="fas fa-check-circle"></i> Płatność zakończona!</h4>
+                </div>
+                <div class="card-body text-center">
+                    <h5>Dziękujemy za płatność!</h5>
+                    <p>Twoja subskrypcja została przedłużona o 30 dni.</p>
+                    <p>Możesz teraz korzystać ze wszystkich funkcji aplikacji.</p>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'my_calendar_week' %}" class="btn btn-primary">Przejdź do kalendarza</a>
+                        <a href="{% url 'subscription_status' %}" class="btn btn-outline-info">Status subskrypcji</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -41,8 +41,11 @@ def contact(request):
 def help(request):
     return render(request, 'dashboard/help.html')
 
-def rules(request):
-    return render(request, 'dashboard/rules.html')
+def terms_of_service(request):
+    return render(request, 'dashboard/legal/terms_of_service.html')
 
 def offert(request):
     return render(request, 'dashboard/offert.html')
+
+def privacy_policy(request):
+    return render(request, 'dashboard/legal/privacy_policy.html')

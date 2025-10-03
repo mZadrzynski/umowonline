@@ -272,3 +272,22 @@ ul {
         padding: 2rem 0;
     }
 }
+
+.site-footer {
+  background-color: #222; /* opcjonalne tło */
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.site-footer a.footer-link {
+  color: white;
+  text-decoration: underline;
+  margin: 0 0.5rem;
+}
+
+.site-footer a.footer-link:hover {
+  color: #ddd;
+  text-decoration: none;
+}

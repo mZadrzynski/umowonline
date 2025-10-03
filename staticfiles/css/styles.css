@@ -236,3 +236,58 @@ s {
 }
 
 
+ul {
+     text-align: left !important;
+}
+
+/* Dodatkowe style dla formularzy */
+.form-control-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+.vh-100 {
+    min-height: 100vh;
+}
+
+/* Animacje dla przycisków */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .vh-100 {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+}
+
+.site-footer {
+  background-color: #222; /* opcjonalne tło */
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.site-footer a.footer-link {
+  color: white;
+  text-decoration: underline;
+  margin: 0 0.5rem;
+}
+
+.site-footer a.footer-link:hover {
+  color: #ddd;
+  text-decoration: none;
+}

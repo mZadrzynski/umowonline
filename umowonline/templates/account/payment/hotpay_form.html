@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Płatność - umowonline{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Płatność za subskrypcję</h4>
+                </div>
+                <div class="card-body text-center">
+                    <h5>Kwota: {{ payment.amount }} PLN</h5>
+                    <p>Subskrypcja na 30 dni</p>
+                    <p class="text-muted">Zostaniesz przekierowany do bezpiecznej strony płatności HotPay</p>
+                    
+                    <form action="{{ HOTPAY_API_URL }}" method="POST" id="hotpay-form">
+                        {% for key, value in hotpay_data.items %}
+                            <input type="hidden" name="{{ key }}" value="{{ value }}">
+                        {% endfor %}
+                        
+                        <button type="submit" class="btn btn-success btn-lg">
+                            Zapłać {{ payment.amount }} PLN
+                        </button>
+                    </form>
+                    
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Automatyczne przekierowanie za <span id="countdown">5</span> sekund...
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let countdown = 5;
+const countdownElement = document.getElementById('countdown');
+const form = document.getElementById('hotpay-form');
+
+const timer = setInterval(() => {
+    countdown--;
+    countdownElement.textContent = countdown;
+    
+    if (countdown <= 0) {
+        clearInterval(timer);
+        form.submit();
+    }
+}, 1000);
+</script>
+{% endblock %}

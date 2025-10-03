@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Status subskrypcji - umowonline{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Status subskrypcji</h2>
+    
+    {% if subscription %}
+        <div class="card {% if subscription.is_active %}border-success{% else %}border-warning{% endif %}">
+            <div class="card-body">
+                <h5 class="card-title">
+                    Status: 
+                    {% if subscription.is_active %}
+                        <span class="badge bg-success">Aktywna</span>
+                    {% else %}
+                        <span class="badge bg-warning">{{ subscription.get_status_display }}</span>
+                    {% endif %}
+                </h5>
+                
+                <p><strong>Data rozpoczęcia:</strong> {{ subscription.start_date|date:"d.m.Y H:i" }}</p>
+                <p><strong>Data zakończenia:</strong> {{ subscription.end_date|date:"d.m.Y H:i" }}</p>
+                
+                {% if not subscription.is_active %}
+                    <div class="mt-3">
+                        <a href="{% url 'create_payment' %}" class="btn btn-success">
+                            Odnów subskrypcję (20 PLN/miesiąc)
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="mt-3">
+                        <a href="{% url 'create_payment' %}" class="btn btn-outline-success">
+                            Przedłuż subskrypcję (20 PLN/miesiąc)
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <h5>Brak subskrypcji</h5>
+            <p>Nie masz jeszcze aktywnej subskrypcji.</p>
+            <a href="{% url 'create_payment' %}" class="btn btn-success">
+                Aktywuj subskrypcję (20 PLN/miesiąc)
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

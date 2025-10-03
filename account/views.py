@@ -9,6 +9,18 @@ from django.contrib import messages
 from .models import FavoriteCalendar
 from .forms import FavoriteCalendarForm
 from myschedule.models import Calendar
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.conf import settings
+from django.utils import timezone
+from .models import Subscription, Payment
+import hashlib
+import json
+import uuid
+import logging
+
+logger = logging.getLogger('hotpay')
 
 
 def user_login(request):
@@ -124,3 +136,138 @@ def remove_favorite_calendar(request, favorite_id):
         return redirect('favorite_calendars')
     
     return render(request, 'account/confirm_remove_favorite.html', {'favorite': favorite})
+
+
+
+@login_required
+def create_payment(request):
+    '''Widok do tworzenia nowej płatności za subskrypcję'''
+    user = request.user
+    
+    # Sprawdź czy user ma już subskrypcję
+    try:
+        subscription = user.subscription
+    except Subscription.DoesNotExist:
+        # Utwórz nową subskrypcję z trial period
+        subscription = Subscription.objects.create(
+            user=user,
+            end_date=timezone.now() + timezone.timedelta(days=30),
+            status='active'
+        )
+    
+    # Sprawdź czy subskrypcja nie jest już aktywna na długo
+    #if subscription.is_active() and subscription.end_date > timezone.now() + timezone.timedelta(days=25):
+    #    messages.info(request, 'Twoja subskrypcja jest już aktywna!')
+    #    return redirect('my_calendar_week')
+    
+    # Generuj unikalny ID płatności
+    payment_id = str(uuid.uuid4())
+    amount = 20.00  # 20 PLN za miesiąc
+    
+    # Utwórz rekord płatności
+    payment = Payment.objects.create(
+        user=user,
+        subscription=subscription,
+        amount=amount,
+        payment_id=payment_id
+    )
+    
+    # Przygotuj dane dla HotPay
+    hotpay_data = {
+        'SEKRET': settings.HOTPAY_SECRET_KEY,
+        'KWOTA': f"{amount:.2f}",
+        'NAZWA_USLUGI': 'Subskrypcja umowonline - 30 dni',
+        'ADRES_WWW': request.build_absolute_uri('/'),
+        'ID_PLATNOSCI': payment_id,
+        'EMAIL': user.email,
+        'NAZWA': f"{user.first_name} {user.last_name}" if user.first_name else user.username,
+        'RETURN_URL': request.build_absolute_uri('/payment/success/'),
+        'RETURN_URLC': request.build_absolute_uri('/payment/webhook/'),
+    }
+    
+    return render(request, 'account/payment/hotpay_form.html', {
+        'hotpay_data': hotpay_data,
+        'payment': payment,
+        'subscription': subscription,
+        'HOTPAY_API_URL': settings.HOTPAY_API_URL,
+    })
+
+@csrf_exempt
+@require_POST
+def hotpay_webhook(request):
+    '''Webhook do obsługi powiadomień z HotPay'''
+    try:
+        # Pobierz dane z POST
+        kwota = request.POST.get('KWOTA', '')
+        id_platnosci = request.POST.get('ID_PLATNOSCI', '')
+        status = request.POST.get('STATUS', '')
+        sekret = request.POST.get('SEKRET', '')
+        hash_value = request.POST.get('HASH', '')
+        
+        # Logowanie dla debugowania
+        logger.info(f"HotPay webhook received: {dict(request.POST)}")
+        
+        # Weryfikacja hash
+        hash_string = f"{kwota};{id_platnosci};{sekret};{status};{settings.HOTPAY_NOTIFICATION_PASSWORD}"
+        
+        # Sprawdź najpierw MD5
+        calculated_hash_md5 = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+        
+        # Jeśli MD5 nie pasuje, sprawdź SHA256
+        calculated_hash_sha256 = hashlib.sha256(hash_string.encode('utf-8')).hexdigest()
+        
+        if hash_value.lower() not in [calculated_hash_md5.lower(), calculated_hash_sha256.lower()]:
+            logger.error(f"Invalid hash. Received: {hash_value}, MD5: {calculated_hash_md5}, SHA256: {calculated_hash_sha256}")
+            return HttpResponse('Invalid hash', status=400)
+        
+        # Znajdź płatność
+        try:
+            payment = Payment.objects.get(payment_id=id_platnosci)
+        except Payment.DoesNotExist:
+            logger.error(f"Payment not found: {id_platnosci}")
+            return HttpResponse('Payment not found', status=404)
+        
+        # Aktualizuj status płatności
+        payment.hotpay_response = dict(request.POST)
+        
+        if status == 'SUCCESS':
+            payment.status = 'completed'
+            payment.completed_at = timezone.now()
+            payment.hotpay_payment_id = request.POST.get('ID_PLATNOSCI_HOTPAY', '')
+            payment.save()
+            
+            # KLUCZOWE: Przedłuż subskrypcję o 30 dni
+            subscription = payment.subscription
+            subscription.extend_subscription(days=30)
+            subscription.hotpay_transaction_id = payment.hotpay_payment_id
+            subscription.save()
+            
+            logger.info(f"Payment successful for user {payment.user.username} - subscription extended by 30 days")
+            
+        elif status == 'FAILED':
+            payment.status = 'failed'
+            payment.save()
+            logger.warning(f"Payment failed for user {payment.user.username}")
+        
+        return HttpResponse('OK')
+        
+    except Exception as e:
+        logger.error(f"Webhook processing error: {str(e)}")
+        return HttpResponse(f'Error: {str(e)}', status=500)
+
+@login_required
+def payment_success(request):
+    '''Strona potwierdzenia płatności'''
+    return render(request, 'account/payment/success.html')
+
+@login_required
+def subscription_status(request):
+    '''Status subskrypcji użytkownika'''
+    try:
+        subscription = request.user.subscription
+    except Subscription.DoesNotExist:
+        subscription = None
+    
+    return render(request, 'account/subscription_status.html', {
+        'subscription': subscription
+    })
