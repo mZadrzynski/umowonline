@@ -213,9 +213,7 @@ def hotpay_webhook(request):
             settings.HOTPAY_NOTIFICATION_PASSWORD,
             kwota,
             id_platnosci,
-            id_zamowienia,
             status,
-            secure,
             sekret
         ])
 
