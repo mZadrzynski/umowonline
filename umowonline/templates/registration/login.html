@@ -1,41 +1,219 @@
 {% extends "base.html" %}
-{% block title %}Log-in{% endblock %}
+{% load static %}
+
+{% block title %}Zaloguj się - UmówOnline{% endblock %}
+
 {% block content %}
+<div class="container-fluid vh-100 p-0">
+    <div class="row h-100 g-0">
+        <!-- Lewa strona - 1/3 szerokości -->
+        <div class="col-lg-4 d-none d-lg-flex align-items-center justify-content-center bg-primary position-relative">
+            <div class="text-center text-white p-4">
+                <div class="welcome-content">
+                    <i class="fas fa-calendar-check fa-4x mb-4 opacity-75"></i>
+                    <h2 class="h3 mb-3">Witaj z powrotem!</h2>
+                    <p class="lead mb-4">Zaloguj się do swojego konta UmówOnline i zarządzaj swoim kalendarzem</p>
+                    <div class="features-list text-start">
+                        <div class="feature-item mb-2">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <small>Zarządzaj terminami</small>
+                        </div>
+                        <div class="feature-item mb-2">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <small>Udostępniaj kalendarz</small>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <small>Otrzymuj powiadomienia</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tło z gradientem -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
+                <div class="bg-pattern"></div>
+            </div>
+        </div>
+        
+        <!-- Prawa strona - 2/3 szerokości -->
+        <div class="col-lg-8 d-flex align-items-center justify-content-center bg-light">
+            <div class="w-100 px-4" style="max-width: 500px;">
+                <!-- Mobile header - widoczny tylko na małych ekranach -->
+                <div class="d-lg-none text-center mb-4">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h2 class="h4 text-primary">UmówOnline</h2>
+                </div>
 
-    <h1>Log-in</h1>
-    {% if form.errors %}
-    <p>
-    Your username and password didn't match.
-    Please try again.
-    </p>
-    {% else %}
-        <p>Please, use the following form to log-in:
-        If you don't have an account <a href="{% url "register" %}">register here</a>
-    </p>
-    {% endif %}
-    <div class="login-form">
-    <form action="{% url 'login' %}" method="post">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}" />
-    <p><input type="submit" value="Log-in"></p>
-    </form>
+                <div class="login-form-container bg-white p-5 rounded-3 shadow-sm">
+                    <div class="text-center mb-4">
+                        <h1 class="h3 mb-2 text-dark">Zaloguj się</h1>
+                        <p class="text-muted">Wprowadź swoje dane logowania</p>
+                    </div>
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Nieprawidłowy email lub hasło. Spróbuj ponownie.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-2 text-primary"></i>Email
+                            </label>
+                            {{ form.username }}
+                            <div class="invalid-feedback">
+                                Wprowadź prawidłowy adres email.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-lock me-2 text-primary"></i>Hasło
+                            </label>
+                            {{ form.password }}
+                            <div class="invalid-feedback">
+                                Wprowadź hasło.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label text-muted" for="rememberMe">
+                                    Zapamiętaj mnie
+                                </label>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="text-decoration-none text-primary">
+                                Zapomniałeś hasła?
+                            </a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-4 py-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Zaloguj się
+                        </button>
+                    </form>
+
+                    <!-- Separator -->
+                    <div class="text-center mb-4">
+                        <div class="position-relative">
+                            <hr class="my-4">
+                            <span class="bg-white px-3 text-muted position-absolute top-50 start-50 translate-middle small">
+                                lub zaloguj się przez
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Google Login -->
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" 
+                       class="btn btn-outline-danger btn-lg w-100 mb-4 py-3 d-flex align-items-center justify-content-center google-btn">
+                        <svg class="me-3" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Zaloguj się przez Google
+                    </a>
+
+                    <div class="text-center">
+                        <p class="mb-0 text-muted">Nie masz konta? 
+                            <a href="{% url 'register' %}" class="text-decoration-none fw-bold text-primary">
+                                Zarejestruj się tutaj
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Gradient background */
+.bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Background pattern */
+.bg-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 2px, transparent 2px),
+        radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 2px, transparent 2px);
+    background-size: 100px 100px;
+}
+
+/* Form styling */
+.login-form-container {
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.google-btn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+}
+
+/* Features list styling */
+.feature-item {
+    display: flex;
+    align-items: center;
+}
+
+.feature-item i {
+    color: rgba(255,255,255,0.8);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 991.98px) {
+    .vh-100 {
+        min-height: 100vh;
+    }
     
-        <p>
-            <a href="{% url "password_reset" %}">
-                Forgotten your password?
-            </a>
-        </p>
-    </div>
-    <div class="social">
-        <ul>
-            <li class="google">
-                <a href="{% url "social:begin" "google-oauth2" %}">
+    .login-form-container {
+        margin: 1rem;
+    }
+}
+</style>
 
-                Sign in with Google
-                </a>
-            </li>
-        </ul>
-    </div>
-
+<script>
+// Bootstrap form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
 {% endblock %}

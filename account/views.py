@@ -16,22 +16,23 @@ def user_login(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
+            # Użyj email zamiast username
             user = authenticate(
                 request,
-                username=cd['username'],
+                username=cd['email'],  # Django będzie używać email jako username
                 password=cd['password']
             )
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return HttpResponse('Authenticated successfully')
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return redirect('/')  # lub przekieruj gdzie chcesz
+                else:
+                    messages.error(request, 'Konto zostało wyłączone.')
             else:
-                return HttpResponse('Disabled account')
-        else:
-            return HttpResponse('Invalid login')
+                messages.error(request, 'Nieprawidłowy email lub hasło.')
     else:
         form = LoginForm()
-    return render(request, 'account/login.html', {'form': form})
+    return render(request, 'registration/login.html', {'form': form})
 
 def register(request):
     if request.method == 'POST':
@@ -40,23 +41,16 @@ def register(request):
             # Create a new user object but avoid saving it yet
             new_user = user_form.save(commit=False)
             # Set the chosen password
-            new_user.set_password(
-                user_form.cleaned_data['password']
-            )
+            new_user.set_password(user_form.cleaned_data['password'])
             # Save the User object
             new_user.save()
-            return render(
-                request,
-                'account/register_done.html',
-                {'new_user': new_user}
-                )
+            
+            messages.success(request, 'Konto zostało utworzone pomyślnie!')
+            return redirect('login')
     else:
-            user_form = UserRegistrationForm()
-    return render(
-            request,
-            'account/register.html',
-            {'user_form': user_form}
-    )
+        user_form = UserRegistrationForm()
+    
+    return render(request, 'account/register.html', {'user_form': user_form})
 
 @login_required
 def edit(request):
@@ -98,39 +92,25 @@ def favorite_calendars(request):
 
 @login_required
 def add_favorite_calendar(request):
-    """Dodaj nowy ulubiony kalendarz"""
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.debug("ENTER add_favorite_calendar, method=%s", request.method)
     if request.method == 'POST':
         form = FavoriteCalendarForm(request.POST)
+        logger.debug("POST data: %s", request.POST)
+        logger.debug("Form valid: %s, errors: %s", form.is_valid(), form.errors)
         if form.is_valid():
             favorite = form.save(commit=False)
             favorite.user = request.user
-            
-            # Sprawdź czy kalendarz o tym tokenie istnieje
-            calendar_obj = favorite.get_calendar_object()
-            if not calendar_obj:
-                messages.error(request, 'Kalendarz o podanym linku nie istnieje lub jest nieaktywny.')
-                return render(request, 'account/add_favorite_calendar.html', {'form': form})
-            
-            # Sprawdź czy użytkownik już nie ma tego kalendarza w ulubionych
-            if FavoriteCalendar.objects.filter(user=request.user, calendar_token=favorite.calendar_token).exists():
-                messages.error(request, 'Ten kalendarz jest już w Twoich ulubionych.')
-                return render(request, 'account/add_favorite_calendar.html', {'form': form})
-            
-            # Automatycznie uzupełnij dane jeśli nie podano
-            if not favorite.owner_name:
-                favorite.owner_name = calendar_obj.user.username
-            if not favorite.calendar_name:
-                favorite.calendar_name = f"Kalendarz {calendar_obj.user.username}"
-            
+            logger.debug("Saving favorite: %s", favorite)
             favorite.save()
-            messages.success(request, f'Dodano kalendarz "{favorite.calendar_name}" do ulubionych.')
+            logger.debug("Saved favorite id: %s", favorite.id)
+            messages.success(request, 'Dodano kalendarz do ulubionych.')
             return redirect('favorite_calendars')
     else:
         form = FavoriteCalendarForm()
-        print(form.errors)               # <<< dodaj tę linię
-        messages.error(request, form.errors)  # <<< oraz tę
-    
-        return render(request, 'account/add_favorite_calendar.html', {'form': form})
+    return render(request, 'account/add_favorite_calendar.html', {'form': form})
+
 
 @login_required
 def remove_favorite_calendar(request, favorite_id):

@@ -8,6 +8,8 @@ from datetime import timedelta
 class CustomUser(AbstractUser):
     email = models.EmailField('email address', unique=True)
     username = models.CharField(max_length=150, unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Numer telefonu")  # NOWE POLE
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     
@@ -84,3 +86,19 @@ class FavoriteCalendar(models.Model):
         return f"{self.user.username} -> {self.calendar_name or self.calendar_token}"
     
 
+class Payment(models.Model):
+    PAYMENT_STATUS = [
+        ('pending', 'Oczekująca'),
+        ('completed', 'Zakończona'),
+        ('failed', 'Nieudana'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
+    payment_id = models.CharField(max_length=100, unique=True)
+    hotpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+    hotpay_response = models.JSONField(blank=True, null=True)

@@ -184,3 +184,9 @@ LOGOUT_URL = 'logout'
 
 CAPTCHA_IMAGE_SIZE = (180, 70)  # szerokość i wysokość w pikselach (domyślnie mniejsze)
 CAPTCHA_FONT_SIZE = 50
+
+
+HOTPAY_SECRET_KEY = config('HOTPAY_SECRET_KEY')
+HOTPAY_NOTIFICATION_PASSWORD = config('HOTPAY_NOTIFICATION_PASSWORD') 
+HOTPAY_API_URL = 'https://platnosc.hotpay.pl/'
+HOTPAY_TEST_MODE = config('HOTPAY_TEST_MODE', default=False, cast=bool)

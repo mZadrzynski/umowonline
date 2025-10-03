@@ -9,14 +9,39 @@ class BookingForm(forms.ModelForm):
         empty_label="Wybierz rodzaj wizyty",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    
     start_time = forms.TimeField(
         widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
         help_text="Wybierz godzinę rozpoczęcia wizyty"
     )
+
+    client_phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+48 123 456 789'}),
+        label="Numer telefonu",
+        help_text="Podaj numer telefonu kontaktowy"
+    )
     
+    client_note = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Dodatkowe informacje...'}),
+        label="Notatka",
+        help_text="Możesz dodać dodatkowe informacje lub uwagi"
+    )
+
     class Meta:
         model = Booking
-        fields = ['service_type', 'start_time']
+        fields = ['service_type', 'start_time', 'client_phone', 'client_note']
+     
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Pobierz użytkownika z kwargs
+        super().__init__(*args, **kwargs)
+        
+        # Automatycznie uzupełnij telefon z profilu użytkownika jeśli dostępny
+        if user and hasattr(user, 'phone_number') and user.phone_number:
+            self.fields['client_phone'].initial = user.phone_number
+            
 
 class ServiceTypeForm(forms.ModelForm):
     class Meta:

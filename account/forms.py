@@ -3,36 +3,88 @@ from django.contrib.auth import get_user_model
 from .models import FavoriteCalendar
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Wprowadź email'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Wprowadź hasło'
+        })
+    )
 
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(
-        label='Password',
-        widget=forms.PasswordInput
+        label='Hasło',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Wprowadź hasło'
+        })
     )
     password2 = forms.CharField(
-        label='Repeat password',
-        widget=forms.PasswordInput
+        label='Powtórz hasło',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Powtórz hasło'
+        })
     )
+    
     class Meta:
         model = get_user_model()
-        fields = ['username', 'first_name', 'email']
-        
+        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number']
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Nazwa użytkownika'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Imię'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Drugie imię/Nazwisko (opcjonalne)'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Adres email'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Numer telefonu (opcjonalne)'
+            }),
+        }
+        labels = {
+            'username': 'Nazwa użytkownika',
+            'first_name': 'Imię',
+            'last_name': 'Drugie imię/Nazwisko',
+            'email': 'Email',
+            'phone_number': 'Numer telefonu',
+        }
 
     def clean_password2(self):
         cd = self.cleaned_data
         if cd['password'] != cd['password2']:
-            raise forms.ValidationError("Passwords don't match.")
+            raise forms.ValidationError("Hasła nie są identyczne.")
         return cd['password2']
     
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email']
-
-
+        fields = ['first_name', 'last_name', 'email', 'phone_number']  # DODANE phone_number
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+48 123 456 789'}),
+        }
+        labels = {
+            'phone_number': 'Numer telefonu',
+        }
 
 class FavoriteCalendarForm(forms.ModelForm):
     class Meta:

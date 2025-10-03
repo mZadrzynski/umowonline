@@ -43,6 +43,22 @@ Dostępne godziny: {{ availability.start_time }} – {{ availability.end_time }}
     {% endfor %}
 </div>
 
+<div class="mb-3">
+    {{ form.client_phone.label_tag }}
+    {{ form.client_phone }}
+    {% if form.client_phone.help_text %}
+        <div class="form-text">{{ form.client_phone.help_text }}</div>
+    {% endif %}
+</div>
+
+<div class="mb-3">
+    {{ form.client_note.label_tag }}
+    {{ form.client_note }}
+    {% if form.client_note.help_text %}
+        <div class="form-text">{{ form.client_note.help_text }}</div>
+    {% endif %}
+</div>
+
 <script>
 document.getElementById('id_service_type').addEventListener('change', function() {
     const selectedId = this.value;

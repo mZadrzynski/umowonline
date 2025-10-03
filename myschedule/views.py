@@ -164,30 +164,23 @@ def book_availability(request, availability_id):
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
     
     if request.method == "POST":
-        form = BookingForm(request.POST)
+        form = BookingForm(request.POST, user=request.user)  # Przekaż użytkownika
         form.fields['service_type'].queryset = service_types
         
         if form.is_valid():
             service_type = form.cleaned_data['service_type']
             start_time = form.cleaned_data['start_time']
+            client_phone = form.cleaned_data['client_phone']
+            client_note = form.cleaned_data['client_note']
             
-            # Połącz datę z Availability z wybraną godziną
+            # Reszta istniejącej logiki walidacji czasu...
             start_datetime = datetime.combine(availability.date, start_time)
-            
-            # Oblicz czas końca wizyty (POPRAWKA)
             end_datetime = start_datetime + timedelta(minutes=service_type.duration_minutes)
             end_time = end_datetime.time()
             
-            # POPRAWIONE SPRAWDZENIE - porównuj tylko obiekty time
             availability_start = availability.start_time
             availability_end = availability.end_time
             
-            print(f"Debug: start_time={start_time}, end_time={end_time}")
-            print(f"Debug: availability start={availability_start}, end={availability_end}")
-            print(f"Debug: start_time >= availability_start: {start_time >= availability_start}")
-            print(f"Debug: end_time <= availability_end: {end_time <= availability_end}")
-            
-            # Sprawdź czy wizyta mieści się w ramach dostępności
             if start_time < availability_start or end_time > availability_end:
                 messages.error(request, f"Wybrana godzina {start_time}-{end_time} nie mieści się w dostępnym czasie {availability_start}-{availability_end}!")
                 return render(request, "myschedule/book_availability.html", {
@@ -196,18 +189,16 @@ def book_availability(request, availability_id):
                     "service_types": service_types
                 })
             
-            # Reszta kodu bez zmian...
+            # Sprawdzenie kolizji...
             conflicting_bookings = Booking.objects.filter(
                 availability=availability,
                 start_datetime__date=availability.date
             ).exclude(user=request.user)
             
-            # Sprawdź kolizje czasowe
             for booking in conflicting_bookings:
                 existing_start = booking.start_datetime.time()
                 existing_end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
                 
-                # Sprawdź czy zakresy się pokrywają
                 if (start_time < existing_end and end_time > existing_start):
                     messages.error(request, "Ten termin jest już zajęty!")
                     return render(request, "myschedule/book_availability.html", {
@@ -216,18 +207,20 @@ def book_availability(request, availability_id):
                         "service_types": service_types
                     })
             
-            # Stwórz rezerwację
+            # Stwórz rezerwację z nowymi danymi
             Booking.objects.create(
                 availability=availability,
                 user=request.user,
                 service_type=service_type,
-                start_datetime=start_datetime
+                start_datetime=start_datetime,
+                client_phone=client_phone,
+                client_note=client_note
             )
             
             messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time}")
             return redirect("my_bookings")
     else:
-        form = BookingForm()
+        form = BookingForm(user=request.user)  # Przekaż użytkownika
         form.fields['service_type'].queryset = service_types
     
     return render(request, "myschedule/book_availability.html", {
@@ -235,7 +228,6 @@ def book_availability(request, availability_id):
         "form": form, 
         "service_types": service_types,
     })
-
 
 @login_required
 def my_calendar(request):
@@ -379,3 +371,26 @@ def subscription_expired(request):
         'hotpay_form_url': 'https://panel.hotpay.pl/twoj_link_do_formularza'
     }
     return render(request, "dashboard/subscription_expired.html", context)
+
+@login_required
+def calendar_bookings(request):
+    """Widok dla właściciela kalendarza - wszystkie rezerwacje"""
+    if not hasattr(request.user, "calendar"):
+        return HttpResponse("Nie masz kalendarza")
+    
+    # Pobierz wszystkie rezerwacje dla kalendarza użytkownika
+    bookings = Booking.objects.filter(
+        availability__calendar=request.user.calendar
+    ).select_related(
+        'user', 'service_type', 'availability'
+    ).order_by('-booked_at')
+    
+    # Dodaj informacje o czasie zakończenia wizyty
+    for booking in bookings:
+        start = booking.start_datetime
+        duration = booking.service_type.duration_minutes
+        booking.end_datetime = start + timedelta(minutes=duration)
+    
+    return render(request, "myschedule/calendar_bookings.html", {
+        "bookings": bookings
+    })
