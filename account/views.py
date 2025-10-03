@@ -181,8 +181,8 @@ def create_payment(request):
         'ID_PLATNOSCI': payment_id,
         'EMAIL': user.email,
         'NAZWA': f"{user.first_name} {user.last_name}" if user.first_name else user.username,
-        'RETURN_URL': request.build_absolute_uri('/payment/success/'),
-        'RETURN_URLC': request.build_absolute_uri('/payment/webhook/'),
+        'RETURN_URL': request.build_absolute_uri('/account/payment/success/'),
+        'RETURN_URLC': request.build_absolute_uri('/account/payment/webhook/'),
     }
     
     return render(request, 'account/payment/hotpay_form.html', {
@@ -193,7 +193,7 @@ def create_payment(request):
     })
 
 @csrf_exempt
-@require_POST
+#@require_POST test czy zadziala
 def hotpay_webhook(request):
     '''Webhook do obsługi powiadomień z HotPay'''
     try:
