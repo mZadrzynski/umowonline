@@ -197,29 +197,38 @@ def create_payment(request):
 def hotpay_webhook(request):
     '''Webhook do obsługi powiadomień z HotPay'''
     try:
-        # Pobierz dane z POST
-        kwota = request.POST.get('KWOTA', '')
-        id_platnosci = request.POST.get('ID_PLATNOSCI', '')
-        status = request.POST.get('STATUS', '')
-        sekret = request.POST.get('SEKRET', '').rstrip(',')
-        hash_value = request.POST.get('HASH', '')
+    # Pobierz wszystkie wartości
+        kwota          = request.POST.get('KWOTA', '')
+        id_platnosci   = request.POST.get('ID_PLATNOSCI', '')
+        id_zamowienia  = request.POST.get('ID_ZAMOWIENIA', '')
+        status         = request.POST.get('STATUS', '')
+        secure         = request.POST.get('SECURE', '')      # <— dodaj
+        sekret         = request.POST.get('SEKRET', '').rstrip(',')
         
         # Logowanie dla debugowania
         logger.info(f"HotPay webhook received: {dict(request.POST)}")
         
         # Weryfikacja hash
-        hash_string = f"{kwota};{id_platnosci};{sekret};{status};{settings.HOTPAY_NOTIFICATION_PASSWORD}"
+        hash_string = (
+            f"{settings.HOTPAY_NOTIFICATION_PASSWORD};"
+            f"{kwota};"
+            f"{id_platnosci};"
+            f"{id_zamowienia};"
+            f"{status};"
+            f"{secure};"
+            f"{sekret}"
+        )
+        logger.info(f"Hash string = {hash_string}")
         
-        # Sprawdź najpierw MD5
-        calculated_hash_md5 = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+        calculated_hash = hashlib.sha256(hash_string.encode('utf-8')).hexdigest()
+        logger.info(f"Calculated SHA256 = {calculated_hash}")
         
-        # Jeśli MD5 nie pasuje, sprawdź SHA256
-        calculated_hash_sha256 = hashlib.sha256(hash_string.encode('utf-8')).hexdigest()
-        
-        if hash_value.lower() not in [calculated_hash_md5.lower(), calculated_hash_sha256.lower()]:
-            logger.error(f"Invalid hash. Received: {hash_value}, MD5: {calculated_hash_md5}, SHA256: {calculated_hash_sha256}")
+
+        received_hash = request.POST.get('HASH', '')
+        if calculated_hash != received_hash:
+            logger.error(f"Invalid hash. Received: {received_hash}, Calculated: {calculated_hash}")
             return HttpResponse('Invalid hash', status=400)
-        
+            
         # Znajdź płatność
         try:
             payment = Payment.objects.get(payment_id=id_platnosci)
