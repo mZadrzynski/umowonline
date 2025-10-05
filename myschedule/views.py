@@ -376,7 +376,7 @@ def subscription_expired(request):
 def calendar_bookings(request):
     """Widok dla właściciela kalendarza - wszystkie rezerwacje"""
     if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza")
+            return render(request, "dashboard/no_calendar.html")
     
     # Pobierz wszystkie rezerwacje dla kalendarza użytkownika
     bookings = Booking.objects.filter(

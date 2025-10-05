@@ -1,3 +1,27 @@
 .env
 docker-compose.yml
 sqlite3
+
+
+# Django migrations
+**/migrations/
+!**/migrations/__init__.py
+
+# Database files
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# IDE config
+.vscode/
+.idea/
+
+# Env files
+.env
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
