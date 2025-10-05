@@ -222,7 +222,7 @@ def hotpay_webhook(request):
             
         # Znajdź płatność
         try:
-            payment = Payment.objects.get(payment_id=id_platnosci)
+            payment = Payment.objects.get(payment_id=id_zamowienia)
         except Payment.DoesNotExist:
             logger.error(f"Payment not found: {id_platnosci}")
             return HttpResponse('Payment not found', status=404)
