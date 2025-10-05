@@ -179,7 +179,7 @@ def create_payment(request):
         'KWOTA': f"{amount:.2f}",
         'NAZWA_USLUGI': 'Subskrypcja umowonline - 30 dni',
         'ADRES_WWW': request.build_absolute_uri('/'),
-        'ID_PLATNOSCI': payment_id,
+        'ID_ZAMOWIENIA': payment_id,
         'EMAIL': user.email,
         'NAZWA': f"{user.first_name} {user.last_name}" if user.first_name else user.username,
         'RETURN_URL': request.build_absolute_uri('/ac/payment/success/'),
