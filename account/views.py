@@ -163,7 +163,8 @@ def create_payment(request):
     # Generuj unikalny ID płatności
     payment_id = str(uuid.uuid4())
     amount = 20.00  # 20 PLN za miesiąc
-    
+    logger.info(f"Created Payment: payment_id={payment.payment_id}")
+
     # Utwórz rekord płatności
     payment = Payment.objects.create(
         user=user,
