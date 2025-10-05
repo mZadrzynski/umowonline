@@ -258,6 +258,8 @@ def hotpay_webhook(request):
 @login_required
 def payment_success(request):
     '''Strona potwierdzenia płatności'''
+    logger.info(f"Payment success reached via: {request.build_absolute_uri()}")
+
     return render(request, 'account/payment/success.html')
 
 @login_required
