@@ -182,7 +182,7 @@ def create_payment(request):
         'ID_ZAMOWIENIA': payment_id,
         'EMAIL': user.email,
         'NAZWA': f"{user.first_name} {user.last_name}" if user.first_name else user.username,
-        'RETURN_URL': request.build_absolute_uri('/ac/payment/success/'),
+        'RETURN_URL': request.build_absolute_uri('/account/payment/success/'),
         'RETURN_URLC': request.build_absolute_uri('/account/payment/webhook/'),
     }
     
