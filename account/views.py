@@ -192,46 +192,33 @@ def create_payment(request):
         'HOTPAY_API_URL': settings.HOTPAY_API_URL,
     })
 
+
 @csrf_exempt
-#@require_POST test czy zadziala
 def hotpay_webhook(request):
-    '''Webhook do obsługi powiadomień z HotPay'''
     try:
-    # Pobierz wszystkie wartości
-        kwota = request.POST.get('KWOTA', '')
-        id_platnosci = request.POST.get('ID_PLATNOSCI', '')
-        status = request.POST.get('STATUS', '')
-        sekret = request.POST.get('SEKRET', '').rstrip(',')
+        # Pobierz wszystkie dane z POST (uwaga na listy!)
+        kwota = request.POST.get('KWOTA')
+        id_platnosci = request.POST.get('ID_PLATNOSCI')
+        id_zamowienia = request.POST.get('ID_ZAMOWIENIA', '')  # Może być puste!
+        status = request.POST.get('STATUS')
+        sekret = request.POST.get('SEKRET')
+        secure = request.POST.get('SECURE')  # To pole JEST WYMAGANE!
+        received_hash = request.POST.get('HASH')
         
-        # Logowanie dla debugowania
-        logger.info(f"HotPay webhook received: {dict(request.POST)}")
+        notification_password = "dSvEhsMoBBGfPbfxBP8H"  # Twoje hasło z panelu
         
-        # Weryfikacja hash
-        hash_string = ";".join([
-            settings.HOTPAY_NOTIFICATION_PASSWORD,
-            kwota,
-            id_platnosci,
-            status,
-            sekret
-        ])
-
-
-        logger.info("hash_string repr: %r", hash_string)
-
-        logger.info("kwota = %r", kwota)
-        logger.info("id_platnosci = %r", id_platnosci)
-        logger.info("status = %r", status)
-        logger.info("sekret = %r", sekret)
-        logger.info("notification_password = %r", settings.HOTPAY_NOTIFICATION_PASSWORD)
-                
+        # PRAWIDŁOWY format haszu dla webhooków (uwzględniający puste ID_ZAMOWIENIA)
+        hash_string = f"{notification_password};{kwota};{id_platnosci};{id_zamowienia};{status};{secure};{sekret}"
         calculated_hash = hashlib.sha256(hash_string.encode('utf-8')).hexdigest()
-        logger.info(f"Calculated SHA256 = {calculated_hash}")
         
-
-        received_hash = request.POST.get('HASH', '')
+        logger.info(f"Webhook data: KWOTA={kwota}, ID_PLATNOSCI={id_platnosci}, ID_ZAMOWIENIA='{id_zamowienia}', STATUS={status}, SECURE={secure}")
+        logger.info(f"Hash string: '{hash_string}'")
+        logger.info(f"Calculated: {calculated_hash}")
+        logger.info(f"Received: {received_hash}")
+        
         if calculated_hash != received_hash:
-            logger.error(f"Invalid hash. Received: {received_hash}, Calculated: {calculated_hash}")
-            return HttpResponse('Invalid hash', status=400)
+            logger.error("Hash mismatch!")
+            return HttpResponse("Invalid hash", status=400)
             
         # Znajdź płatność
         try:
