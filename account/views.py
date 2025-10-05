@@ -163,7 +163,7 @@ def create_payment(request):
     # Generuj unikalny ID płatności
     payment_id = str(uuid.uuid4())
     amount = 20.00  # 20 PLN za miesiąc
-    logger.info(f"Created Payment: payment_id={payment.payment_id}")
+    
 
     # Utwórz rekord płatności
     payment = Payment.objects.create(
@@ -172,7 +172,7 @@ def create_payment(request):
         amount=amount,
         payment_id=payment_id
     )
-    
+    logger.info(f"Created Payment: payment_id={payment.payment_id}")
     # Przygotuj dane dla HotPay
     hotpay_data = {
         'SEKRET': settings.HOTPAY_SECRET_KEY,
