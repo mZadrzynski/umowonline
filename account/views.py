@@ -196,23 +196,22 @@ def create_payment(request):
 @csrf_exempt
 def hotpay_webhook(request):
     try:
-        # Pobierz wszystkie dane z POST (uwaga na listy!)
+        # Pobierz dane z POST
         kwota = request.POST.get('KWOTA')
         id_platnosci = request.POST.get('ID_PLATNOSCI')
-        id_zamowienia = request.POST.get('ID_ZAMOWIENIA', '')  # Może być puste!
+        id_zamowienia = request.POST.get('ID_ZAMOWIENIA', '')  # Może być puste
         status = request.POST.get('STATUS')
         sekret = request.POST.get('SEKRET')
-        secure = request.POST.get('SECURE')  # To pole JEST WYMAGANE!
         received_hash = request.POST.get('HASH')
         
-        notification_password = "dSvEhsMoBBGfPbfxBP8H"  # Twoje hasło z panelu
+        notification_password = "dSvEhsMoBBGfPbfxBP8H"
         
-        # PRAWIDŁOWY format haszu dla webhooków (uwzględniający puste ID_ZAMOWIENIA)
-        hash_string = f"{notification_password};{kwota};{id_platnosci};{id_zamowienia};{status};{secure};{sekret}"
+        # SPRÓBUJ BEZ pola SECURE (może nie istnieje w webhookach)
+        hash_string = f"{notification_password};{kwota};{id_platnosci};{id_zamowienia};{status};{sekret}"
         calculated_hash = hashlib.sha256(hash_string.encode('utf-8')).hexdigest()
         
-        logger.info(f"Webhook data: KWOTA={kwota}, ID_PLATNOSCI={id_platnosci}, ID_ZAMOWIENIA='{id_zamowienia}', STATUS={status}, SECURE={secure}")
-        logger.info(f"Hash string: '{hash_string}'")
+        logger.info(f"Webhook data: KWOTA={kwota}, ID_PLATNOSCI={id_platnosci}, ID_ZAMOWIENIA='{id_zamowienia}', STATUS={status}")
+        logger.info(f"Hash string (without SECURE): '{hash_string}'")
         logger.info(f"Calculated: {calculated_hash}")
         logger.info(f"Received: {received_hash}")
         
