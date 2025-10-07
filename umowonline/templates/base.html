@@ -85,9 +85,17 @@
            <!-- Footer -->
 <footer class="site-footer text-center text-white py-3">
   <p>
-    &copy; 2025 umowonline.pl
+    <a href="/" class="footer-link">Strona główna</a> |
+    <a href="/dashboard/offert/" class="footer-link">Oferta</a> |
+    <a href="{% url 'my_calendar_week' %}"class="footer-link">Mój kalendarz</a> |
+    <a href="{% url 'calendar_bookings' %}" class="footer-link">Moje rezerwacje</a> |
+    <a href="{% url 'favorite_calendars' %}" class="footer-link">Ulubione</a> |
+    <a href="/dashboard/contact/" class="footer-link">Pomoc</a> |
+    <!--<a href="/contact/">Blog</a>-->
     <a href="{% url 'terms_of_service' %}" class="footer-link">Regulamin serwisu</a> |
-    <a href="{% url 'privacy_policy' %}" class="footer-link">Polityka prywatności</a>
+    <a href="{% url 'privacy_policy' %}" class="footer-link">Polityka prywatności</a> |
+    <a href="/dashboard/contact/" class="footer-link">Kontakt</a>
+    <br><br> &copy; 2025 umowonline.pl wszelkie prawa zastrzeżone
   </p>
 </footer>
     </div>

@@ -223,7 +223,7 @@ s {
 }
 
 .sidebar {
-  width: 220px;            /* Stała szerokość sidebaru */
+  width: 450;            /* Stała szerokość sidebaru */
   background-color: #f0f0f0;
   padding: 15px;
   box-sizing: border-box;
@@ -290,4 +290,98 @@ ul {
 .site-footer a.footer-link:hover {
   color: #ddd;
   text-decoration: none;
+}
+/* Usuń tradycyjne list-style i dodaj gradient tła */
+.sidebar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 0 15px 15px 0;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+}
+
+/* Nagłówek menu */
+.sidebar h3 {
+    color: white;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Listy i linki w sidebar */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar ul li a {
+    display: block;
+    color: white !important;
+    text-decoration: none;
+    padding: 12px 20px;
+    margin: 5px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid transparent;
+}
+
+/* Lekki efekt „wypełnienia” przy hover */
+.sidebar ul li a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(255,255,255,0.1);
+    transition: width 0.3s ease;
+    z-index: 1;
+}
+.sidebar ul li a:hover::before {
+    width: 100%;
+}
+.sidebar ul li a:hover {
+    background: rgba(255,255,255,0.15);
+    border-left-color: #fff;
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Ikony przed linkami (emoji) */
+.sidebar ul li:nth-child(1) a::before { content: '📅 '; }
+.sidebar ul li:nth-child(2) a::before { content: '🗓️ '; }
+.sidebar ul li:nth-child(3) a::before { content: '➕ '; }
+.sidebar ul li:nth-child(4) a::before { content: '🛠️ '; }
+.sidebar ul li:nth-child(5) a::before { content: '💳 '; }
+
+/* Przywróć z-index linków nad pseudo-elementem */
+.sidebar ul li a span,
+.sidebar ul li a::before {
+    position: relative;
+}
+
+/* RESPONSYWNOŚĆ dla mobilnych */
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        border-radius: 0;
+    }
+    .sidebar_container {
+        flex-direction: column;
+    }
+    .sidebar ul {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding: 0 10px;
+    }
+    .sidebar ul li a {
+        flex-shrink: 0;
+        margin: 0;
+    }
 }

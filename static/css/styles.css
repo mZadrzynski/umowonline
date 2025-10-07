@@ -2,16 +2,34 @@
 html, body {
     background-color: #c4d3da !important;
     text-align: center;
-    overflow-x: auto;
+    overflow-x: auto !important;
 }
 
-body {
-    padding-top: 90px; /* dopasuj do wysokości nagłówka */
+body { 
+  margin: 0; 
+  padding: 80px 0 0 0; /* Fix dla headera zasłaniającego treść */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fcfcf9; 
+  color: #13343b; 
 }
+
+
 
 .container-custom h3 {
     display: block;
 }
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 { margin: 0; font-weight: 550; line-height: 1.2; color: #13343b; letter-spacing: -0.01em; }
+h1 { font-size: 30px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+h4 { font-size: 18px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
+p { margin: 0 0 16px 0; }
+a { color: #21808d; text-decoration: none; transition: color 150ms ease; }
+a:hover { color: #1d7480; }
 
 .container-custom {
 
@@ -23,9 +41,10 @@ body {
 
 .header {
     overflow-x: auto;
-    background-color: #2484a196;
+    background: linear-gradient(135deg, #3156fc 0%, #3ae6d1 100%);
     color: white;
-    padding: 1rem;
+    padding: 20px 20px 20px 20px !important;
+    font-size: 16px !important;
     box-shadow: 0px 5px 5px 0px white;
     margin-bottom: 8px;
     width: 100vw;
@@ -47,6 +66,9 @@ body {
     text-decoration: underline;
 }
 
+.header .umow-zdalnie {
+    font-size: 2rem !important;
+}
 .table-container {
     margin: 2rem auto;
     background: white;
@@ -64,7 +86,7 @@ footer {
 }
 
 nav a {
-    margin: 5px;
+    margin: 15px;
     padding: 10px 15px;
     text-decoration: none;
 }
@@ -153,7 +175,7 @@ nav a {
 }
 
 .menu a:hover {
-  color: #0d6efd; /* efekt hover */
+  color: #28116617; /* efekt hover */
 }
 s {
   all: unset;
@@ -223,7 +245,7 @@ s {
 }
 
 .sidebar {
-  width: 220px;            /* Stała szerokość sidebaru */
+  width: 350px;            /* Stała szerokość sidebaru */
   background-color: #f0f0f0;
   padding: 15px;
   box-sizing: border-box;
@@ -274,7 +296,7 @@ ul {
 }
 
 .site-footer {
-  background-color: #222; /* opcjonalne tło */
+  background-color: #696868; /* opcjonalne tło */
   color: white;
   text-align: center;
   padding: 1rem 0;
@@ -288,6 +310,100 @@ ul {
 }
 
 .site-footer a.footer-link:hover {
-  color: #ddd;
+  color: #f09e40;
   text-decoration: none;
+}
+/* Usuń tradycyjne list-style i dodaj gradient tła */
+.sidebar {
+    background: linear-gradient(135deg, #3156fc 0%, #3ae6d1 100%);
+    border-radius: 0 15px 15px 0;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+}
+
+/* Nagłówek menu */
+.sidebar h3 {
+    color: white;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Listy i linki w sidebar */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar ul li a {
+    display: block;
+    color: white !important;
+    text-decoration: none;
+    padding: 12px 20px;
+    margin: 5px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid transparent;
+}
+
+/* Lekki efekt „wypełnienia” przy hover */
+.sidebar ul li a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(240, 173, 73, 0.1);
+    transition: width 0.3s ease;
+    z-index: 1;
+}
+.sidebar ul li a:hover::before {
+    width: 100%;
+}
+.sidebar ul li a:hover {
+    background: rgba(230, 183, 32, 0.15);
+    border-left-color: #f5b80f;
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Ikony przed linkami (emoji) */
+.sidebar ul li:nth-child(1) a::before { content: '📅 '; }
+.sidebar ul li:nth-child(2) a::before { content: '🗓️ '; }
+.sidebar ul li:nth-child(3) a::before { content: '➕ '; }
+.sidebar ul li:nth-child(4) a::before { content: '🛠️ '; }
+.sidebar ul li:nth-child(5) a::before { content: '💳 '; }
+
+/* Przywróć z-index linków nad pseudo-elementem */
+.sidebar ul li a span,
+.sidebar ul li a::before {
+    position: relative;
+}
+
+/* RESPONSYWNOŚĆ dla mobilnych */
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        border-radius: 0;
+    }
+    .sidebar_container {
+        flex-direction: column;
+    }
+    .sidebar ul {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding: 0 10px;
+    }
+    .sidebar ul li a {
+        flex-shrink: 0;
+        margin: 0;
+    }
 }

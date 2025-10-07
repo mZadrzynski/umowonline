@@ -7,7 +7,7 @@
 }
 
 .calendar-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3156fc 0%, #3ae6d1 100%);
     color: white;
     padding: 20px;
     text-align: center;
@@ -43,7 +43,7 @@
 }
 
 .calendar-month th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3156fc 0%, #3ae6d1 100%);
     color: white;
     font-weight: 600;
     text-align: center;
@@ -163,7 +163,7 @@
 }
 
 .calendar-table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3156fc 0%, #3ae6d1 100%);
     color: white;
     font-weight: 600;
     text-align: center;

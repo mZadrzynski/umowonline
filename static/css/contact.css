@@ -1,4 +1,4 @@
-html, body {
+.contact-page {
     text-align: center;
     overflow-x: auto;
 }
@@ -36,6 +36,7 @@ form label[for="id_accept_terms"] {
   color: #000;         /* albo inny kolor, np. biały: #fff */
   font-weight: normal; /* dostosuj wagę czcionki */
 }
+
 .btn-custom-soft {
     background-color: #3d91da; /* stonowany szary */
     color: white;
