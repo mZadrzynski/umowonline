@@ -10,11 +10,13 @@
     <title>Dodaj wydarzenie</title>
 </head>
 <body>
+    <section class="schedule_service">
     <h1>Dodaj wydarzenie</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Dodaj">
     </form>
+    </section>
 </body>
 {% endblock %}

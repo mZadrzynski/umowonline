@@ -18,7 +18,7 @@ def contact(request):
                 subject=form_email.cleaned_data['subject'],
                 body=form_email.cleaned_data['message'],
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.DEFAULT_FROM_EMAIL],
+                to=["kontakt@umowzdalnie.pl"],
                 reply_to=[form_email.cleaned_data['from_email']]
             )
             email.send(fail_silently=False)
@@ -28,7 +28,7 @@ def contact(request):
                 subject="prośba o kontakt",
                 body=form_phone.cleaned_data['phone'],
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.DEFAULT_FROM_EMAIL],
+                to=["kontakt@umowzdalnie.pl"],
             )
             email.send(fail_silently=False)
             return render(request, 'dashboard/mail_send_success.html')

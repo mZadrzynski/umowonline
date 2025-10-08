@@ -15,7 +15,45 @@ class CustomUser(AbstractUser):
     
 User = get_user_model()
 
+class UserNotificationSettings(models.Model):
+    """Model przechowujący ustawienia powiadomień użytkownika"""
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,  # ✅ Używa AUTH_USER_MODEL z settings
+        on_delete=models.CASCADE, 
+        related_name='notification_settings'
+    )
+    
+    # Opcje powiadomień
+    booking_created_notifications = models.BooleanField(
+        default=True, 
+        verbose_name="Powiadomienia o nowych wizytach",
+        help_text="Otrzymuj email gdy ktoś umawia wizytę w Twoim kalendarzu"
+    )
+    
+    booking_cancelled_notifications = models.BooleanField(
+        default=True,
+        verbose_name="Powiadomienia o anulowanych wizytach", 
+        help_text="Otrzymuj email gdy ktoś anuluje wizytę"
+    )
+    
+    own_booking_confirmations = models.BooleanField(
+        default=True,
+        verbose_name="Potwierdzenia własnych wizyt",
+        help_text="Otrzymuj email po umówieniu wizyty u kogoś"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Ustawienia powiadomień użytkownika"
+        verbose_name_plural = "Ustawienia powiadomień użytkowników"
+    
+    def __str__(self):
+        return f"Ustawienia powiadomień - {self.user.username}"
+    
 
+    
 class Subscription(models.Model):
     SUBSCRIPTION_STATUS = [
         ('active', 'Aktywna'),

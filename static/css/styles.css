@@ -87,7 +87,7 @@ footer {
 
 nav a {
     margin: 15px;
-    padding: 10px 15px;
+    padding: 5px 5px;
     text-decoration: none;
 }
 
@@ -140,7 +140,7 @@ nav a {
 
 .umow-zdalnie i {
   font-size: 1.8rem;
-  color: #198754; /* zielony bootstrap */
+  color: #ffffff; /* zielony bootstrap */
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
@@ -190,7 +190,7 @@ s {
   flex-direction: column;
   cursor: pointer;
   padding: 15px;
-  background: #ff00002a;
+  background: #172be02a;
   text-align: center;
 }
 .hamburger span {
@@ -408,18 +408,3 @@ s {
     }
 }
 
-/* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; line-height: 1.5; cursor: pointer; transition: all 250ms ease; border: none; text-decoration: none; position: relative; }
-.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.4); }
-.btn--primary { background: #1f3bdb; color: #fcfcf9; }
-.btn--primary:hover { background: #1cd469; }
-.btn--primary:active { background: #129256; }
-.btn--secondary { background: rgba(94, 82, 64, 0.12); color: #13343b; }
-.btn--secondary:hover { background: rgba(94, 82, 64, 0.2); }
-.btn--secondary:active { background: rgba(94, 82, 64, 0.25); }
-.btn--outline { background: transparent; border: 1px solid rgba(94, 82, 64, 0.2); color: #13343b; }
-.btn--outline:hover { background: rgba(94, 82, 64, 0.12); }
-.btn--sm { padding: 4px 12px; font-size: 12px; border-radius: 6px; }
-.btn--lg { padding: 10px 20px; font-size: 16px; border-radius: 10px; }
-.btn--full-width { width: 100%; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }

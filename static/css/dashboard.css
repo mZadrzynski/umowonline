@@ -147,6 +147,10 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 .rules {text-align: left;}
 .rules {margin: 30px 30px 30px 30px; /* góra, prawo, dół, lewo */}
 
+/* schedule service Section*/
+.schedule_service {text-align: left;}
+.schedule_service {margin: 0px 0px 0px 100px; /* góra, prawo, dół, lewo */}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   body { padding-top: 70px; }
