@@ -4,14 +4,76 @@ from django.core.exceptions import ValidationError
 from datetime import time, timedelta, datetime
 
 def generate_time_choices():
+    """Generuje wybory czasu co 15 minut z zabezpieczeniem przed błędami"""
     times = []
-    current = datetime.strptime('00:00', '%H:%M')
-    end = datetime.strptime('23:45', '%H:%M')
-    delta = timedelta(minutes=15)
-    while current <= end:
-        t_str = current.strftime('%H:%M')
-        times.append((t_str, t_str))
-        current += delta
+    try:
+        current = datetime.strptime('00:00', '%H:%M')
+        end = datetime.strptime('23:45', '%H:%M')
+        delta = timedelta(minutes=15)
+        
+        while current <= end:
+            t_str = current.strftime('%H:%M')
+            times.append((t_str, t_str))
+            current += delta
+            
+        # Sprawdź czy lista nie jest pusta
+        if not times:
+            raise ValueError("Lista czasów jest pusta")
+            
+        return times
+    except Exception as e:
+        # Fallback - zwróć podstawowe opcje
+        print(f"Błąd w generate_time_choices: {e}")
+        return [
+            ('08:00', '08:00'), ('08:15', '08:15'), ('08:30', '08:30'), ('08:45', '08:45'),
+            ('09:00', '09:00'), ('09:15', '09:15'), ('09:30', '09:30'), ('09:45', '09:45'),
+            ('10:00', '10:00'), ('10:15', '10:15'), ('10:30', '10:30'), ('10:45', '10:45'),
+            ('11:00', '11:00'), ('11:15', '11:15'), ('11:30', '11:30'), ('11:45', '11:45'),
+            ('12:00', '12:00'), ('12:15', '12:15'), ('12:30', '12:30'), ('12:45', '12:45'),
+            ('13:00', '13:00'), ('13:15', '13:15'), ('13:30', '13:30'), ('13:45', '13:45'),
+            ('14:00', '14:00'), ('14:15', '14:15'), ('14:30', '14:30'), ('14:45', '14:45'),
+            ('15:00', '15:00'), ('15:15', '15:15'), ('15:30', '15:30'), ('15:45', '15:45'),
+            ('16:00', '16:00'), ('16:15', '16:15'), ('16:30', '16:30'), ('16:45', '16:45'),
+            ('17:00', '17:00'), ('17:15', '17:15'), ('17:30', '17:30'), ('17:45', '17:45'),
+            ('18:00', '18:00'), ('18:15', '18:15'), ('18:30', '18:30'), ('18:45', '18:45'),
+        ]
+    
+
+def generate_available_times(availability, service_duration_minutes=15):
+    '''Generuje czasy dostępne w danej availability z uwzględnieniem czasu trwania usługi'''
+    times = []
+    
+    try:
+        # Start i koniec availability
+        avail_start = availability.start_time
+        avail_end = availability.end_time
+        
+        # Konwertuj na datetime dla obliczeń
+        today = datetime.today().date()
+        current = datetime.combine(today, avail_start)
+        end = datetime.combine(today, avail_end)
+        
+        # Odejmij czas trwania usługi od końca
+        service_duration = timedelta(minutes=service_duration_minutes)
+        last_possible_start = end - service_duration
+        
+        # Generuj co 15 minut
+        delta = timedelta(minutes=15)
+        
+        while current <= last_possible_start:
+            t_str = current.strftime('%H:%M')
+            times.append((t_str, t_str))
+            current += delta
+        
+        if not times:
+            return [('', 'Brak dostępnych godzin dla tej usługi')]
+            
+        return times
+    
+    except Exception as e:
+        print(f"Błąd w generate_available_times: {e}")
+        return [('', 'Błąd przy generowaniu czasów')]
+    
 
 class BookingForm(forms.ModelForm):
     service_type = forms.ModelChoiceField(
@@ -21,7 +83,7 @@ class BookingForm(forms.ModelForm):
     )
     
     start_time = forms.ChoiceField(choices=generate_time_choices(), label="Godzina rozpoczęcia")
-    
+
     client_phone = forms.CharField(
         max_length=20,
         required=False,
@@ -42,13 +104,22 @@ class BookingForm(forms.ModelForm):
         fields = ['service_type', 'start_time', 'client_phone', 'client_note']
      
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Pobierz użytkownika z kwargs
+        self.availability = kwargs.pop('availability', None)
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
         # Automatycznie uzupełnij telefon z profilu użytkownika jeśli dostępny
         if user and hasattr(user, 'phone_number') and user.phone_number:
             self.fields['client_phone'].initial = user.phone_number
-            
+        
+        # Ustaw dostępne czasy na podstawie availability
+        if self.availability:
+            available_times = generate_available_times(self.availability, 15)
+            self.fields['start_time'].choices = available_times
+        else:
+            # Fallback na wszystkie czasy
+            self.fields['start_time'].choices = generate_time_choices()
+                
 
 class ServiceTypeForm(forms.ModelForm):
     class Meta:

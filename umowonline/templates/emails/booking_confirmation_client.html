@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        .header { 
+            background: #28a745; 
+            color: white; 
+            padding: 15px; 
+            text-align: center; 
+            border-radius: 5px 5px 0 0;
+        }
+        .content { 
+            padding: 20px; 
+            background: #f8f9fa; 
+        }
+        .booking-details { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+            border-left: 4px solid #28a745;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>{{site_name}} - Potwierdzenie Rezerwacji</h2>
+        </div>
+        <div class="content">
+            <h3>Dzięki {{recipient.first_name}}!</h3>
+            <p>Twoja wizyta została pomyślnie zarezerwowana. ✅</p>
+            
+            <div class="booking-details">
+                <h4>📅 Szczegóły Twojej wizyty:</h4>
+                <p><strong>Usługa:</strong> {{booking.service_type.name}}</p>
+                <p><strong>Data i godzina:</strong> {{booking.start_datetime|date:"d.m.Y"}} o {{booking.start_datetime|time:"H:i"}}</p>
+                <p><strong>Czas trwania:</strong> {{booking.service_type.duration_minutes}} minut</p>
+                <p><strong>U:</strong> {{booking.provider.first_name}} {{booking.provider.last_name}}</p>
+                {% if booking.client_note %}
+                <p><strong>💬 Twoja notatka:</strong> {{booking.client_note}}</p>
+                {% endif %}
+            </div>
+            
+            <p>Jeśli potrzebujesz anulować lub zmienić wizytę, zaloguj się na <strong>{{site_name}}</strong>.</p>
+        </div>
+        <div class="footer">
+            <p>To jest automatyczne potwierdzenie z systemu {{site_name}}.</p>
+        </div>
+    </div>
+</body>
+</html>

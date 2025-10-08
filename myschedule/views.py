@@ -164,12 +164,13 @@ def book_availability(request, availability_id):
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
     
     if request.method == "POST":
-        form = BookingForm(request.POST, user=request.user)  # Przekaż użytkownika
+        form = BookingForm(user=request.user, availability=availability)
         form.fields['service_type'].queryset = service_types
         
         if form.is_valid():
             service_type = form.cleaned_data['service_type']
-            start_time = form.cleaned_data['start_time']
+            start_time_str = form.cleaned_data['start_time']  # TO JEST STRING
+            start_time = datetime.strptime(start_time_str, '%H:%M').time()  # KONWERSJA
             client_phone = form.cleaned_data['client_phone']
             client_note = form.cleaned_data['client_note']
             
@@ -214,13 +215,14 @@ def book_availability(request, availability_id):
                 service_type=service_type,
                 start_datetime=start_datetime,
                 client_phone=client_phone,
-                client_note=client_note
+                client_note=client_note,
+                status='active'
             )
             
             messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time}")
             return redirect("my_bookings")
     else:
-        form = BookingForm(user=request.user)  # Przekaż użytkownika
+        form = BookingForm(user=request.user, availability=availability)
         form.fields['service_type'].queryset = service_types
     
     return render(request, "myschedule/book_availability.html", {
@@ -393,4 +395,26 @@ def calendar_bookings(request):
     
     return render(request, "myschedule/calendar_bookings.html", {
         "bookings": bookings
+    })
+
+@login_required
+def delete_booking(request, booking_id):
+    """Anulowanie booking z powiadomieniami emailowymi"""
+    from account.signals import cancel_booking_with_notifications
+    
+    booking = get_object_or_404(
+        Booking, 
+        id=booking_id, 
+        user=request.user,
+        status='active'  # Tylko aktywne booking można anulować
+    )
+    
+    if request.method == 'POST':
+        # Użyj funkcji z signals która wyśle powiadomienia
+        cancel_booking_with_notifications(booking)
+        messages.success(request, f'Wizyta {booking.service_type.name} została anulowana.')
+        return redirect('my_bookings')
+    
+    return render(request, 'myschedule/confirm_cancel_booking.html', {
+        'booking': booking
     })

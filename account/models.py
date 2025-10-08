@@ -51,9 +51,8 @@ class UserNotificationSettings(models.Model):
     
     def __str__(self):
         return f"Ustawienia powiadomień - {self.user.username}"
-    
 
-    
+
 class Subscription(models.Model):
     SUBSCRIPTION_STATUS = [
         ('active', 'Aktywna'),

@@ -68,10 +68,26 @@ class Booking(models.Model):
     client_phone = models.CharField(max_length=20, blank=True, verbose_name="Telefon klienta")
     client_email = models.EmailField(blank=True, verbose_name="Email klienta") 
     client_note = models.TextField(blank=True, verbose_name="Notatka klienta", help_text="Dodatkowe informacje od klienta")
+    status = models.CharField(
+        max_length=20, 
+        choices=[('active', 'Aktywna'), ('cancelled', 'Anulowana')], 
+        default='active',
+        verbose_name="Status wizyty"
+    )
 
     class Meta:
         unique_together = ('availability', 'user')
     
+    @property 
+    def provider(self):
+        """Właściciel kalendarza (dostawca usługi)"""
+        return self.availability.calendar.user
+
+    @property
+    def client(self):
+        """Klient (osoba rezerwująca)"""
+        return self.user
+        
     def save(self, *args, **kwargs):
         # Automatycznie uzupełnij dane klienta z profilu użytkownika jeśli nie podano
         if not self.client_email and self.user.email:

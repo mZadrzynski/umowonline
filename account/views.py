@@ -16,9 +16,11 @@ from django.conf import settings
 from django.utils import timezone
 from .models import Subscription, Payment
 import hashlib
-import json
 import uuid
 import logging
+from .forms import NotificationSettingsForm
+from .models import UserNotificationSettings
+
 
 logger = logging.getLogger('hotpay')
 
@@ -272,4 +274,27 @@ def subscription_status(request):
     
     return render(request, 'account/subscription_status.html', {
         'subscription': subscription
+    })
+
+@login_required
+def notification_settings(request):
+    """Widok zarządzania ustawieniami powiadomień"""
+    
+    # Pobierz lub stwórz ustawienia powiadomień dla użytkownika
+    settings, created = UserNotificationSettings.objects.get_or_create(
+        user=request.user
+    )
+    
+    if request.method == 'POST':
+        form = NotificationSettingsForm(request.POST, instance=settings)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ustawienia powiadomień zostały zaktualizowane.')
+            return redirect('notification_settings')
+    else:
+        form = NotificationSettingsForm(instance=settings)
+    
+    return render(request, 'account/notification_settings.html', {
+        'form': form,
+        'settings': settings
     })

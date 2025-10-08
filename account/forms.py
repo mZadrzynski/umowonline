@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from .models import FavoriteCalendar
+from .models import UserNotificationSettings
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -113,3 +114,24 @@ class FavoriteCalendarForm(forms.ModelForm):
         if not re.search(r'/public/[a-zA-Z0-9]+/?', url):
             raise forms.ValidationError("Nieprawidłowy link do kalendarza. URL powinien zawierać /public/TOKEN/")
         return url
+
+
+class NotificationSettingsForm(forms.ModelForm):
+    class Meta:
+        model = UserNotificationSettings
+        fields = [
+            'booking_created_notifications',
+            'booking_cancelled_notifications', 
+            'own_booking_confirmations'
+        ]
+        widgets = {
+            'booking_created_notifications': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'booking_cancelled_notifications': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'own_booking_confirmations': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
