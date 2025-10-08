@@ -28,7 +28,7 @@ h4 { font-size: 18px; }
 h5 { font-size: 16px; }
 h6 { font-size: 14px; }
 p { margin: 0 0 16px 0; }
-a { color: #21808d; text-decoration: none; transition: color 150ms ease; }
+a { color: #15acc0; text-decoration: none; transition: color 150ms ease; }
 a:hover { color: #1d7480; }
 
 .container-custom {
@@ -43,7 +43,7 @@ a:hover { color: #1d7480; }
     overflow-x: auto;
     background: linear-gradient(135deg, #3156fc 0%, #3ae6d1 100%);
     color: white;
-    padding: 20px 20px 20px 20px !important;
+    padding: 5px 20px 5px 20px !important;
     font-size: 16px !important;
     box-shadow: 0px 5px 5px 0px white;
     margin-bottom: 8px;
@@ -156,26 +156,28 @@ nav a {
 }
 
 .menu {
+  font-weight: bold;
   list-style: none;       /* usuwa kropki */
   margin: 0;
   padding: 0;
-  display: flex;          /* ustawia elementy w poziomie */
-  gap: 20px;              /* odstępy między elementami */
+  gap: 5px;              /* odstępy między elementami */
 }
 
 .menu li {
-  display: inline-block;  /* każdy element w jednej linii */
+  display: inline-flex;  /* każdy element w jednej linii */
+  margin: 0;
+  padding: 0;
 }
-
+s
 .menu a {
   text-decoration: none;  /* usuwa podkreślenie */
   color: #f7f7f7;
   font-weight: 500;
-  transition: color 0.3s;
+  transition: color 0.7s;
 }
 
 .menu a:hover {
-  color: #28116617; /* efekt hover */
+  color: #4d0f00; /* efekt hover */
 }
 s {
   all: unset;
@@ -188,7 +190,8 @@ s {
   flex-direction: column;
   cursor: pointer;
   padding: 15px;
-  background: #ff000000
+  background: #ff00002a;
+  text-align: center;
 }
 .hamburger span {
   height: 3px;
@@ -258,9 +261,6 @@ s {
 }
 
 
-ul {
-     text-align: left !important;
-}
 
 /* Dodatkowe style dla formularzy */
 .form-control-lg {
@@ -407,3 +407,19 @@ ul {
         margin: 0;
     }
 }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; line-height: 1.5; cursor: pointer; transition: all 250ms ease; border: none; text-decoration: none; position: relative; }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.4); }
+.btn--primary { background: #1f3bdb; color: #fcfcf9; }
+.btn--primary:hover { background: #1cd469; }
+.btn--primary:active { background: #129256; }
+.btn--secondary { background: rgba(94, 82, 64, 0.12); color: #13343b; }
+.btn--secondary:hover { background: rgba(94, 82, 64, 0.2); }
+.btn--secondary:active { background: rgba(94, 82, 64, 0.25); }
+.btn--outline { background: transparent; border: 1px solid rgba(94, 82, 64, 0.2); color: #13343b; }
+.btn--outline:hover { background: rgba(94, 82, 64, 0.12); }
+.btn--sm { padding: 4px 12px; font-size: 12px; border-radius: 6px; }
+.btn--lg { padding: 10px 20px; font-size: 16px; border-radius: 10px; }
+.btn--full-width { width: 100%; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }

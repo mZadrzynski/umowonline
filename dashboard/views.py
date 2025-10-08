@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-
+from docx import Document
 from django.conf import settings
 from .forms import ContactForm, ContactFormPhone
+import mammoth
 
 
 
@@ -37,6 +38,11 @@ def contact(request):
         'form_phone': form_phone,
     })
 
+def docx_to_html(path):
+    with open(path, "rb") as docx_file:
+        result = mammoth.convert_to_html(docx_file)
+        html = result.value  # uzyskane html
+    return html
 
 def help(request):
     return render(request, 'dashboard/help.html')
@@ -48,4 +54,6 @@ def offert(request):
     return render(request, 'dashboard/offert.html')
 
 def privacy_policy(request):
-    return render(request, 'dashboard/legal/privacy_policy.html')
+    path = 'dashboard/rules/privacy_policy.docx'
+    html = docx_to_html(path)
+    return render(request, 'dashboard/legal/privacy_policy.html', {'html': html})

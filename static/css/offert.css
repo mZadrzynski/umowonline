@@ -1,32 +1,4 @@
 
-/* Body i podstawy */
-body { 
-  margin: 0; 
-  padding: 80px 0 0 0; /* Fix dla headera zasłaniającego treść */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #fcfcf9; 
-  color: #13343b; 
-}
-
-
-
-
-/* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; line-height: 1.5; cursor: pointer; transition: all 250ms ease; border: none; text-decoration: none; position: relative; }
-.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.4); }
-.btn--primary { background: #21808d; color: #fcfcf9; }
-.btn--primary:hover { background: #1d7480; }
-.btn--primary:active { background: #1a6873; }
-.btn--secondary { background: rgba(94, 82, 64, 0.12); color: #13343b; }
-.btn--secondary:hover { background: rgba(94, 82, 64, 0.2); }
-.btn--secondary:active { background: rgba(94, 82, 64, 0.25); }
-.btn--outline { background: transparent; border: 1px solid rgba(94, 82, 64, 0.2); color: #13343b; }
-.btn--outline:hover { background: rgba(94, 82, 64, 0.12); }
-.btn--sm { padding: 4px 12px; font-size: 12px; border-radius: 6px; }
-.btn--lg { padding: 10px 20px; font-size: 16px; border-radius: 10px; }
-.btn--full-width { width: 100%; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
 /* Form elements */
 .form-control { display: block; width: 100%; padding: 8px 12px; font-size: 14px; line-height: 1.5; color: #13343b; background-color: #fffffd; border: 1px solid rgba(94, 82, 64, 0.2); border-radius: 8px; transition: border-color 150ms ease, box-shadow 150ms ease; }
 .form-control:focus { border-color: #21808d; outline: 2px solid #21808d; }
@@ -79,7 +51,7 @@ body {
 .hero { background: rgba(59, 130, 246, 0.08); padding: 32px 0; text-align: center; }
 .hero__content { max-width: 800px; margin: 0 auto; }
 .hero__title { font-size: 30px; font-weight: 600; margin-bottom: 16px; line-height: 1.2; }
-.hero__title--highlight { color: #21808d; }
+.hero__title--highlight { color: #051b7e; }
 .hero__subtitle { font-size: 18px; color: #626c71; margin-bottom: 32px; }
 .hero__offer { background-color: #fffffd; border: 1px solid rgba(94, 82, 64, 0.12); border-radius: 12px; padding: 24px; margin-bottom: 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02); }
 
