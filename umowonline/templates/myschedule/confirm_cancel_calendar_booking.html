@@ -1,4 +1,5 @@
-{% block title %}Anuluj wizytę{% endblock %}
+{% extends "myschedule/calendar_sidemenu.html" %}
+{% block title %}Anuluj wizytę klienta{% endblock %}
 {% block content %}
 
 <div class="container">
@@ -8,7 +9,7 @@
                 <div class="card-header bg-warning text-dark">
                     <h4 class="mb-0">
                         <i class="fas fa-exclamation-triangle"></i>
-                        Potwierdź anulowanie wizyty
+                        Potwierdź anulowanie wizyty klienta
                     </h4>
                 </div>
                 <div class="card-body">
@@ -18,13 +19,19 @@
                         <p class="mb-1"><strong>Usługa:</strong> {{ booking.service_type.name }}</p>
                         <p class="mb-1"><strong>Data:</strong> {{ booking.availability.date|date:"d.m.Y" }}</p>
                         <p class="mb-1"><strong>Godzina:</strong> {{ booking.start_datetime|time:"H:i" }}</p>
-                        <p class="mb-1"><strong>Właściciel kalendarza:</strong> {{ booking.availability.calendar.user.username }}</p>
+                        <p class="mb-1"><strong>Klient:</strong> {{ booking.user.username }}</p>
+                        {% if booking.client_phone %}
+                        <p class="mb-1"><strong>Telefon:</strong> {{ booking.client_phone }}</p>
+                        {% endif %}
+                        {% if booking.client_note %}
+                        <p class="mb-1"><strong>Notatka:</strong> {{ booking.client_note }}</p>
+                        {% endif %}
                         <p class="mb-0"><strong>Zarezerwowano:</strong> {{ booking.booked_at|date:"d.m.Y H:i" }}</p>
                     </div>
                     
                     <div class="alert alert-warning">
                         <i class="fas fa-info-circle"></i>
-                        <strong>Uwaga:</strong> Anulowanie wizyty spowoduje wysłanie powiadomienia email do właściciela kalendarza.
+                        <strong>Uwaga:</strong> Anulowanie wizyty spowoduje wysłanie powiadomienia email do klienta.
                     </div>
                     
                     <form method="post">
@@ -45,4 +52,3 @@
 </div>
 
 {% endblock %}
-
