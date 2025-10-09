@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Instrukcja Obsługi - umowzdalnie.pl{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1>📖 Instrukcja Obsługi umowzdalnie.pl</h1>
+                </div>
+                <div class="card-body">
+                    {{ html|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

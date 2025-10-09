@@ -278,23 +278,40 @@ def subscription_status(request):
 
 @login_required
 def notification_settings(request):
-    """Widok zarządzania ustawieniami powiadomień"""
+    """Widok zarządzania ustawieniami powiadomień i statusu konta"""
     
-    # Pobierz lub stwórz ustawienia powiadomień dla użytkownika
+    # Pobierz lub stwórz ustawienia powiadomień
     settings, created = UserNotificationSettings.objects.get_or_create(
         user=request.user
     )
+    
+    # Pobierz informacje o subskrypcji
+    try:
+        subscription = request.user.subscription
+    except Subscription.DoesNotExist:
+        subscription = None
+    
+    # Oblicz dni pozostałe
+    days_left = 0
+    is_trial = False
+    if subscription and subscription.is_active():
+        days_left = (subscription.end_date.date() - timezone.now().date()).days
+        # Sprawdź czy to okres testowy (czy subskrypcja ma mniej niż 30 dni i nie ma płatności)
+        is_trial = subscription.payments.filter(status='completed').count() == 0
     
     if request.method == 'POST':
         form = NotificationSettingsForm(request.POST, instance=settings)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Ustawienia powiadomień zostały zaktualizowane.')
+            messages.success(request, 'Ustawienia zostały zaktualizowane.')
             return redirect('notification_settings')
     else:
         form = NotificationSettingsForm(instance=settings)
     
     return render(request, 'account/notification_settings.html', {
         'form': form,
-        'settings': settings
+        'settings': settings,
+        'subscription': subscription,
+        'days_left': days_left,
+        'is_trial': is_trial
     })

@@ -1,86 +1,124 @@
 {% extends 'base.html' %}
-
-{% block title %}Ustawienia Powiadomień{% endblock %}
-
+{% block title %}Ustawienia Konta{% endblock %}
 {% block content %}
+
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <!-- Status Subskrypcji -->
+    <div class="row mb-4">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h4><i class="fas fa-bell"></i> Ustawienia Powiadomień Email</h4>
-                    <p class="mb-0 text-muted">Zarządzaj powiadomieniami o wizytach</p>
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">📊 Status Konta</h4>
+                </div>
+                <div class="card-body">
+                    {% if subscription %}
+                        {% if subscription.is_active %}
+                            <div class="alert alert-success">
+                                <h5>✅ Konto aktywne</h5>
+                                {% if is_trial %}
+                                    <p><strong>Typ konta:</strong> 30-dniowy okres testowy</p>
+                                    <p><strong>Pozostało dni:</strong> {{ days_left }}</p>
+                                    <p class="text-warning">⚠️ Po zakończeniu okresu testowego konto zostanie zdezaktywowane</p>
+                                {% else %}
+                                    <p><strong>Typ konta:</strong> Premium (płatne)</p>
+                                    <p><strong>Pozostało dni:</strong> {{ days_left }}</p>
+                                {% endif %}
+                                <p><strong>Aktywne do:</strong> {{ subscription.end_date|date:"d.m.Y H:i" }}</p>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger">
+                                <h5>❌ Subskrypcja wygasła</h5>
+                                <p>Twoja subskrypcja wygasła: {{ subscription.end_date|date:"d.m.Y" }}</p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <h5>⚠️ Brak subskrypcji</h5>
+                            <p>Nie masz aktywnej subskrypcji</p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Przyciski akcji -->
+                    <div class="mt-3">
+                        {% if not subscription or not subscription.is_active %}
+                            <a href="{% url 'create_payment' %}" class="btn btn-primary">
+                                💳 Aktywuj Premium (20 PLN / 30 dni)
+                            </a>
+                        {% else %}
+                            <a href="{% url 'create_payment' %}" class="btn btn-success">
+                                ➕ Przedłuż o 30 dni (20 PLN)
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Info o płatnościach -->
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            💡 <strong>Informacja:</strong> Każda płatność przedłuża subskrypcję o 30 dni od daty wygaśnięcia.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ustawienia Powiadomień -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">🔔 Ustawienia Powiadomień Email</h4>
+                    <small>Zarządzaj powiadomieniami o wizytach</small>
                 </div>
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
                         
                         <div class="form-group mb-4">
-                            <h5 class="text-primary">
-                                <i class="fas fa-calendar-plus"></i> Nowe wizyty
-                            </h5>
-                            <div class="form-check">
+                            <h5>📅 Nowe wizyty</h5>
+                            <div class="custom-control custom-switch">
                                 {{ form.booking_created_notifications }}
-                                <label class="form-check-label" for="{{ form.booking_created_notifications.id_for_label }}">
+                                <label class="custom-control-label" for="{{ form.booking_created_notifications.id_for_label }}">
                                     <strong>{{ form.booking_created_notifications.label }}</strong>
                                 </label>
-                                <small class="form-text text-muted d-block">
-                                    {{ form.booking_created_notifications.help_text }}
-                                </small>
                             </div>
+                            <small class="text-muted">{{ form.booking_created_notifications.help_text }}</small>
                         </div>
                         
                         <div class="form-group mb-4">
-                            <h5 class="text-danger">
-                                <i class="fas fa-calendar-times"></i> Anulowane wizyty
-                            </h5>
-                            <div class="form-check">
+                            <h5>❌ Anulowane wizyty</h5>
+                            <div class="custom-control custom-switch">
                                 {{ form.booking_cancelled_notifications }}
-                                <label class="form-check-label" for="{{ form.booking_cancelled_notifications.id_for_label }}">
+                                <label class="custom-control-label" for="{{ form.booking_cancelled_notifications.id_for_label }}">
                                     <strong>{{ form.booking_cancelled_notifications.label }}</strong>
                                 </label>
-                                <small class="form-text text-muted d-block">
-                                    {{ form.booking_cancelled_notifications.help_text }}
-                                </small>
                             </div>
+                            <small class="text-muted">{{ form.booking_cancelled_notifications.help_text }}</small>
                         </div>
                         
                         <div class="form-group mb-4">
-                            <h5 class="text-success">
-                                <i class="fas fa-check-circle"></i> Potwierdzenia
-                            </h5>
-                            <div class="form-check">
+                            <h5>✅ Potwierdzenia</h5>
+                            <div class="custom-control custom-switch">
                                 {{ form.own_booking_confirmations }}
-                                <label class="form-check-label" for="{{ form.own_booking_confirmations.id_for_label }}">
+                                <label class="custom-control-label" for="{{ form.own_booking_confirmations.id_for_label }}">
                                     <strong>{{ form.own_booking_confirmations.label }}</strong>
                                 </label>
-                                <small class="form-text text-muted d-block">
-                                    {{ form.own_booking_confirmations.help_text }}
-                                </small>
                             </div>
+                            <small class="text-muted">{{ form.own_booking_confirmations.help_text }}</small>
                         </div>
                         
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save"></i> Zapisz ustawienia
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Zapisz ustawienia</button>
                     </form>
-                </div>
-            </div>
-            
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        <i class="fas fa-info-circle"></i> Informacja
-                    </h6>
-                    <p class="small text-muted mb-0">
-                        Powiadomienia są wysyłane na adres email przypisany do Twojego konta. 
-                        Możesz je w każdej chwili włączyć lub wyłączyć.
-                    </p>
+                    
+                    <div class="alert alert-info mt-4">
+                        <h6>ℹ️ Informacja</h6>
+                        <p class="mb-0">Powiadomienia są wysyłane na adres email przypisany do Twojego konta. 
+                        Możesz je w każdej chwili włączyć lub wyłączyć.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
