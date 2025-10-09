@@ -395,16 +395,20 @@ def my_calendar_week(request):
 
         # Pobierz wszystkie Bookingi przypisane do tych Availability
         bookings = Booking.objects.filter(
-            availability__in=availabilities
-        ).select_related('service_type')
+            availability__in=availabilities,
+            status='active'  # Tylko aktywne rezerwacje
+        ).select_related('service_type', 'user')
+
 
         # Przygotuj strukturę mapującą Availability na zajęte sloty z Booking
         bookings_by_availability = {}
         for booking in bookings:
-            slots = bookings_by_availability.setdefault(booking.availability_id, [])
-            start = booking.start_datetime.time()
-            end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
-            slots.append((start, end))
+            booking_list = bookings_by_availability.setdefault(booking.availability_id, [])
+            # Oblicz czas zakończenia
+            start = booking.start_datetime
+            duration = booking.service_type.duration_minutes
+            booking.end_datetime = start + timedelta(minutes=duration)
+            booking_list.append(booking)
 
         # Przydziel Availability z informacją o zajętych slotach do dni
         availabilities_by_day = {day: [] for day in week_days}
@@ -413,8 +417,10 @@ def my_calendar_week(request):
             busy_slots = bookings_by_availability.get(availability.id, [])
             info = {
                 "availability": availability,
-                "busy_slots": busy_slots  # lista tuple (start, end) zajętych godzin
+                "busy_slots": busy_slots,
+                "bookings": bookings_by_availability.get(availability.id, [])  # DODAJ to
             }
+
             if availability.date in availabilities_by_day:
                 availabilities_by_day[availability.date].append(info)
 

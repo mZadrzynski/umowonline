@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{site_name}} - Anulowanie Wizyty</title>
+</head>
+<body style="font-family: Arial, sans-serif;">
+<div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #dc3545;">{{site_name}} - Twoja wizyta została anulowana</h2>
+    <h3>Cześć {{recipient.first_name}}!</h3>
+    <p>Informujemy, że Twoja wizyta została anulowana:</p>
+    
+    <h4>📅 Szczegóły anulowanej wizyty:</h4>
+    <p><strong>Usługa:</strong> {{booking.service_type.name}}</p>
+    <p><strong>Data i godzina:</strong> {{booking.start_datetime|date:"d.m.Y"}} o {{booking.start_datetime|time:"H:i"}}</p>
+    <p><strong>U:</strong> {{booking.provider.first_name}} {{booking.provider.last_name}}</p>
+    
+    <p>Możesz umówić nową wizytę logując się na stronie <strong>{{site_name}}</strong>.</p>
+</div>
+</body>
+</html>

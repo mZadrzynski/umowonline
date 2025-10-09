@@ -5,14 +5,14 @@
 <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 
 <div class="calendar-container">
-    <div class="calendar-header">
+    <div">
         <h2>Kalendarz tygodniowy użytkownika {{ request.user.username }}</h2>
         <div class="month-nav">
-            <a href="?week={{ week_offset|add:-1 }}" class="nav-btn">
+            <a href="?week={{ week_offset|add:-1 }}" class="btn">
                 « Poprzedni tydzień
             </a>
             <span>{{ selected_week|date:"d.m.Y" }}</span>
-            <a href="?week={{ week_offset|add:1 }}" class="nav-btn">
+            <a href="?week={{ week_offset|add:1 }}" class="btn">
                 Następny tydzień »
             </a>
         </div>
