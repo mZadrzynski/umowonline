@@ -141,18 +141,83 @@ def add_service(request):
 
 @login_required
 def my_bookings(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('booked_at')
-
-    for booking in bookings:
+    """Widok dla rezerwacji użytkownika - podzielony na dwie sekcje"""
+    
+    # Rezerwacje które użytkownik zrobił (rezerwacje u innych)
+    my_bookings = Booking.objects.filter(
+        user=request.user,
+        status='active'
+    ).select_related('availability__calendar__user', 'service_type').order_by('-booked_at')
+    
+    # Rezerwacje w kalendarzu użytkownika (rezerwacje innych u niego)
+    calendar_bookings = []
+    if hasattr(request.user, 'calendar'):
+        calendar_bookings = Booking.objects.filter(
+            availability__calendar=request.user.calendar,
+            status='active'
+        ).select_related('user', 'service_type').order_by('-booked_at')
+    
+    # Oblicz czasy zakończenia dla wszystkich rezerwacji
+    for booking in my_bookings:
         start = booking.availability.start_time
         dummy_date = datetime(2000, 1, 1, start.hour, start.minute)
-        duration = booking.service_type.duration_minutes  # zakładamy, że Booking ma pole service_type
-
+        duration = booking.service_type.duration_minutes
         end_time = (dummy_date + timedelta(minutes=duration)).time()
-        booking.end_time = end_time  # dynamiczne dodanie pola do obiektu
+        booking.end_time = end_time
+    
+    for booking in calendar_bookings:
+        start = booking.start_datetime
+        duration = booking.service_type.duration_minutes
+        booking.end_datetime = start + timedelta(minutes=duration)
+    
+    return render(request, "myschedule/my_bookings.html", {
+        "my_bookings": my_bookings,  # Rezerwacje które użytkownik zrobił
+        "calendar_bookings": calendar_bookings,  # Rezerwacje w kalendarzu użytkownika
+    })
 
-    return render(request, "myschedule/my_bookings.html", {"bookings": bookings})
+@login_required
+def cancel_booking(request, booking_id):
+    """Anulowanie rezerwacji przez użytkownika"""
+    from account.signals import cancel_booking_with_notifications
+    
+    booking = get_object_or_404(
+        Booking, 
+        id=booking_id,
+        user=request.user,
+        status='active'
+    )
+    
+    if request.method == 'POST':
+        # Użyj funkcji z signals która wyśle powiadomienia
+        cancel_booking_with_notifications(booking)
+        messages.success(request, f'Wizyta {booking.service_type.name} została anulowana.')
+        return redirect('my_bookings')
+    
+    return render(request, 'myschedule/confirm_cancel_booking.html', {
+        'booking': booking
+    })
 
+@login_required
+def cancel_calendar_booking(request, booking_id):
+    """Anulowanie rezerwacji w kalendarzu właściciela"""
+    from account.signals import cancel_booking_with_notifications
+    
+    # Sprawdź czy użytkownik jest właścicielem kalendarza
+    booking = get_object_or_404(
+        Booking, 
+        id=booking_id,
+        availability__calendar=request.user.calendar,
+        status='active'
+    )
+    
+    if request.method == 'POST':
+        cancel_booking_with_notifications(booking)
+        messages.success(request, f'Wizyta {booking.service_type.name} została anulowana.')
+        return redirect('my_bookings')
+    
+    return render(request, 'myschedule/confirm_cancel_calendar_booking.html', {
+        'booking': booking
+    })
 
 @login_required
 def book_availability(request, availability_id):
@@ -164,7 +229,7 @@ def book_availability(request, availability_id):
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
     
     if request.method == "POST":
-        form = BookingForm(user=request.user, availability=availability)
+        form = BookingForm(request.POST, user=request.user, availability=availability) 
         form.fields['service_type'].queryset = service_types
         
         if form.is_valid():
@@ -397,24 +462,3 @@ def calendar_bookings(request):
         "bookings": bookings
     })
 
-@login_required
-def delete_booking(request, booking_id):
-    """Anulowanie booking z powiadomieniami emailowymi"""
-    from account.signals import cancel_booking_with_notifications
-    
-    booking = get_object_or_404(
-        Booking, 
-        id=booking_id, 
-        user=request.user,
-        status='active'  # Tylko aktywne booking można anulować
-    )
-    
-    if request.method == 'POST':
-        # Użyj funkcji z signals która wyśle powiadomienia
-        cancel_booking_with_notifications(booking)
-        messages.success(request, f'Wizyta {booking.service_type.name} została anulowana.')
-        return redirect('my_bookings')
-    
-    return render(request, 'myschedule/confirm_cancel_booking.html', {
-        'booking': booking
-    })

@@ -1,23 +1,148 @@
 {% extends "myschedule/calendar_sidemenu.html" %}
-
 {% block title %}Moje rezerwacje{% endblock %}
-
 {% block content %}
-<h2>Twoje rezerwacje</h2>
 
-{% if bookings %}
-  <ul>
-    {% for booking in bookings %}
-      <li>
-        Data: {{ booking.availability.date }}<br>
-        Godzina: {{ booking.availability.start_time|time:"H:i" }} - {{ booking.availability.end_time|time:"H:i" }}
-        Usługa: {{ booking.service_type.name }}<br>
-        Dodano: {{ booking.booked_at|date:"Y-m-d H:i" }}
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>Nie masz jeszcze żadnych rezerwacji.</p>
-{% endif %}
+<div class="container-fluid">
+    <h2>Moje rezerwacje</h2>
+    
+    <!-- Sekcja 1: Rezerwacje które zrobiłem -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-check"></i>
+                        Rezerwacje które zrobiłem
+                    </h4>
+                    <small>Wizyty umówione u innych</small>
+                </div>
+                <div class="card-body">
+                    {% if my_bookings %}
+                        <div class="list-group">
+                            {% for booking in my_bookings %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            <strong>{{ booking.service_type.name }}</strong>
+                                        </h6>
+                                        <p class="mb-1">
+                                            <i class="fas fa-calendar"></i> 
+                                            {{ booking.availability.date|date:"d.m.Y" }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <i class="fas fa-clock"></i> 
+                                            {{ booking.start_datetime|time:"H:i" }} - {{ booking.end_datetime|time:"H:i" }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <i class="fas fa-user"></i> 
+                                            u: {{ booking.availability.calendar.user.username }}
+                                        </p>
+                                        <small class="text-muted">
+                                            Zarezerwowano: {{ booking.booked_at|date:"d.m.Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <div class="btn-group-vertical">
+                                        <a href="{% url 'cancel_booking' booking.id %}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Czy na pewno chcesz anulować tę wizytę?')">
+                                            <i class="fas fa-times"></i> Anuluj
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <p>Nie masz jeszcze żadnych zarezerwowanych wizyt.</p>
+                            <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                                Znajdź kalendarze do rezerwacji
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sekcja 2: Rezerwacje w moim kalendarzu -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-users"></i>
+                        Rezerwacje w moim kalendarzu
+                    </h4>
+                    <small>Wizyty umówione u mnie</small>
+                </div>
+                <div class="card-body">
+                    {% if calendar_bookings %}
+                        <div class="list-group">
+                            {% for booking in calendar_bookings %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            <strong>{{ booking.service_type.name }}</strong>
+                                        </h6>
+                                        <p class="mb-1">
+                                            <i class="fas fa-calendar"></i> 
+                                            {{ booking.availability.date|date:"d.m.Y" }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <i class="fas fa-clock"></i> 
+                                            {{ booking.start_datetime|time:"H:i" }} - {{ booking.end_datetime|time:"H:i" }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <i class="fas fa-user"></i> 
+                                            Klient: {{ booking.user.username }}
+                                        </p>
+                                        {% if booking.client_phone %}
+                                        <p class="mb-1">
+                                            <i class="fas fa-phone"></i> 
+                                            {{ booking.client_phone }}
+                                        </p>
+                                        {% endif %}
+                                        {% if booking.client_note %}
+                                        <p class="mb-1">
+                                            <i class="fas fa-sticky-note"></i> 
+                                            {{ booking.client_note }}
+                                        </p>
+                                        {% endif %}
+                                        <small class="text-muted">
+                                            Zarezerwowano: {{ booking.booked_at|date:"d.m.Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <div class="btn-group-vertical">
+                                        <a href="{% url 'cancel_calendar_booking' booking.id %}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Czy na pewno chcesz anulować tę wizytę?')">
+                                            <i class="fas fa-times"></i> Anuluj
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            {% if not request.user.calendar %}
+                                <i class="fas fa-calendar-plus fa-3x mb-3"></i>
+                                <p>Nie masz jeszcze kalendarza.</p>
+                                <a href="{% url 'subscription_expired' %}" class="btn btn-success">
+                                    Utwórz kalendarz
+                                </a>
+                            {% else %}
+                                <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                <p>Brak wizyt zarezerwowanych w Twoim kalendarzu.</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

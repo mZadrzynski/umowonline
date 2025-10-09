@@ -150,6 +150,7 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 /* schedule service Section*/
 .schedule_service {text-align: left;}
 .schedule_service {margin: 0px 0px 0px 100px; /* góra, prawo, dół, lewo */}
+.schedule_service {margin: 0px 0px 0px 100px; /* góra, prawo, dół, lewo */}
 
 /* Responsive Design */
 @media (max-width: 768px) {
