@@ -439,26 +439,3 @@ def subscription_expired(request):
     }
     return render(request, "dashboard/subscription_expired.html", context)
 
-@login_required
-def calendar_bookings(request):
-    """Widok dla właściciela kalendarza - wszystkie rezerwacje"""
-    if not hasattr(request.user, "calendar"):
-            return render(request, "dashboard/no_calendar.html")
-    
-    # Pobierz wszystkie rezerwacje dla kalendarza użytkownika
-    bookings = Booking.objects.filter(
-        availability__calendar=request.user.calendar
-    ).select_related(
-        'user', 'service_type', 'availability'
-    ).order_by('-booked_at')
-    
-    # Dodaj informacje o czasie zakończenia wizyty
-    for booking in bookings:
-        start = booking.start_datetime
-        duration = booking.service_type.duration_minutes
-        booking.end_datetime = start + timedelta(minutes=duration)
-    
-    return render(request, "myschedule/calendar_bookings.html", {
-        "bookings": bookings
-    })
-
