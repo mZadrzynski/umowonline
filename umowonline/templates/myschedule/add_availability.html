@@ -8,7 +8,7 @@
   <h1>Dodaj dostępność</h1>
   
   <div class="tabs">
-    <button class="btn btn--primary tab-button active" id="single-tab" onclick="showForm('single', this)">Pojedyncza dostępność</button>
+    <button class="btn btn--secondary tab-button active" id="single-tab" onclick="showForm('single', this)">Pojedyncza dostępność</button>
     <button class="btn btn--secondary tab-button" id="bulk-tab" onclick="showForm('bulk', this)">Dodaj hurtowo</button>
   </div>
 
@@ -18,7 +18,7 @@
     <form method="post">
       {% csrf_token %}
       {{ single_form.as_p }}
-      <button type="submit" name="submit_single">Dodaj pojedynczą</button>
+      <button class="btn btn--primary" type="submit" name="submit_single">Dodaj pojedynczą</button>
     </form>
   </div>
 
@@ -28,7 +28,7 @@
     <form method="post">
       {% csrf_token %}
       {{ bulk_form.as_p }}
-      <button type="submit" name="submit_bulk">Dodaj hurtowo</button>
+      <button class="btn btn--primary" name="submit_bulk">Dodaj hurtowo</button>
     </form>
   </div>
 </section>
@@ -47,11 +47,5 @@
     }
   </script>
 
-  <style>
-    .tabs { margin-bottom: 20px; }
-    .tab-button { padding: 10px 20px; margin-right: 5px; cursor: pointer; }
-    .tab-button.active { background-color: #007cba; color: white; }
-    .form-container { padding: 20px; border: 1px solid #ddd; }
-  </style>
 {% endblock %}
 

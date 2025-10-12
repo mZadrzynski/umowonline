@@ -12,7 +12,7 @@
 </head>
 <body>
   <h2>{{ month_name }} {{ year }}</h2>
-  <div class="nav">
+  <div class="month-nav">
     <a href="?month={{ month_offset|add:'-1' }}">&laquo; Poprzedni miesiąc</a>
     <a href="?month={{ month_offset|add:'1' }}">Następny miesiąc &raquo;</a>
   </div>
@@ -33,26 +33,26 @@
       <td class="{% if day.month == start_of_month.month %}current-month{% else %}other-month{% endif %}">
         <div class="cell-content">
           <div class="day-number">
-            <a href="{% url 'my_calendar_week' %}?week={{ offset }}">
-              {{ day.day }}
-            </a>
-            
+            <a href="{% url 'my_calendar_week' %}?week={{ offset }}" class="btn--month">
+              <h7>{{ day.day }}</h7>
+              </a><br>
             {% with visit_count=visits_by_day|get_item:day %}
               {% if visit_count %}
                 ilosc wizyt:
-                <span class="badge bg-info ms-2" title="Liczba wizyt tego dnia">{{ visit_count }}</span>
+                {{ visit_count }}
               {% endif %}
             {% endwith %}
 
           </div>
-
           {% with day_avs=av_by_day|get_item:day %}
             {% if day_avs %}
-              <p>dostepnosc:</p>
+              
               <ul class="list-unstyled availability-summary mb-0">
                 {% for info in day_avs|slice:":2" %}
                 <li>
+                  dostepnosc:<br>
                   <span class="badge bg-success me-1">
+                    
                     {{ info.availability.start_time|time:"H:i" }}–{{ info.availability.end_time|time:"H:i" }}
                   </span>
                 </li>

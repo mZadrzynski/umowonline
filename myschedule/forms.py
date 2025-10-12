@@ -125,6 +125,11 @@ class ServiceTypeForm(forms.ModelForm):
     class Meta:
         model = ServiceType
         fields = ['name', 'duration_minutes', 'description']
+        labels = {
+            'name': 'Nazwa',
+            'duration_minutes': 'Czas trwania uslugi (minuty)',
+            'description': 'Opis uslugi',
+        }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'duration_minutes': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -144,8 +149,11 @@ class SingleAvailabilityForm(forms.ModelForm):
     class Meta:
         model = Availability
         fields = ['date', 'start_time', 'end_time']
+        labels = {
+            'date': 'Data',
+        }
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'date': forms.DateInput(attrs={'type': 'date'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -193,14 +201,20 @@ class SingleAvailabilityForm(forms.ModelForm):
         return cleaned_data
 
 class BulkAvailabilityForm(forms.Form):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label="Data rozpoczęcia"
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label="Data zakończenia"
+    )
     start_time = forms.ChoiceField(choices=generate_time_choices(), label="Godzina rozpoczęcia")
     end_time = forms.ChoiceField(choices=generate_time_choices(), label="Godzina zakończenia")
     weekdays = forms.MultipleChoiceField(
-        choices=WEEKDAY_CHOICES,  # Musisz mieć to zdefiniowane
+        choices=WEEKDAY_CHOICES,
         widget=forms.CheckboxSelectMultiple,
-        help_text="Wybierz dni tygodnia"
+        label="Wybierz dni tygodnia"
     )
 
     

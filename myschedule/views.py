@@ -355,14 +355,21 @@ def my_calendar(request):
     for b in bookings:
         booking_date = b.availability.date
         visits_by_day[booking_date] = visits_by_day.get(booking_date, 0) + 1
-    
+
+    POLISH_MONTHS = [
+    "",  # placeholder for 0-indexing
+    "styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec",
+    "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"
+    ]
+
+
     return render(request, "myschedule/calendar.html", {
         "weeks_with_offset": weeks_with_offset,
         "start_of_month": start_of_month,
         "month_offset": month_offset,
         "public_calendar_url": public_url,
         "av_by_day": av_by_day,
-        "month_name": calendar.month_name[month],
+        "month_name": POLISH_MONTHS[month],
         "year": year,
         "visits_by_day": visits_by_day, 
     })

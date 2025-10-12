@@ -8,11 +8,11 @@
     <div">
         <h2>Kalendarz tygodniowy użytkownika {{ request.user.username }}</h2>
         <div class="month-nav">
-            <a href="?week={{ week_offset|add:-1 }}" class="btn">
+            <a href="?week={{ week_offset|add:-1 }}">
                 « Poprzedni tydzień
             </a>
             <span>{{ selected_week|date:"d.m.Y" }}</span>
-            <a href="?week={{ week_offset|add:1 }}" class="btn">
+            <a href="?week={{ week_offset|add:1 }}">
                 Następny tydzień »
             </a>
         </div>
@@ -92,7 +92,7 @@
                                     </div>
                                 {% endif %}
 
-                                <!-- Przycisk rezerwacji -->
+                                <!-- Przycisk rezerwacji
                                 <div class="booking-actions">
                                     <a href="{% url 'book_availability' info.availability.id %}" 
                                        class="book-link {% if info.bookings %}partial{% else %}available{% endif %}">
@@ -102,7 +102,7 @@
                                             ✅ Zarezerwuj
                                         {% endif %}
                                     </a>
-                                </div>
+                                </div> -->
                             </div>
                             {% endfor %}
                         {% else %}
@@ -138,7 +138,7 @@
 
             <div style="flex: 1;">
                 <h4>Twoja dostępność w tym tygodniu:</h4>
-                <ul>
+                <ul class="ul_week">
                     {% for day, availabilities in availabilities_by_day_items %}
                         {% for info in availabilities %}
                         <li style="margin-bottom: 8px;">
