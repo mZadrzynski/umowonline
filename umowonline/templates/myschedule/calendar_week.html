@@ -92,17 +92,13 @@
                                     </div>
                                 {% endif %}
 
-                                <!-- Przycisk rezerwacji
+                                Przycisk rezerwacji
                                 <div class="booking-actions">
                                     <a href="{% url 'book_availability' info.availability.id %}" 
-                                       class="book-link {% if info.bookings %}partial{% else %}available{% endif %}">
-                                        {% if info.bookings %}
-                                            📅 Zarezerwuj pozostały czas
-                                        {% else %}
-                                            ✅ Zarezerwuj
-                                        {% endif %}
+                                       class="book-link available">
+                                        📅 Dodaj wizyte
                                     </a>
-                                </div> -->
+                                </div> 
                             </div>
                             {% endfor %}
                         {% else %}
