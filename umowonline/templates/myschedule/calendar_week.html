@@ -92,13 +92,28 @@
                                     </div>
                                 {% endif %}
 
-                                Przycisk rezerwacji
+                               <!-- Przycisk rezerwacji -->
                                 <div class="booking-actions">
-                                    <a href="{% url 'book_availability' info.availability.id %}" 
-                                       class="book-link available">
-                                        📅 Dodaj wizyte
-                                    </a>
-                                </div> 
+                                    {% if request.user.calendar == info.availability.calendar %}
+                                        <!-- Właściciel kalendarza -->
+                                        <a href="{% url 'book_availability' info.availability.id %}" 
+                                        class="book-link owner" style="background-color: #28a745; color: white;">
+                                            👤 Dodaj wizytę klienta
+                                        </a>
+                                    {% else %}
+                                        <!-- Zwykły użytkownik -->
+                                        {% if info.availability.date > today or info.availability.date == today and info.availability.start_time >= now_time %}
+                                            <a href="{% url 'book_availability' info.availability.id %}" 
+                                            class="book-link available">
+                                                📅 Zarezerwuj wizytę
+                                            </a>
+                                        {% else %}
+                                            <span class="book-link past" style="background-color: #6c757d; color: #fff; cursor: not-allowed;">
+                                                ⏰ Termin minął
+                                            </span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
                             </div>
                             {% endfor %}
                         {% else %}

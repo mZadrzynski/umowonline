@@ -2,6 +2,7 @@ from django import forms
 from .models import Availability, ServiceType, Booking
 from django.core.exceptions import ValidationError
 from datetime import time, timedelta, datetime
+from django.contrib.auth.models import User
 
 def generate_time_choices():
     """Generuje wybory czasu co 15 minut z zabezpieczeniem przed błędami"""
@@ -227,3 +228,31 @@ class BulkAvailabilityForm(forms.Form):
             raise ValidationError("Czas rozpoczęcia musi być wcześniejszy niż czas zakończenia")
         
         return cleaned_data
+
+
+class OwnerBookingForm(forms.ModelForm):
+    start_time = forms.ChoiceField(
+        choices=[],
+        label="Godzina rozpoczęcia",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Booking
+        fields = ['client_name', 'service_type', 'client_phone', 'client_note']
+        widgets = {
+            'client_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Np. Jan Kowalski / XYZ Sp. z o.o.'}),
+            'service_type': forms.Select(attrs={'class': 'form-control'}),
+            'client_phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'client_note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+        labels = {
+            'client_name': "Nazwa klienta",
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        # można dodać walidację, że client_name nie jest pusty
+        if not cleaned.get('client_name'):
+            self.add_error('client_name', "Podaj nazwę klienta.")
+        return cleaned

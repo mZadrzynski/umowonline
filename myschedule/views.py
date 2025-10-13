@@ -1,9 +1,9 @@
 import calendar
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm, BookingForm
+from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm, BookingForm, OwnerBookingForm
 from datetime import timedelta
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
@@ -219,81 +219,154 @@ def cancel_calendar_booking(request, booking_id):
         'booking': booking
     })
 
+def generate_available_times(availability):
+    """Generuje dostępne czasy w 15-minutowych interwałach"""
+    times = []
+    start_hour = availability.start_time.hour
+    start_minute = availability.start_time.minute
+    end_hour = availability.end_time.hour
+    end_minute = availability.end_time.minute
+    
+    current_time = time(start_hour, start_minute)
+    end_time = time(end_hour, end_minute)
+    
+    while current_time < end_time:
+        times.append(current_time.strftime('%H:%M'))
+        # Dodaj 15 minut
+        current_datetime = datetime.combine(date.today(), current_time)
+        current_datetime += timedelta(minutes=15)
+        current_time = current_datetime.time()
+    
+    return times
+
+def check_time_collision(availability, start_datetime, service_type):
+    """Sprawdza czy nowy termin koliduje z istniejącymi rezerwacjami"""
+    end_datetime = start_datetime + timedelta(minutes=service_type.duration_minutes)
+    
+    conflicting_bookings = Booking.objects.filter(
+        availability=availability,
+        status='active'
+    )
+    
+    for booking in conflicting_bookings:
+        existing_start = booking.start_datetime
+        existing_end = existing_start + timedelta(minutes=booking.service_type.duration_minutes)
+        
+        # Sprawdź nakładanie
+        if (start_datetime < existing_end and end_datetime > existing_start):
+            return True  # Kolizja
+    
+    return False  # Brak kolizji
+
+
 @login_required
 def book_availability(request, availability_id):
     availability = get_object_or_404(Availability, id=availability_id)
-    
-    if Booking.objects.filter(availability=availability, user=request.user).exists():
+
+    # Blokada przeszłości
+    now = datetime.now()
+    if datetime.combine(availability.date, availability.end_time) <= now:
+        messages.error(request, "Nie można zarezerwować terminu w przeszłości.")
+        return redirect("my_calendar_week")
+
+    is_owner = hasattr(request.user, 'calendar') and request.user.calendar == availability.calendar
+
+    if is_owner:
+        return handle_owner_booking(request, availability)
+    else:
+        return handle_regular_booking(request, availability)
+
+def handle_regular_booking(request, availability):
+    # 1 rezerwacja per availability dla danego usera (zachowane)
+    if Booking.objects.filter(availability=availability, user=request.user, status='active').exists():
         return render(request, "myschedule/already_booked.html", {"availability": availability})
-    
+
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
-    
+
     if request.method == "POST":
-        form = BookingForm(request.POST, user=request.user, availability=availability) 
+        form = BookingForm(request.POST, user=request.user, availability=availability)
         form.fields['service_type'].queryset = service_types
-        
+
         if form.is_valid():
             service_type = form.cleaned_data['service_type']
-            start_time_str = form.cleaned_data['start_time']  # TO JEST STRING
-            start_time = datetime.strptime(start_time_str, '%H:%M').time()  # KONWERSJA
-            client_phone = form.cleaned_data['client_phone']
-            client_note = form.cleaned_data['client_note']
-            
-            # Reszta istniejącej logiki walidacji czasu...
-            start_datetime = datetime.combine(availability.date, start_time)
-            end_datetime = start_datetime + timedelta(minutes=service_type.duration_minutes)
-            end_time = end_datetime.time()
-            
-            availability_start = availability.start_time
-            availability_end = availability.end_time
-            
-            if start_time < availability_start or end_time > availability_end:
-                messages.error(request, f"Wybrana godzina {start_time}-{end_time} nie mieści się w dostępnym czasie {availability_start}-{availability_end}!")
-                return render(request, "myschedule/book_availability.html", {
-                    "availability": availability, 
-                    "form": form, 
-                    "service_types": service_types
-                })
-            
-            # Sprawdzenie kolizji...
-            conflicting_bookings = Booking.objects.filter(
-                availability=availability,
-                start_datetime__date=availability.date
-            ).exclude(user=request.user)
-            
-            for booking in conflicting_bookings:
-                existing_start = booking.start_datetime.time()
-                existing_end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
-                
-                if (start_time < existing_end and end_time > existing_start):
-                    messages.error(request, "Ten termin jest już zajęty!")
-                    return render(request, "myschedule/book_availability.html", {
-                        "availability": availability, 
-                        "form": form, 
-                        "service_types": service_types
-                    })
-            
-            # Stwórz rezerwację z nowymi danymi
+            start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
+
+            start_dt = datetime.combine(availability.date, start_time)
+            end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
+
+            if start_time < availability.start_time or end_dt.time() > availability.end_time:
+                messages.error(request, "Godzina poza zakresem dostępności.")
+                return render(request, "myschedule/book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+
+            if check_time_collision(availability, start_dt, service_type):
+                messages.error(request, "Ten termin jest już zajęty.")
+                return render(request, "myschedule/book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+
             Booking.objects.create(
                 availability=availability,
-                user=request.user,
+                user=request.user,              # ← zwykły user powiązany
                 service_type=service_type,
-                start_datetime=start_datetime,
-                client_phone=client_phone,
-                client_note=client_note,
+                start_datetime=start_dt,
+                client_phone=form.cleaned_data.get('client_phone', ''),
+                client_note=form.cleaned_data.get('client_note', ''),
+                booked_by=request.user,
                 status='active'
             )
-            
-            messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time}")
+            messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time.strftime('%H:%M')}")
             return redirect("my_bookings")
     else:
         form = BookingForm(user=request.user, availability=availability)
         form.fields['service_type'].queryset = service_types
-    
-    return render(request, "myschedule/book_availability.html", {
-        "availability": availability, 
-        "form": form, 
+
+    return render(request, "myschedule/book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+
+def handle_owner_booking(request, availability):
+    service_types = ServiceType.objects.filter(calendar=availability.calendar)
+
+    if request.method == "POST":
+        form = OwnerBookingForm(request.POST)
+        form.fields['service_type'].queryset = service_types
+        # dostępne minuty/sloty
+        form.fields['start_time'].choices = [(t, t) for t in generate_available_times(availability)]
+
+        if form.is_valid():
+            service_type = form.cleaned_data['service_type']
+            start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
+            start_dt = datetime.combine(availability.date, start_time)
+
+            # kolizje i zakres
+            end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
+            if start_time < availability.start_time or end_dt.time() > availability.end_time:
+                messages.error(request, "Godzina poza zakresem dostępności.")
+                return render(request, "myschedule/owner_book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+
+            if check_time_collision(availability, start_dt, service_type):
+                messages.error(request, "Ten termin jest już zajęty.")
+                return render(request, "myschedule/owner_book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+
+            Booking.objects.create(
+                availability=availability,
+                user=None,                                   # ← brak usera
+                client_name=form.cleaned_data['client_name'],# ← nazwa klienta wpisana przez właściciela
+                service_type=service_type,
+                start_datetime=start_dt,
+                client_phone=form.cleaned_data.get('client_phone', ''),
+                client_note=form.cleaned_data.get('client_note', ''),
+                booked_by=request.user,
+                status='active'
+            )
+            messages.success(request, f"Dodano wizytę dla {form.cleaned_data['client_name']} na {start_time.strftime('%H:%M')}")
+            return redirect("my_calendar_week")
+    else:
+        form = OwnerBookingForm()
+        form.fields['service_type'].queryset = service_types
+        form.fields['start_time'].choices = [(t, t) for t in generate_available_times(availability)]
+
+    return render(request, "myschedule/owner_book_availability.html", {
+        "availability": availability,
+        "form": form,
         "service_types": service_types,
+        "is_owner": True
     })
 
 @login_required
@@ -391,7 +464,8 @@ def my_calendar_week(request):
         start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
         end_of_week = start_of_week + timedelta(days=6)
         week_days = [start_of_week + timedelta(days=i) for i in range(7)]
-
+        now = datetime.now()
+  
 
         public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
         public_url = request.build_absolute_uri(public_path)
@@ -438,8 +512,8 @@ def my_calendar_week(request):
             "selected_week": start_of_week,
             "availabilities_by_day_items": availabilities_by_day_items,
             "public_calendar_url": public_url,
-            "week_offset": week_offset, 
-
+            "week_offset": week_offset,
+            "now_time": now.time(),
         })
     
     except Subscription.DoesNotExist:

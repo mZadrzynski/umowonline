@@ -59,39 +59,45 @@ class Booking(models.Model):
     availability = models.ForeignKey(Availability, on_delete=models.CASCADE, related_name='bookings')
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True, blank=True,  # ← pozwala na brak usera dla rezerwacji dodanych przez właściciela
     )
     booked_at = models.DateTimeField(auto_now_add=True)
     service_type = models.ForeignKey(ServiceType, on_delete=models.CASCADE, null=True, blank=True)
     start_datetime = models.DateTimeField()
 
+    # DANE KLIENTA
+    client_name = models.CharField(max_length=120, blank=True)  # ← NOWE, nazwa wpisywana przez właściciela
     client_phone = models.CharField(max_length=20, blank=True, verbose_name="Telefon klienta")
-    client_email = models.EmailField(blank=True, verbose_name="Email klienta") 
+    client_email = models.EmailField(blank=True, verbose_name="Email klienta")
     client_note = models.TextField(blank=True, verbose_name="Notatka klienta", help_text="Dodatkowe informacje od klienta")
+
     status = models.CharField(
-        max_length=20, 
-        choices=[('active', 'Aktywna'), ('cancelled', 'Anulowana')], 
+        max_length=20,
+        choices=[('active', 'Aktywna'), ('cancelled', 'Anulowana')],
         default='active',
         verbose_name="Status wizyty"
     )
 
+    # Kto dodał (właściciel lub sam klient)
+    booked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='bookings_created',
+        null=True, blank=True,
+        verbose_name="Dodane przez"
+    )
+
     class Meta:
-        unique_together = ('availability', 'user')
-    
-    @property 
+        # Usuń wcześniejsze unique_together ('availability','user').
+        # Jeśli chcesz bronić przed nakładkami, i tak robimy check_time_collision.
+        constraints = []
+
+    @property
     def provider(self):
-        """Właściciel kalendarza (dostawca usługi)"""
         return self.availability.calendar.user
 
     @property
     def client(self):
-        """Klient (osoba rezerwująca)"""
-        return self.user
-        
-    def save(self, *args, **kwargs):
-        # Automatycznie uzupełnij dane klienta z profilu użytkownika jeśli nie podano
-        if not self.client_email and self.user.email:
-            self.client_email = self.user.email
-        if not self.client_phone and hasattr(self.user, 'phone_number') and self.user.phone_number:
-            self.client_phone = self.user.phone_number
-        super().save(*args, **kwargs)
+        # Jeśli to samodzielna rezerwacja – klient to user. Jeśli dodane przez właściciela – klient po nazwie.
+        return self.user or self.client_name
