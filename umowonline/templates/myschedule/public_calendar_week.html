@@ -39,7 +39,7 @@
                         
                         {% if availabilities %}
                             {% for info in availabilities %}
-                            <div class="mb-2 p-2 border rounded-sm" style="background: #f7f7f7;">
+                            <div class="mb-2 p-2 border rounded-sm">
                                 
                                 {% if info.availability.title %}
                                 <div class="text-muted small mb-1">{{ info.availability.title }}</div>
@@ -47,30 +47,17 @@
                                 
                                 <!-- Pokaż wolne przedziały zamiast całego czasu dostępności -->
                                 {% if info.free_slots %}
-                                <div class="font-weight-bold text-success">
+                                <div>
                                     Dostępne:
                                     {% for start, end in info.free_slots %}
-                                    <div class="badge badge-success mr-1 mb-1">{{ start }}–{{ end }}</div>
+                                    <div>{{ start }}–{{ end }}</div>
                                     {% endfor %}
                                 </div>
                                 {% else %}
                                 <div class="text-muted">Brak wolnych terminów</div>
                                 {% endif %}
                                 
-                                <div class="mt-2 text-center">
-                                    {% if info.free_slots %}
-                                    <a href="{% url 'book_availability' info.availability.id %}"
-                                    class="btn btn-sm btn-success btn-block">
-                                        ✅ Zarezerwuj
-                                    </a>
-                                    {% else %}
-                                    <span class="btn btn-sm btn-secondary btn-block disabled">
-                                        Brak dostępności
-                                    </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                           
+
                                 <!-- NOWY ŁADNY PRZYCISK -->
                                 <div class="booking-button-container">
                                     <a href="{% url 'book_availability' info.availability.id %}" 

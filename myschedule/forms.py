@@ -198,7 +198,25 @@ class BookingForm(forms.ModelForm):
         label="Godzina rozpoczęcia"
     )
     
-    # ... reszta pól bez zmian
+    client_phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+48 123 456 789'}),
+        label="Numer telefonu",
+        help_text="Podaj numer telefonu kontaktowy"
+    )
+    
+    client_note = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Dodatkowe informacje...'}),
+        label="Notatka",
+        help_text="Możesz dodać dodatkowe informacje lub uwagi"
+    )
+    
+    # DODAJ TĘ KLASĘ META - to było pominięte!
+    class Meta:
+        model = Booking
+        fields = ['service_type', 'start_time', 'client_phone', 'client_note']
     
     def __init__(self, *args, **kwargs):
         self.availability = kwargs.pop('availability', None)
@@ -231,7 +249,25 @@ class OwnerBookingForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
-    # ... reszta pól bez zmian
+    # DODAJ META CLASS jeśli nie ma
+    class Meta:
+        model = Booking
+        fields = ['client_name', 'service_type', 'client_phone', 'client_note']
+        widgets = {
+            'client_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Np. Jan Kowalski / XYZ Sp. z o.o.'}),
+            'service_type': forms.Select(attrs={'class': 'form-control'}),
+            'client_phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'client_note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+        labels = {
+            'client_name': "Nazwa klienta",
+        }
+    
+    def clean(self):
+        cleaned = super().clean()
+        if not cleaned.get('client_name'):
+            self.add_error('client_name', "Podaj nazwę klienta.")
+        return cleaned
     
     def update_available_times(self, availability, service_duration=15):
         """Aktualizuje dostępne czasy dla danej usługi"""
