@@ -1,80 +1,139 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "myschedule/calendar_sidemenu.html" %}
+{% block title %}Zarezerwuj wizytę{% endblock %}
 
-{% block content %}
-
-<h2>Rezerwacja wizyty</h2>
-<p>Dostępność: {{ availability.title }}<br>
-Data: {{ availability.date }}<br>
-Dostępne godziny: {{ availability.start_time }} – {{ availability.end_time }}</p>
-
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-{% endif %}
-
-<form method="post">
-    {% csrf_token %}
+{% block calendar %}
+<div class="container mt-4">
+    <h2>Zarezerwuj wizytę</h2>
     
-    <div class="form-group">
-        {{ form.service_type.label_tag }}
-        {{ form.service_type }}
-        <small class="form-text text-muted">{{ form.service_type.help_text }}</small>
-    </div>
-    
-    <div class="form-group">
-        {{ form.start_time.label_tag }}
-        {{ form.start_time }}
-        <small class="form-text text-muted">{{ form.start_time.help_text }}</small>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Zarezerwuj wizytę</button>
-    <a href="{% url 'my_calendar' %}" class="btn btn-secondary">Anuluj</a>
-</form>
-
-<div id="service-info" style="display:none;">
-    <h4>Informacje o wybranych usługach:</h4>
-    {% for service in service_types %}
-        <div data-service="{{ service.id }}" style="display:none;">
-            <strong>{{ service.name }}</strong> - {{ service.duration_minutes }} minut<br>
-            {{ service.description }}
+    <div class="row">
+        <!-- Kolumna formularza (po lewej) -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        📅 {{ availability.date|date:"d.m.Y" }} 
+                        🕐 {{ availability.start_time|time:"H:i" }}-{{ availability.end_time|time:"H:i" }}
+                    </h5>
+                    
+                    <!-- Błędy formularza -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.service_type.id_for_label }}">
+                                <strong>Rodzaj usługi</strong>
+                            </label>
+                            {{ form.service_type }}
+                            {% if form.service_type.errors %}
+                                <div class="text-danger mt-1">{{ form.service_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.start_time.id_for_label }}">
+                                <strong>{{ form.start_time.label }}</strong>
+                            </label>
+                            {{ form.start_time }}
+                            {% if form.start_time.errors %}
+                                <div class="text-danger mt-1">{{ form.start_time.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.client_phone.id_for_label }}">
+                                <strong>{{ form.client_phone.label }}</strong>
+                            </label>
+                            {{ form.client_phone }}
+                            {% if form.client_phone.errors %}
+                                <div class="text-danger mt-1">{{ form.client_phone.errors.0 }}</div>
+                            {% endif %}
+                            {% if form.client_phone.help_text %}
+                                <small class="form-text text-muted">{{ form.client_phone.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.client_note.id_for_label }}">
+                                <strong>{{ form.client_note.label }}</strong>
+                            </label>
+                            {{ form.client_note }}
+                            {% if form.client_note.errors %}
+                                <div class="text-danger mt-1">{{ form.client_note.errors.0 }}</div>
+                            {% endif %}
+                            {% if form.client_note.help_text %}
+                                <small class="form-text text-muted">{{ form.client_note.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg mr-2">
+                                📝 Zarezerwuj wizytę
+                            </button>
+                            <a href="javascript:history.back()" class="btn btn-secondary">
+                                ← Anuluj
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    {% endfor %}
+        
+        <!-- Kolumna informacji o usługach (po prawej) -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">ℹ️ Dostępne usługi</h6>
+                </div>
+                <div class="card-body p-2">
+                    {% for service in service_types %}
+                        <div class="service-info mb-2 p-2 border-left border-primary" style="border-left-width: 3px !important;">
+                            <div class="service-name">
+                                <strong style="color: #495057;">{{ service.name }}</strong>
+                            </div>
+                            <div class="service-duration text-muted" style="font-size: 13px;">
+                                🕐 {{ service.duration_minutes }} minut
+                            </div>
+                            {% if service.description %}
+                                <div class="service-description" style="font-size: 12px; color: #6c757d;">
+                                    {{ service.description }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Dodatkowa karta z informacjami -->
+            <div class="card mt-3">
+                <div class="card-body p-3 text-center">
+                    <h6 class="text-muted">💡 Wskazówka</h6>
+                    <small class="text-muted">
+                        Wybierz rodzaj usługi, aby zobaczyć dostępne godziny. 
+                        Otrzymasz potwierdzenie rezerwacji.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="mb-3">
-    {{ form.client_phone.label_tag }}
-    {{ form.client_phone }}
-    {% if form.client_phone.help_text %}
-        <div class="form-text">{{ form.client_phone.help_text }}</div>
-    {% endif %}
-</div>
+<style>
+.form-actions {
+    border-top: 1px solid #dee2e6;
+    padding-top: 15px;
+    margin-top: 20px;
+}
 
-<div class="mb-3">
-    {{ form.client_note.label_tag }}
-    {{ form.client_note }}
-    {% if form.client_note.help_text %}
-        <div class="form-text">{{ form.client_note.help_text }}</div>
-    {% endif %}
-</div>
-
-<script>
-document.getElementById('id_service_type').addEventListener('change', function() {
-    const selectedId = this.value;
-    const infoDiv = document.getElementById('service-info');
-    const serviceInfos = infoDiv.querySelectorAll('[data-service]');
-    
-    serviceInfos.forEach(info => info.style.display = 'none');
-    
-    if (selectedId) {
-        infoDiv.style.display = 'block';
-        const selectedInfo = infoDiv.querySelector(`[data-service="${selectedId}"]`);
-        if (selectedInfo) selectedInfo.style.display = 'block';
-    } else {
-        infoDiv.style.display = 'none';
-    }
-});
-</script>
-
+.service-info:hover {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+</style>
 {% endblock %}

@@ -289,8 +289,13 @@ def book_availability(request, availability_id):
     else:
         return handle_regular_booking(request, availability)
 
+@login_required
 def handle_regular_booking(request, availability):
-    # 1 rezerwacja per availability dla danego usera (zachowane)
+    # Wyczyść niechciane komunikaty (np. o ulubionych)
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    # Sprawdzenie, czy użytkownik już zarezerwował tę availability
     if Booking.objects.filter(availability=availability, user=request.user, status='active').exists():
         return render(request, "myschedule/already_booked.html", {"availability": availability})
 
@@ -301,37 +306,59 @@ def handle_regular_booking(request, availability):
         form.fields['service_type'].queryset = service_types
 
         if form.is_valid():
-            service_type = form.cleaned_data['service_type']
-            start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
+            # Walidacja: czy wybrano usługę
+            service_type = form.cleaned_data.get('service_type')
+            if not service_type:
+                form.add_error('service_type', "Wybierz rodzaj usługi.")
+            else:
+                # Parsowanie godziny
+                start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
+                
+                # Utwórz timezone-aware datetime
+                start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
+                end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
 
-            start_dt = datetime.combine(availability.date, start_time)
-            end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
+                # Granice availability jako aware datetimes
+                availability_start_dt = timezone.make_aware(
+                    datetime.combine(availability.date, availability.start_time)
+                )
+                availability_end_dt = timezone.make_aware(
+                    datetime.combine(availability.date, availability.end_time)
+                )
 
-            if start_time < availability.start_time or end_dt.time() > availability.end_time:
-                messages.error(request, "Godzina poza zakresem dostępności.")
-                return render(request, "myschedule/book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+                # Sprawdź zakres
+                if start_dt < availability_start_dt or end_dt > availability_end_dt:
+                    form.add_error('start_time', "Godzina poza zakresem dostępności.")
+                # Sprawdź kolizję
+                elif check_time_collision(availability, start_dt, service_type):
+                    form.add_error('start_time', "Ten termin jest już zajęty.")
+                else:
+                    # Utwórz rezerwację
+                    Booking.objects.create(
+                        availability=availability,
+                        user=request.user,
+                        service_type=service_type,
+                        start_datetime=start_dt,
+                        client_phone=form.cleaned_data.get('client_phone', ''),
+                        client_note=form.cleaned_data.get('client_note', ''),
+                        booked_by=request.user,
+                        status='active'
+                    )
+                    messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time.strftime('%H:%M')}")
+                    return redirect("my_bookings")
 
-            if check_time_collision(availability, start_dt, service_type):
-                messages.error(request, "Ten termin jest już zajęty.")
-                return render(request, "myschedule/book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
-
-            Booking.objects.create(
-                availability=availability,
-                user=request.user,              # ← zwykły user powiązany
-                service_type=service_type,
-                start_datetime=start_dt,
-                client_phone=form.cleaned_data.get('client_phone', ''),
-                client_note=form.cleaned_data.get('client_note', ''),
-                booked_by=request.user,
-                status='active'
-            )
-            messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time.strftime('%H:%M')}")
-            return redirect("my_bookings")
+        # Jeżeli formularz ma błędy, zostanie ponownie wyrenderowany poniżej
     else:
+        # GET: wstępne przygotowanie formularza
         form = BookingForm(user=request.user, availability=availability)
         form.fields['service_type'].queryset = service_types
 
-    return render(request, "myschedule/book_availability.html", {"availability": availability, "form": form, "service_types": service_types})
+    return render(request, "myschedule/book_availability.html", {
+        "availability": availability,
+        "form": form,
+        "service_types": service_types
+    })
+
 
 def handle_owner_booking(request, availability):
     from django.utils import timezone

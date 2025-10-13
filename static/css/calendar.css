@@ -290,3 +290,125 @@
     vertical-align: middle;
     padding: 0.25em 0.5em;
 }
+
+
+
+
+
+
+/* Zachowuj istniejące style i dodaj tylko te nowe */
+.availability-block {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+    border-radius: 5px;
+}
+
+.availability-hours {
+    font-size: 18px;           /* WIĘKSZY TEKST */
+    font-weight: bold;
+    color: #495057;
+    text-align: center;
+    margin: 8px 0;
+}
+
+.busy-times {
+    font-size: 14px;           /* WIĘKSZY TEKST */
+    color: #dc3545;
+    margin: 8px 0;
+}
+
+.busy-times strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.busy-slots-container {
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.busy-slot-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 8px;          /* WIĘKSZY PADDING */
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.free-time {
+    font-size: 14px;           /* WIĘKSZY TEKST */
+    color: #28a745;
+    font-weight: bold;
+    text-align: center;
+    margin: 8px 0;
+}
+
+.booking-button-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.book-link-new {
+    display: inline-block;
+    width: 95%;
+    padding: 10px 8px;         /* WIĘKSZY PRZYCISK */
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;           /* WIĘKSZY TEKST */
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.book-link-new.available {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.book-link-new.partial {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: #212529;
+}
+
+.book-link-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    text-decoration: none;
+}
+
+.book-link-new.available:hover {
+    background: linear-gradient(135deg, #218838, #1ea080);
+    color: white;
+}
+
+.book-link-new.partial:hover {
+    background: linear-gradient(135deg, #e0a800, #e8690b);
+    color: #212529;
+}
+
+.day-header {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.availability-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.no-availability {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 20px 0;
+}

@@ -2,22 +2,23 @@
 {% block title %}Kalendarz tygodniowy – {{ calendar_owner.username }}{% endblock %}
 {% block content %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/calendar.css' %}">
-
-<div class="calendar-container">
-    <div>
-        <h2>Kalendarz tygodniowy użytkownika {{ calendar_owner.username }}</h2>
+<head>
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+</head>
+<div class="container">
+    <h1 class="mt-4 mb-4">Kalendarz tygodniowy użytkownika {{ calendar_owner.username }}</h1>
+    <div class="calendar-container">
+    <div">
         <div class="month-nav">
-            <a href="?week={{ week_offset|add:-1 }}" class="btn">
+            <a href="?week={{ week_offset|add:-1 }}">
                 « Poprzedni tydzień
             </a>
             <span>{{ selected_week|date:"d.m.Y" }}</span>
-            <a href="?week={{ week_offset|add:1 }}" class="btn">
+            <a href="?week={{ week_offset|add:1 }}">
                 Następny tydzień »
             </a>
         </div>
     </div>
-
     <table class="calendar-table">
         <thead>
             <tr>
@@ -30,18 +31,16 @@
                 <th>Nd</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                {% for day, availabilities in availabilities_by_day_items %}
-                <td>
-                    <div class="cell-content">
-                        <div class="calendar-day">
-                            {{ day|date:"d" }}
-                        </div>
+            <tbody>
+                <tr>
+                    {% for day, availabilities in availabilities_by_day_items %}
+                    <td class="calendar-cell">
+                        <div class="day-header">{{ day|date:"d" }}</div>
                         
                         {% if availabilities %}
                             {% for info in availabilities %}
-                            <div class="availability-item">
+                            <div class="availability-block">
+                                <!-- Tytuł dostępności -->
                                 <div class="availability-title">
                                     {% if info.availability.title %}
                                         {{ info.availability.title }}
@@ -49,31 +48,33 @@
                                         Dostępność
                                     {% endif %}
                                 </div>
-                                <div class="availability-time">
+                                
+                                <!-- Godziny dostępności - WIĘKSZY TEKST -->
+                                <div class="availability-hours">
                                     {{ info.availability.start_time|time:"H:i" }} - {{ info.availability.end_time|time:"H:i" }}
                                 </div>
-
-                                <!-- Zajęte sloty (tylko aktywne rezerwacje) -->
+                                
+                                <!-- Zajęte czasy - WIĘKSZY TEKST I LEPSZE FORMATOWANIE -->
                                 {% if info.busy_slots %}
-                                    <div class="busy-slots">
-                                        <div class="busy-slots-label">Zajęte:</div>
-                                        {% for start, end in info.busy_slots %}
-                                        <span class="busy-slot">
-                                            {{ start|time:"H:i" }}-{{ end|time:"H:i" }}
-                                        </span>
-                                        {% endfor %}
+                                    <div class="busy-times">
+                                        <strong>🔴 Zajęte:</strong>
+                                        <div class="busy-slots-container">
+                                            {% for start, end in info.busy_slots %}
+                                                <span class="busy-slot-badge">{{ start|time:"H:i" }}-{{ end|time:"H:i" }}<br></span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="free-time">
+                                        <strong>🟢 Cały czas wolny</strong>
                                     </div>
                                 {% endif %}
-
-                                <!-- Przycisk rezerwacji -->
-                                <div class="booking-actions">
+                                
+                                <!-- NOWY ŁADNY PRZYCISK -->
+                                <div class="booking-button-container">
                                     <a href="{% url 'book_availability' info.availability.id %}" 
-                                       class="book-link {% if info.busy_slots %}partial{% else %}available{% endif %}">
-                                        {% if info.busy_slots %}
-                                            📅 Zarezerwuj pozostały czas
-                                        {% else %}
-                                            ✅ Zarezerwuj
-                                        {% endif %}
+                                       class="book-link-new available">
+                                            📅 Zarezerwuj wizytę
                                     </a>
                                 </div>
                             </div>
@@ -83,12 +84,12 @@
                                 Brak dostępności
                             </div>
                         {% endif %}
-                    </div>
-                </td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table>
+                    </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}
