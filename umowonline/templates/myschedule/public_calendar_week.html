@@ -39,37 +39,38 @@
                         
                         {% if availabilities %}
                             {% for info in availabilities %}
-                            <div class="availability-block">
-                                <!-- Tytuł dostępności -->
-                                <div class="availability-title">
-                                    {% if info.availability.title %}
-                                        {{ info.availability.title }}
-                                    {% else %}
-                                        Dostępność
-                                    {% endif %}
-                                </div>
+                            <div class="mb-2 p-2 border rounded-sm" style="background: #f7f7f7;">
                                 
-                                <!-- Godziny dostępności - WIĘKSZY TEKST -->
-                                <div class="availability-hours">
-                                    {{ info.availability.start_time|time:"H:i" }} - {{ info.availability.end_time|time:"H:i" }}
-                                </div>
-                                
-                                <!-- Zajęte czasy - WIĘKSZY TEKST I LEPSZE FORMATOWANIE -->
-                                {% if info.busy_slots %}
-                                    <div class="busy-times">
-                                        <strong>🔴 Zajęte:</strong>
-                                        <div class="busy-slots-container">
-                                            {% for start, end in info.busy_slots %}
-                                                <span class="busy-slot-badge">{{ start|time:"H:i" }}-{{ end|time:"H:i" }}<br></span>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <div class="free-time">
-                                        <strong>🟢 Cały czas wolny</strong>
-                                    </div>
+                                {% if info.availability.title %}
+                                <div class="text-muted small mb-1">{{ info.availability.title }}</div>
                                 {% endif %}
                                 
+                                <!-- Pokaż wolne przedziały zamiast całego czasu dostępności -->
+                                {% if info.free_slots %}
+                                <div class="font-weight-bold text-success">
+                                    Dostępne:
+                                    {% for start, end in info.free_slots %}
+                                    <div class="badge badge-success mr-1 mb-1">{{ start }}–{{ end }}</div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="text-muted">Brak wolnych terminów</div>
+                                {% endif %}
+                                
+                                <div class="mt-2 text-center">
+                                    {% if info.free_slots %}
+                                    <a href="{% url 'book_availability' info.availability.id %}"
+                                    class="btn btn-sm btn-success btn-block">
+                                        ✅ Zarezerwuj
+                                    </a>
+                                    {% else %}
+                                    <span class="btn btn-sm btn-secondary btn-block disabled">
+                                        Brak dostępności
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                           
                                 <!-- NOWY ŁADNY PRZYCISK -->
                                 <div class="booking-button-container">
                                     <a href="{% url 'book_availability' info.availability.id %}" 
@@ -91,5 +92,31 @@
         </table>
     </div>
 </div>
-
+<script>
+function updateAvailableTimes(serviceTypeId) {
+    if (!serviceTypeId) return;
+    
+    // AJAX call to get available times for selected service
+    fetch(`/myschedule/get-available-times/${availability.id}/${serviceTypeId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const startTimeSelect = document.querySelector('#id_start_time');
+            startTimeSelect.innerHTML = '';
+            
+            if (data.times.length > 0) {
+                data.times.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time[0];
+                    option.textContent = time[1];
+                    startTimeSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Brak dostępnych godzin';
+                startTimeSelect.appendChild(option);
+            }
+        });
+}
+</script>
 {% endblock %}

@@ -291,6 +291,9 @@ def book_availability(request, availability_id):
 
 @login_required
 def handle_regular_booking(request, availability):
+    from django.contrib import messages
+    from django.utils import timezone
+    
     # Wyczyść niechciane komunikaty (np. o ulubionych)
     storage = messages.get_messages(request)
     storage.used = True
@@ -304,6 +307,26 @@ def handle_regular_booking(request, availability):
     if request.method == "POST":
         form = BookingForm(request.POST, user=request.user, availability=availability)
         form.fields['service_type'].queryset = service_types
+        
+        # Pobierz service_type żeby wygenerować odpowiednie czasy
+        service_type_id = form.data.get('service_type')
+        if service_type_id:
+            try:
+                service_obj = ServiceType.objects.get(id=service_type_id)
+                # Aktualizuj dostępne czasy dla wybranej usługi
+                available_times = generate_available_start_times(availability, service_obj.duration_minutes)
+                if available_times:
+                    form.fields['start_time'].choices = available_times
+                else:
+                    form.fields['start_time'].choices = [('', 'Brak dostępnych godzin')]
+            except ServiceType.DoesNotExist:
+                # Fallback na 15 minut
+                available_times = generate_available_start_times(availability, 15)
+                form.fields['start_time'].choices = available_times
+        else:
+            # Brak service_type - ustaw domyślne czasy
+            available_times = generate_available_start_times(availability, 15)
+            form.fields['start_time'].choices = available_times
 
         if form.is_valid():
             # Walidacja: czy wybrano usługę
@@ -312,46 +335,49 @@ def handle_regular_booking(request, availability):
                 form.add_error('service_type', "Wybierz rodzaj usługi.")
             else:
                 # Parsowanie godziny
-                start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
-                
-                # Utwórz timezone-aware datetime
-                start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
-                end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
-
-                # Granice availability jako aware datetimes
-                availability_start_dt = timezone.make_aware(
-                    datetime.combine(availability.date, availability.start_time)
-                )
-                availability_end_dt = timezone.make_aware(
-                    datetime.combine(availability.date, availability.end_time)
-                )
-
-                # Sprawdź zakres
-                if start_dt < availability_start_dt or end_dt > availability_end_dt:
-                    form.add_error('start_time', "Godzina poza zakresem dostępności.")
-                # Sprawdź kolizję
-                elif check_time_collision(availability, start_dt, service_type):
-                    form.add_error('start_time', "Ten termin jest już zajęty.")
+                start_time_str = form.cleaned_data.get('start_time')
+                if not start_time_str:
+                    form.add_error('start_time', "Wybierz godzinę rozpoczęcia.")
                 else:
-                    # Utwórz rezerwację
-                    Booking.objects.create(
-                        availability=availability,
-                        user=request.user,
-                        service_type=service_type,
-                        start_datetime=start_dt,
-                        client_phone=form.cleaned_data.get('client_phone', ''),
-                        client_note=form.cleaned_data.get('client_note', ''),
-                        booked_by=request.user,
-                        status='active'
-                    )
-                    messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time.strftime('%H:%M')}")
-                    return redirect("my_bookings")
+                    start_time = datetime.strptime(start_time_str, '%H:%M').time()
+                    
+                    # Utwórz timezone-aware datetime
+                    start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
+                    
+                    # Sprawdź czy wybrany czas jest nadal dostępny (dodatkowa walidacja)
+                    available_times = generate_available_start_times(availability, service_type.duration_minutes)
+                    available_time_strings = [time_tuple[0] for time_tuple in available_times]
+                    
+                    if start_time_str not in available_time_strings:
+                        form.add_error('start_time', "Wybrany termin nie jest już dostępny.")
+                    else:
+                        # Utwórz rezerwację
+                        Booking.objects.create(
+                            availability=availability,
+                            user=request.user,
+                            service_type=service_type,
+                            start_datetime=start_dt,
+                            client_phone=form.cleaned_data.get('client_phone', ''),
+                            client_note=form.cleaned_data.get('client_note', ''),
+                            booked_by=request.user,
+                            status='active'
+                        )
+                        messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time.strftime('%H:%M')}")
+                        return redirect("my_bookings")
 
         # Jeżeli formularz ma błędy, zostanie ponownie wyrenderowany poniżej
     else:
         # GET: wstępne przygotowanie formularza
         form = BookingForm(user=request.user, availability=availability)
-        form.fields['service_type'].queryset = service_types
+        form = BookingForm(None, user=request.user, availability=availability)
+
+        
+        # Ustaw domyślne dostępne czasy (15 minut)
+        available_times = generate_available_start_times(availability, 15)
+        if available_times:
+            form.fields['start_time'].choices = available_times
+        else:
+            form.fields['start_time'].choices = [('', 'Brak dostępnych godzin')]
 
     return render(request, "myschedule/book_availability.html", {
         "availability": availability,
@@ -359,7 +385,7 @@ def handle_regular_booking(request, availability):
         "service_types": service_types
     })
 
-
+@login_required
 def handle_owner_booking(request, availability):
     from django.utils import timezone
     
@@ -368,76 +394,54 @@ def handle_owner_booking(request, availability):
     if request.method == "POST":
         form = OwnerBookingForm(request.POST)
         form.fields['service_type'].queryset = service_types
-        form.fields['start_time'].choices = [(t, t) for t in generate_available_times(availability)]
+        
+        # Pobierz service_type żeby wygenerować odpowiednie czasy
+        service_type = form.data.get('service_type')
+        if service_type:
+            try:
+                service_obj = ServiceType.objects.get(id=service_type)
+                form.update_available_times(availability, service_obj.duration_minutes)
+            except ServiceType.DoesNotExist:
+                form.update_available_times(availability, 15)
+        else:
+            form.update_available_times(availability, 15)
         
         if form.is_valid():
             service_type = form.cleaned_data.get('service_type')
-            if service_type is None:
-                # dodaj błąd i przerwij przetwarzanie przed duration_minutes
+            if not service_type:
                 form.add_error('service_type', "Wybierz rodzaj usługi.")
-                return render(request, "myschedule/owner_book_availability.html", {
-                    "availability": availability,
-                    "form": form,
-                    "service_types": service_types,
-                    "is_owner": True
-                })
-            start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
-            start_dt = timezone.make_aware(
-                datetime.combine(availability.date, start_time)
-            )
-            
-            # kolizje i zakres
-            end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
-            availability_start_dt = timezone.make_aware(
-                datetime.combine(availability.date, availability.start_time)
-            )
-            availability_end_dt = timezone.make_aware(
-                datetime.combine(availability.date, availability.end_time)
-            )
-            
-
-            if start_dt < availability_start_dt or end_dt > availability_end_dt:
-                messages.error(request, "Godzina poza zakresem dostępności.")
-                return render(request, "myschedule/owner_book_availability.html", {
-                    "availability": availability, "form": form, "service_types": service_types
-                })
-            
-            if check_time_collision(availability, start_dt, service_type):
-                    # Dodaj błąd do pola start_time
-                    form.add_error('start_time', "Ten termin jest już zajęty.")
-                    # Nie przekierowuj — pozwól formularzowi wyświetlić błąd
-                    return render(request, "myschedule/owner_book_availability.html", {
-                        "availability": availability,
-                        "form": form,
-                        "service_types": service_types,
-                        "is_owner": True
-            })
-            
-            Booking.objects.create(
-                availability=availability,
-                user=None,
-                client_name=form.cleaned_data['client_name'],
-                service_type=service_type,
-                start_datetime=start_dt,  # Już timezone-aware
-                client_phone=form.cleaned_data.get('client_phone', ''),
-                client_note=form.cleaned_data.get('client_note', ''),
-                booked_by=request.user,
-                status='active'
-            )
-            
-            messages.success(request, f"Dodano wizytę dla {form.cleaned_data['client_name']} na {start_time.strftime('%H:%M')}")
-            return redirect("my_calendar_week")
+            else:
+                start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
+                start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
+                
+                # Sprawdzenie kolizji (już niepotrzebne, bo generate_available_start_times to uwzględnia)
+                Booking.objects.create(
+                    availability=availability,
+                    user=None,
+                    client_name=form.cleaned_data['client_name'],
+                    service_type=service_type,
+                    start_datetime=start_dt,
+                    client_phone=form.cleaned_data.get('client_phone', ''),
+                    client_note=form.cleaned_data.get('client_note', ''),
+                    booked_by=request.user,
+                    status='active'
+                )
+                
+                messages.success(request, f"Dodano wizytę dla {form.cleaned_data['client_name']} na {start_time.strftime('%H:%M')}")
+                return redirect("my_calendar_week")
     else:
         form = OwnerBookingForm()
         form.fields['service_type'].queryset = service_types
-        form.fields['start_time'].choices = [(t, t) for t in generate_available_times(availability)]
-
+        form.update_available_times(availability, 15)  # Domyślnie 15 minut
+    
     return render(request, "myschedule/owner_book_availability.html", {
         "availability": availability,
         "form": form,
         "service_types": service_types,
         "is_owner": True
     })
+
+
 
 @login_required
 def my_calendar(request):
@@ -596,3 +600,97 @@ def subscription_expired(request):
     }
     return render(request, "dashboard/subscription_expired.html", context)
 
+def calculate_free_time_slots(availability, service_duration_minutes=15):
+    """
+    Wylicza wolne sloty czasowe dla danej availability
+    Zwraca listę tupli (start_time_str, end_time_str) dostępnych przedziałów
+    """
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+    
+    # Pobierz wszystkie aktywne rezerwacje dla tej availability
+    bookings = Booking.objects.filter(
+        availability=availability,
+        status='active'
+    ).order_by('start_datetime')
+    
+    # Konwertuj availability na minuty od północy
+    avail_start_minutes = availability.start_time.hour * 60 + availability.start_time.minute
+    avail_end_minutes = availability.end_time.hour * 60 + availability.end_time.minute
+    
+    # Zbierz zajęte przedziały w minutach
+    busy_intervals = []
+    for booking in bookings:
+        start_minutes = booking.start_datetime.time().hour * 60 + booking.start_datetime.time().minute
+        end_minutes = start_minutes + booking.service_type.duration_minutes
+        busy_intervals.append((start_minutes, end_minutes))
+    
+    # Sortuj i scal nakładające się przedziały zajęte
+    if busy_intervals:
+        busy_intervals.sort()
+        merged_busy = [busy_intervals[0]]
+        for current_start, current_end in busy_intervals[1:]:
+            last_start, last_end = merged_busy[-1]
+            if current_start <= last_end:  # Nakładają się lub przylegają
+                merged_busy[-1] = (last_start, max(last_end, current_end))
+            else:
+                merged_busy.append((current_start, current_end))
+    else:
+        merged_busy = []
+    
+    # Wylicz wolne przedziały
+    free_intervals = []
+    current_minute = avail_start_minutes
+    
+    for busy_start, busy_end in merged_busy:
+        if current_minute < busy_start:
+            # Jest wolny czas przed tym zajętym przedziałem
+            free_intervals.append((current_minute, busy_start))
+        current_minute = max(current_minute, busy_end)
+    
+    # Dodaj ostatni wolny przedział jeśli zostało miejsce
+    if current_minute < avail_end_minutes:
+        free_intervals.append((current_minute, avail_end_minutes))
+    
+    # Konwertuj z powrotem na godziny i zwróć jako stringi
+    free_slots = []
+    for start_minutes, end_minutes in free_intervals:
+        # Sprawdź czy przedział jest wystarczająco długi dla usługi
+        if end_minutes - start_minutes >= service_duration_minutes:
+            start_hour = start_minutes // 60
+            start_min = start_minutes % 60
+            end_hour = end_minutes // 60
+            end_min = end_minutes % 60
+            
+            start_time_str = f"{start_hour:02d}:{start_min:02d}"
+            end_time_str = f"{end_hour:02d}:{end_min:02d}"
+            free_slots.append((start_time_str, end_time_str))
+    
+    return free_slots
+
+def generate_available_start_times(availability, service_duration_minutes=15):
+    """
+    Generuje dostępne godziny rozpoczęcia dla danej availability i usługi
+    Zwraca listę tupli (time_str, time_str) dla pola wyboru
+    """
+    free_slots = calculate_free_time_slots(availability, service_duration_minutes)
+    available_times = []
+    
+    for start_time_str, end_time_str in free_slots:
+        # Parsuj czas początkowy i końcowy
+        start_hour, start_min = map(int, start_time_str.split(':'))
+        end_hour, end_min = map(int, end_time_str.split(':'))
+        
+        start_minutes = start_hour * 60 + start_min
+        end_minutes = end_hour * 60 + end_min
+        
+        # Generuj czasy co 15 minut w tym przedziale
+        current_minutes = start_minutes
+        while current_minutes + service_duration_minutes <= end_minutes:
+            hour = current_minutes // 60
+            minute = current_minutes % 60
+            time_str = f"{hour:02d}:{minute:02d}"
+            available_times.append((time_str, time_str))
+            current_minutes += 15  # Co 15 minut
+    
+    return available_times

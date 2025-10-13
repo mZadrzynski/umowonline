@@ -61,37 +61,28 @@ def public_calendar_week(request, token):
     availabilities = calendar.availabilities.filter(
         date__range=[start_of_week, end_of_week]
     ).order_by('date', 'start_time')
-    
-    # POPRAWKA: Filtruj tylko aktywne rezerwacje
+
     bookings = Booking.objects.filter(
         availability__in=availabilities,
-        status='active'  # DODAJ TĘ LINIĘ
-    ).select_related('service_type').order_by('start_datetime') 
-    
-    bookings_by_availability = {}
-    for booking in bookings:
-        slots = bookings_by_availability.setdefault(booking.availability_id, [])
-        start = booking.start_datetime.time()
-        end = (booking.start_datetime + timedelta(minutes=booking.service_type.duration_minutes)).time()
-        slots.append((start, end))
+        status='active'
+    ).select_related('service_type').order_by('start_datetime')
+
+    # Zamiast busy_slots, wylicz free_slots
+    from .views import calculate_free_time_slots
     
     avail_by_day = {day: [] for day in week_days}
     for availability in availabilities:
-        busy = bookings_by_availability.get(availability.id, [])
+        free_slots = calculate_free_time_slots(availability)
         avail_by_day[availability.date].append({
             "availability": availability,
-            "busy_slots": busy
+            "free_slots": free_slots  # Zamiast busy_slots
         })
-        busy = bookings_by_availability.get(availability.id, [])
-        free_slots = calculate_free_time_slots(availability, busy)
 
-    
     context = {
         "week_days": week_days,
         "selected_week": start_of_week,
         "availabilities_by_day_items": [(d, avail_by_day[d]) for d in week_days],
         "calendar_owner": calendar.user,
         "week_offset": week_offset,
-        "free_slots": free_slots,
     }
     return render(request, "myschedule/public_calendar_week.html", context)
