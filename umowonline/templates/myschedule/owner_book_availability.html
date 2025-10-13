@@ -15,34 +15,45 @@
                 {% csrf_token %}
                 
                 <div class="form-group mb-3">
-                    <label for="{{ form.client_user.id_for_label }}">{{ form.client_user.label }}</label>
-                    {{ form.client_user }}
-                </div>
-                
-                <div class="form-group mb-3">
-                    <label for="{{ form.new_client_name.id_for_label }}">{{ form.new_client_name.label }}</label>
-                    {{ form.new_client_name }}
-                    <small class="form-text text-muted">Wypełnij jeśli dodajesz nowego klienta</small>
+                    <label for="{{ form.client_name.id_for_label }}">{{ form.client_name.label }}</label>
+                    {{ form.client_name }}
+                    {% if form.client_name.errors %}
+                        <div class="text-danger">{{ form.client_name.errors }}</div>
+                    {% endif %}
                 </div>
                 
                 <div class="form-group mb-3">
                     <label for="{{ form.service_type.id_for_label }}">Rodzaj usługi</label>
                     {{ form.service_type }}
+                    {% if form.service_type.errors %}
+                        <div class="text-danger">
+                            {{ form.service_type.errors.0 }}
+                        </div>
+                    {% endif %}
                 </div>
                 
                 <div class="form-group mb-3">
                     <label for="{{ form.start_time.id_for_label }}">{{ form.start_time.label }}</label>
                     {{ form.start_time }}
+                    {% if form.start_time.errors %}
+                        <div class="text-danger">{{ form.start_time.errors }}</div>
+                    {% endif %}
                 </div>
                 
                 <div class="form-group mb-3">
                     <label for="{{ form.client_phone.id_for_label }}">Telefon klienta</label>
                     {{ form.client_phone }}
+                    {% if form.client_phone.errors %}
+                        <div class="text-danger">{{ form.client_phone.errors }}</div>
+                    {% endif %}
                 </div>
                 
                 <div class="form-group mb-3">
                     <label for="{{ form.client_note.id_for_label }}">Notatka</label>
                     {{ form.client_note }}
+                    {% if form.client_note.errors %}
+                        <div class="text-danger">{{ form.client_note.errors }}</div>
+                    {% endif %}
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Dodaj wizytę</button>

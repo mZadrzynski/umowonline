@@ -13,10 +13,23 @@
     transition: all 0.3s ease;
 }
 
+.book-link.owner {
+  display: block;
+  margin: 4px 0;
+  clear: both;
+}
+
 .calendar-container {
     max-width: 1200px;
     margin: 0 auto;
 }
+
+.calendar-cell .owner-action {
+  margin-top: 6px;    /* odstęp od wizyt */
+  clear: both;        /* usuwa wpływ floatów */
+}
+
+
 
 .calendar-header {
     background: linear-gradient(135deg, #3156fc 0%, #669ee9 100%);
@@ -213,9 +226,18 @@
 }
 
 .booking-actions {
-    position: absolute;
     bottom: 8px;
     left: 8px;
+}
+
+.book-link.owner {
+  display: block; 
+  padding: 4px 8px;
+  background: #00ff2a9d;
+  color: #000000;
+  text-decoration: none;
+  font-size: 12px;
+  border-radius: 4px;
 }
 
 .book-link {
@@ -227,12 +249,12 @@
 }
 
 .book-link.available {
-    background: #28a745;
+    background: #f3fff5;
     color: white;
 }
 
 .book-link.available:hover {
-    background: #218838;
+    background: #213488;
 }
 
 .book-link.partial {

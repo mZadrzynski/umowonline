@@ -33,7 +33,7 @@
         <tbody>
             <tr>
                 {% for day, availabilities in availabilities_by_day_items %}
-                <td>
+                <td class="calendar-cell">
                     <div class="cell-content">
                         <div class="calendar-day">
                             {{ day|date:"d" }}
@@ -61,43 +61,58 @@
                                 </div>
 
                                 <!-- Zarezerwowane wizyty z szczegółami -->
-                                {% if info.bookings %}
-                                    <div class="busy-slots">
-                                        <div class="busy-slots-label">Zarezerwowane wizyty:</div>
-                                        {% for booking in info.bookings %}
-                                        <div class="booking-detail" style="margin: 4px 0; padding: 4px; background: rgba(220,53,69,0.1); border-radius: 3px;">
-                                            <div style="display: flex; justify-content: between; align-items: center;">
-                                                <div style="flex-grow: 1;">
-                                                    <strong>{{ booking.service_type.name }}</strong><br>
-                                                    <small>{{ booking.start_datetime|time:"H:i" }}-{{ booking.end_datetime|time:"H:i" }}</small><br>
-                                                    <small>{{ booking.user.username }}</small>
-                                                    {% if booking.client_phone %}
-                                                        <br><small>📞 {{ booking.client_phone }}</small>
-                                                    {% endif %}
-                                                    {% if booking.client_note %}
-                                                        <br><small>💬 {{ booking.client_note }}</small>
-                                                    {% endif %}
-                                                </div>
-                                                <div style="margin-left: 8px;">
-                                                    <a href="{% url 'cancel_calendar_booking' booking.id %}" 
-                                                       title="Anuluj wizytę"
-                                                       style="color: #dc3545; text-decoration: none; font-size: 12px;"
-                                                       onclick="return confirm('Czy na pewno chcesz anulować tę wizytę?')">
-                                                        ❌
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                {% if info.bookings %}
+<div class="booked-visits" style="margin-top: 8px;">
+    <small><strong>Zarezerwowane wizyty:</strong></small>
+    {% for booking in info.bookings %}
+    <div class="visit-item" style="background: #f8f9fa; margin: 4px 0; padding: 6px; border-radius: 4px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <strong style="color: #495057;">{{ booking.service_type.name }}</strong><br>
+                
+                <span style="color: #6c757d;">
+                    🕐 {{ booking.start_datetime|time:"H:i" }}-{{ booking.end_datetime|time:"H:i" }}
+                </span><br>
+                
+                <span style="color: #28a745;">
+                    👤 
+                    {% if booking.client_name %}
+                        {{ booking.client_name }}
+                    {% elif booking.user %}
+                        {{ booking.user.username }}
+                    {% else %}
+                        [Brak nazwy]
+                    {% endif %}
+                </span>
+                
+                {% if booking.client_phone %}
+                    <br><span style="color: #17a2b8;">📞 {{ booking.client_phone }}</span>
+                {% endif %}
+                
+                {% if booking.client_note %}
+                    <br><span style="color: #ffc107;">💬 {{ booking.client_note }}</span>
+                {% endif %}
+            </div>
+            
+            <a href="{% url 'cancel_calendar_booking' booking.id %}" 
+               title="Anuluj wizytę" 
+               style="color: #dc3545; text-decoration: none;" 
+               onclick="return confirm('Czy na pewno chcesz anulować tę wizytę?')">
+                ❌
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
                                <!-- Przycisk rezerwacji -->
                                 <div class="booking-actions">
+                                    
                                     {% if request.user.calendar == info.availability.calendar %}
                                         <!-- Właściciel kalendarza -->
                                         <a href="{% url 'book_availability' info.availability.id %}" 
-                                        class="book-link owner" style="background-color: #28a745; color: white;">
+                                        class="book-link owner">
                                             👤 Dodaj wizytę klienta
                                         </a>
                                     {% else %}
