@@ -1,3 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Kalendarz – {{ calendar_owner.username }}{% endblock %}
+{% block content %}
+{% load static %}
+
+
 <h2>Masz już rezerwację na ten termin!</h2>
+<br>
 <p>Wizyta: {{ availability.title }} — {{ availability.date }} {{ availability.start_time }}–{{ availability.end_time }}</p>
+<br>
 <a href="{% url 'my_bookings' %}">Zobacz swoje rezerwacje</a>
+<br>
+automatyczne przekierowanie za 3sek...
+<br>
+<meta http-equiv="refresh" content="3; {% url 'my_bookings' %}" />
+{% endblock %}

@@ -5,13 +5,19 @@
 {% block content %}
 {% load static %}
 <head>
-    
-    <link rel="stylesheet" type="text/css" href="{% static 'css/account.css' %}">
-
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboadcss' %}">
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="5; url={% url 'login' %}">
 </head>
-    <h1>Welcome {{ new_user.first_name }}!</h1>
+
+<body>
+    <h1>Witamy! {{ new_user.first_name }}!</h1>
     <p>
-        Your account has been successfully created.
-        Now you can <a href="{% url "login" %}">log in</a>.
+        <h2>Rejestracja zakończona pomyślnie!</h2>
     </p>
+        <div class="success-message">
+            <p>Zostaniesz przekierowany na stronę logowania za 5 sekund...</p>
+            <p><a href="{% url 'login' %}">Kliknij tutaj, jeśli nie zostaniesz automatycznie przekierowany</a></p>
+        </div>
+</body>
 {% endblock %}

@@ -12,6 +12,7 @@ urlpatterns = [
     path('favorites/add/', views.add_favorite_calendar, name='add_favorite_calendar'),
     path('favorites/remove/<int:favorite_id>/', views.remove_favorite_calendar, name='remove_favorite_calendar'),
     path('settings/', views.notification_settings, name='notification_settings'),
+    path('register/done/', views.register_done, name='register_done'),
 
     #URL-E PŁATNOŚCI
     path('payment/create/', views.create_payment, name='create_payment'),

@@ -4,7 +4,7 @@
 {% block title %}Zaloguj się - UmówOnline{% endblock %}
 
 {% block content %}
-<div class="container-fluid vh-100 p-0">
+<div class="container-fluid p-0">
     <div class="row h-100 g-0">
         <!-- Lewa strona - 1/3 szerokości -->
         <div class="col-lg-4 d-none d-lg-flex align-items-center justify-content-center bg-primary position-relative">
@@ -12,7 +12,7 @@
                 <div class="welcome-content">
                     <i class="fas fa-calendar-check fa-4x mb-4 opacity-75"></i>
                     <h2 class="h3 mb-3">Witaj z powrotem!</h2>
-                    <p class="lead mb-4">Zaloguj się do swojego konta UmówOnline i zarządzaj swoim kalendarzem</p>
+                    <p class="lead mb-4">Zaloguj się do swojego konta UmówZdalnie i zarządzaj swoim kalendarzem</p>
                     <div class="features-list text-start">
                         <div class="feature-item mb-2">
                             <i class="fas fa-check-circle me-2"></i>
@@ -41,7 +41,7 @@
                 <!-- Mobile header - widoczny tylko na małych ekranach -->
                 <div class="d-lg-none text-center mb-4">
                     <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
-                    <h2 class="h4 text-primary">UmówOnline</h2>
+                    <h2 class="h4 text-primary">UmówZdalnie</h2>
                 </div>
 
                 <div class="login-form-container bg-white p-5 rounded-3 shadow-sm">
@@ -63,7 +63,7 @@
                         
                         <div class="mb-4">
                             <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
-                                <i class="fas fa-envelope me-2 text-primary"></i>Email
+                                <i class="fas fa-envelope me-2 text-primary"></i>login
                             </label>
                             {{ form.username }}
                             <div class="invalid-feedback">
@@ -80,7 +80,9 @@
                                 Wprowadź hasło.
                             </div>
                         </div>
-
+                        <div>
+                            <p>*jako login podaj nazwe uzytkownika lub email</p>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="rememberMe">
@@ -185,6 +187,7 @@
 .feature-item i {
     color: rgba(255,255,255,0.8);
 }
+
 
 /* Mobile responsiveness */
 @media (max-width: 991.98px) {

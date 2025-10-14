@@ -105,7 +105,7 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 .hero { background-color: rgba(59, 130, 246, 0.08); padding: 32px 0; display: flex; align-items: center; }
 .hero-content { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
 .hero-text h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.2; color: #13343b; }
-.hero-subtitle { font-size: 16px; color: #626c71; margin-bottom: 24px; line-height: 1.5; }
+.hero-subtitle { font-size: 16px; margin-bottom: 24px; line-height: 1.5; }
 .hero-cta { display: flex; flex-direction: column; gap: 12px; }
 .trial-note { color: #21808d; font-weight: 500; font-size: 14px; margin: 0; }
 .hero-image { text-align: center; width: 100%; }
@@ -202,3 +202,5 @@ form {
   border-radius: 8px; /* zaokrąglenie rogów */
   margin-left: 0;
 }
+
+.text-warning {color: #f9f9f9 !important;}

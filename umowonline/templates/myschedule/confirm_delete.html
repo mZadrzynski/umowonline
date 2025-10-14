@@ -1,3 +1,9 @@
+{% extends "myschedule/calendar_sidemenu.html" %}
+{% block title %}Wszystkie rezerwacje{% endblock %}
+{% block content %}
+
+
+
 <div class="container">
     <h2>Potwierdź usunięcie</h2>
     <p>Czy na pewno chcesz usunąć dostępność na dzień <strong>{{ availability.date }}</strong> 
@@ -11,3 +17,5 @@
         <a href="{% url 'my_calendar' %}" class="btn btn-secondary">Anuluj</a>
     </form>
 </div>
+
+{% endblock %}

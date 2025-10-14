@@ -670,7 +670,7 @@ def calculate_free_time_slots(availability, service_duration_minutes=15):
 
 def generate_available_start_times(availability, service_duration_minutes=15):
     """
-    Generuje dostępne godziny rozpoczęcia dla danej availability i usługi
+    Generuje dostępne godziny rozpoczęcia - optymalne wykorzystanie czasu
     Zwraca listę tupli (time_str, time_str) dla pola wyboru
     """
     free_slots = calculate_free_time_slots(availability, service_duration_minutes)
@@ -684,8 +684,15 @@ def generate_available_start_times(availability, service_duration_minutes=15):
         start_minutes = start_hour * 60 + start_min
         end_minutes = end_hour * 60 + end_min
         
-        # Generuj czasy co 15 minut w tym przedziale
+        # Generuj czasy co 15 minut, ale tylko te które zmieszczą usługę
         current_minutes = start_minutes
+        
+        # NOWE: Zaokrąglij do najbliższej pełnej godziny lub kwarty
+        # Znajdź najbliższy slot 15-minutowy (00, 15, 30, 45)
+        remainder = current_minutes % 15
+        if remainder != 0:
+            current_minutes += (15 - remainder)  # Zaokrąglij w górę do najbliższej kwarty
+        
         while current_minutes + service_duration_minutes <= end_minutes:
             hour = current_minutes // 60
             minute = current_minutes % 60
@@ -694,3 +701,44 @@ def generate_available_start_times(availability, service_duration_minutes=15):
             current_minutes += 15  # Co 15 minut
     
     return available_times
+
+def suggest_optimal_times(availability, service_duration_minutes):
+    """
+    Sugeruje optymalne czasy startowe dla maksymalnego wykorzystania
+    """
+    free_slots = calculate_free_time_slots(availability, service_duration_minutes)
+    optimal_times = []
+    
+    for start_time_str, end_time_str in free_slots:
+        start_hour, start_min = map(int, start_time_str.split(':'))
+        end_hour, end_min = map(int, end_time_str.split(':'))
+        
+        start_minutes = start_hour * 60 + start_min
+        end_minutes = end_hour * 60 + end_min
+        
+        slot_duration = end_minutes - start_minutes
+        
+        if slot_duration >= service_duration_minutes:
+            # Zaproponuj czas który najlepiej wykorzystuje slot
+            if slot_duration == service_duration_minutes:
+                # Idealnie pasuje
+                optimal_times.append((start_time_str, "Idealnie pasuje"))
+            elif slot_duration >= service_duration_minutes * 2:
+                # Można zmieścić 2 lub więcej usług - zaproponuj początek
+                hour = start_minutes // 60
+                minute = start_minutes % 60
+                time_str = f"{hour:02d}:{minute:02d}"
+                optimal_times.append((time_str, "Optymalny początek"))
+            else:
+                # Pojedyncza usługa z marginesem
+                # Zaproponuj czas zaokrąglony do kwarty
+                remainder = start_minutes % 15
+                if remainder != 0:
+                    start_minutes += (15 - remainder)
+                
+                hour = start_minutes // 60
+                minute = start_minutes % 60
+                time_str = f"{hour:02d}:{minute:02d}"
+                optimal_times.append((time_str, f"Margines {slot_duration - service_duration_minutes} min"))
+    
+    return optimal_times
