@@ -13,6 +13,8 @@ urlpatterns = [
     path('favorites/remove/<int:favorite_id>/', views.remove_favorite_calendar, name='remove_favorite_calendar'),
     path('settings/', views.notification_settings, name='notification_settings'),
     path('register/done/', views.register_done, name='register_done'),
+    path('registration-pending/', views.registration_pending, name='registration_pending'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     #URL-E PŁATNOŚCI
     path('payment/create/', views.create_payment, name='create_payment'),

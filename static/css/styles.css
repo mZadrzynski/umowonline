@@ -409,6 +409,7 @@ s {
 
 .text-alert {color: #eb7d00 !important;}
 
-.vh-100 {
-        height: auto !important;
+.card-body {
+  text-align: left !important;
 }
+.card-body li::before { content: ""}

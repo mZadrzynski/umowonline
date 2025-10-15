@@ -8,16 +8,22 @@ class SubscriptionMiddleware(MiddlewareMixin):
     
     # URLs dostępne bez aktywnej subskrypcji
     ALLOWED_URLS = [
+        '/',
         '/accounts/login/',
         '/accounts/logout/',
         '/accounts/register/',
         '/payment/',
-        '/subscription/expired/',
+        '/myschedule/subscription/expired/',
         '/admin/',
         '/static/',
         '/media/',
+        '/myschedule/public/'
+        '/dashboard/'
     ]
+        
     
+    PROTECTED_URL_PREFIX = '/myschedule/'
+
     def process_request(self, request):
         # Pomiń dla nieuwierzytelnionych użytkowników
         if not request.user.is_authenticated:

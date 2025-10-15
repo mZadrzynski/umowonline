@@ -20,6 +20,13 @@ import uuid
 import logging
 from .forms import NotificationSettingsForm
 from .models import UserNotificationSettings
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from django.contrib.auth import get_user_model
+from .tokens import account_activation_token
 
 
 logger = logging.getLogger('hotpay')
@@ -56,11 +63,28 @@ def register(request):
             new_user = user_form.save(commit=False)
             # Set the chosen password
             new_user.set_password(user_form.cleaned_data['password'])
+            # KLUCZOWA ZMIANA: ustaw is_active na False
+            new_user.is_active = False
             # Save the User object
             new_user.save()
             
-            messages.success(request, 'Konto zostało utworzone pomyślnie!')
-            return redirect('register_done')
+            # WYSYŁANIE EMAIL AKTYWACYJNEGO
+            current_site = get_current_site(request)
+            mail_subject = 'Aktywacja konta – UmowZdalnie.pl'
+            message = render_to_string('account/activation_email.html', {
+                'user': new_user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(new_user.pk)),
+                'token': account_activation_token.make_token(new_user),
+                'protocol': 'https' if request.is_secure() else 'http',
+            })
+            email = EmailMessage(mail_subject, message, to=[new_user.email])
+            email.content_subtype = 'html'
+            email.send()
+            
+            messages.success(request, 
+                'Konto zostało utworzone! Sprawdź swoją skrzynkę pocztową i kliknij w link aktywacyjny.')
+            return redirect('registration_pending')
     else:
         user_form = UserRegistrationForm()
     
@@ -318,3 +342,22 @@ def notification_settings(request):
         'days_left': days_left,
         'is_trial': is_trial
     })
+
+def registration_pending(request):
+    return render(request, 'account/register_done.html')  # Możesz użyć istniejącego szablonu
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = get_user_model().objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        user = None
+
+    if user and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Konto zostało pomyślnie aktywowane! Możesz się teraz zalogować.')
+        return redirect('login')
+    else:
+        messages.error(request, 'Link aktywacyjny jest nieprawidłowy lub wygasł.')
+        return render(request, 'account/activation_invalid.html')

@@ -7,16 +7,18 @@
 <head>
     <link rel="stylesheet" type="text/css" href="{% static 'css/dashboadcss' %}">
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="5; url={% url 'login' %}">
+    <meta http-equiv="refresh" content="15; url={% url 'login' %}">
 </head>
 
 <body>
     <h1>Witamy! {{ new_user.first_name }}!</h1>
     <p>
         <h2>Rejestracja zakończona pomyślnie!</h2>
+        <p>Na podany przez Ciebie mail zostal wysłany link aktywacyjny proszę go użyc w celu aktywacji konta</p>
+        <p>Link jest ważny przez 3dni, jeżeli nie otrzymałeś maila aktywayjnego proszę sprawdzić spam lub skontaktować sie z nami</p>
     </p>
         <div class="success-message">
-            <p>Zostaniesz przekierowany na stronę logowania za 5 sekund...</p>
+            <p>Zostaniesz przekierowany na stronę logowania za 15 sekund...</p>
             <p><a href="{% url 'login' %}">Kliknij tutaj, jeśli nie zostaniesz automatycznie przekierowany</a></p>
         </div>
 </body>

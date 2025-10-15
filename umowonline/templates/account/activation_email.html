@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Aktywacja konta UmowZdalnie</title>
+</head>
+<body>
+    <h2>Witaj {{ user.username }}!</h2>
+    <p>Dziękujemy za rejestrację w UmowZdalnie!</p>
+    <p>Aby aktywować swoje konto, kliknij w poniższy link:</p>
+    <p>
+        <a href="{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}" 
+           style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Aktywuj konto
+        </a>
+    </p>
+    <p>Lub skopiuj ten link do przeglądarki:</p>
+    <p>{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}</p>
+    <p>Jeśli nie rejestrowałeś się na naszej stronie, zignoruj tę wiadomość.</p>
+    <p>Link jest ważny przez 3 dni.</p>
+    <p>Pozdrawiamy,<br>Zespół UmowZdalnie</p>
+</body>
+</html>

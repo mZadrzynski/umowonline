@@ -44,7 +44,7 @@
                 <ul class="menu">
 
                 {% if request.user.is_authenticated %}
-                    Hello {{ request.user.first_name|default:request.user.username }}
+                    Witaj {{ request.user.first_name|default:request.user.username }}
                     <li>
                         <a href="/dashboad/"></a>
                     </li>
@@ -55,8 +55,8 @@
                     <li><a href="{% url 'my_bookings' %}">Moje rezerwacje</a></li>
                     <li><a href="{% url 'favorite_calendars' %}">Ulubione</a></li>
                     <li><a href="/dashboard/instructions/">Pomoc</a></li>
-                    <!--<li><a href="/contact/">Blog</a></li>-->
-                    <li><a href="{% url 'terms_of_service' %}">Regulamin</a></li>
+                    <!--<li><a href="/contact/">Blog</a></li>
+                    <li><a href="{% url 'terms_of_service' %}">Regulamin</a></li>-->
                     <li><a href="/account/settings/">Ustawienia</a></li>
                     <li><a href="/dashboard/contact/">Kontakt</a></li>
 
@@ -95,6 +95,7 @@
     <!--<a href="/contact/">Blog</a>-->
     <a href="{% url 'terms_of_service' %}" class="footer-link">Regulamin serwisu</a> |
     <a href="{% url 'privacy_policy' %}" class="footer-link">Polityka prywatności</a> |
+    <a href="/account/settings/" class="footer-link">Ustawienia</a> |
     <a href="/dashboard/contact/" class="footer-link">Kontakt</a>
     <br><br> &copy; 2025 umowonline.pl wszelkie prawa zastrzeżone
 </footer>

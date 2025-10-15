@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Edit your account{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Błąd aktywacji</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Błąd aktywacji konta</h2>
+        <p>Link aktywacyjny jest nieprawidłowy lub wygasł.</p>
+        <p>Spróbuj zarejestrować się ponownie lub skontaktuj się z obsługą.</p>
+        <p><a href="{% url 'register' %}" class="btn btn-primary">Rejestracja ponownie</a></p>
+    </div>
+</body>
+</html>
+{% endblock %}
