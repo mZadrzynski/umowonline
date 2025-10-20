@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}umow zdalnie{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 
@@ -43,8 +44,8 @@
                 
                 <ul class="menu">
 
-                {% if request.user.is_authenticated %}
-                    Witaj {{ request.user.first_name|default:request.user.username }}
+                <!--{% if request.user.is_authenticated %}
+                    Witaj {{ request.user.first_name|default:request.user.username }}-->
                     <li>
                         <a href="/dashboad/"></a>
                     </li>
@@ -97,7 +98,12 @@
     <a href="{% url 'privacy_policy' %}" class="footer-link">Polityka prywatności</a> |
     <a href="/account/settings/" class="footer-link">Ustawienia</a> |
     <a href="/dashboard/contact/" class="footer-link">Kontakt</a>
-    <br><br> &copy; 2025 umowonline.pl wszelkie prawa zastrzeżone
+      <div class="social-icons">
+    znajdz nas na:<a href="https://www.instagram.com/twoj_profil" target="_blank" aria-label="Instagram">
+      <i class="fab fa-instagram"></i>
+    </a>
+  </div>
+     &copy; 2025 umowonline.pl wszelkie prawa zastrzeżone
 </footer>
     </div>
 <script>

@@ -48,6 +48,7 @@ a:hover { color: #1d7480; }
     box-shadow: 0px 5px 5px 0px white;
     margin-bottom: 8px;
     width: 100vw;
+    height: 80px;
     display: flex;
     position: fixed;/* albo fixed */
     top: 0;
@@ -168,7 +169,7 @@ nav a {
   margin: 0;
   padding: 0;
 }
-s
+
 .menu a {
   text-decoration: none;  /* usuwa podkreślenie */
   color: #f7f7f7;
@@ -192,6 +193,8 @@ s {
   padding: 15px;
   background: #172be02a;
   text-align: center;
+  margin-left: auto;
+  position: absolute;
 }
 .hamburger span {
   height: 3px;
@@ -211,7 +214,7 @@ s {
     display: none;
     flex-direction: column;
     background: #0f343fcb;
-    text-align: center;
+    text-align: center !important;
   }
   .menu.active {
     display: flex;
@@ -398,13 +401,45 @@ s {
     .sidebar ul {
         display: flex;
         overflow-x: auto;
-        gap: 10px;
         padding: 0 10px;
     }
     .sidebar ul li a {
         flex-shrink: 0;
         margin: 0;
     }
+    
+    .menu li {
+    display: block;  
+    margin: 0;
+    padding: 0;
+    gap: 0;
+
+    }
+    .menu li a {
+      display: block; /* ważne - sprawia, że link zajmuje całą szerokość */
+      text-decoration: none;
+      
+      transition: background-color 0.3s ease; /* płynne przejście */
+    }
+
+    nav a {
+      
+      padding: 0px 0px;
+      text-decoration: none;
+    }
+
+    /* Efekt hover - podświetlenie całej szerokości */
+    .menu li a:hover {
+      background-color: #8f8383; /* kolor tła po najechaniu */
+    }
+
+    /* Efekt po kliknięciu (aktywna strona) */
+    .menu li a.active {
+      background-color: #007bff; /* kolor dla aktywnej pozycji */
+      color: white; /* biały tekst */
+    }
+
+
 }
 
 .text-alert {color: #eb7d00 !important;}
@@ -413,3 +448,22 @@ s {
   text-align: left !important;
 }
 .card-body li::before { content: ""}
+
+
+.social-icons {
+  text-align: center;
+  padding: 20px;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin: 0 10px;
+  font-size: 24px;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #E4405F; /* kolor Instagrama */
+  transform: translateY(-5px); /* lekkie uniesienie przy hoverze */
+}
