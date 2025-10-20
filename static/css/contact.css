@@ -12,7 +12,6 @@
 
 .form-box {
     max-width: 400px;       /* ustawia maksymalną szerokość */
-    width: 50%;            /* wypełnia dostępne miejsce w granicach max-width */
     box-sizing: border-box; /* padding i border wliczony w max-width */
     word-break: break-word; /* łamanie wyrazów przy braku miejsca */
     overflow-wrap: break-word; /* wyrazy łamane zgodnie z szerokością */
@@ -71,4 +70,8 @@ p {
 
 ul {
      text-align: left !important;
+}
+
+h3 {
+        margin: 0 0 12px 0 !important;
 }
