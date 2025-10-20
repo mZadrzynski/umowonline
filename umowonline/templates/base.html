@@ -45,11 +45,12 @@
                 <ul class="menu">
 
                 <!--{% if request.user.is_authenticated %}
-                    Witaj {{ request.user.first_name|default:request.user.username }}-->
+                    Witaj {{ request.user.first_name|default:request.user.username }}
+                      {% endif %}-->
                     <li>
                         <a href="/dashboad/"></a>
                     </li>
-                {% endif %}
+              
                     <li><a href="/">Strona główna</a></li>
                     <li><a href="/dashboard/offert/">Oferta</a></li>
                     <li><a href="{% url 'my_calendar_week' %}">Mój kalendarz</a></li>
