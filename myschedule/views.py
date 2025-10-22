@@ -543,6 +543,7 @@ def my_calendar_week(request):
 
         public_path = reverse('public_calendar_week', args=[request.user.calendar.share_token])
         public_url = request.build_absolute_uri(public_path)
+        
         #wyszukuje wszystkie dostepnosci w danym tygodsniu
         availabilities = request.user.calendar.availabilities.filter(
             date__range=[start_of_week, end_of_week]

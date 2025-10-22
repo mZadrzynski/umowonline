@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from myschedule.views_public import redirect_username_to_token, public_calendar_week
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('<str:username>/', redirect_username_to_token, name='public_calendar_username'),
     path('account/', include('account.urls')),
     path('dashboard/', include('dashboard.urls')),
     path("myschedule/", include("myschedule.urls")),

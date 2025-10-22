@@ -5,9 +5,27 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import timedelta
 
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
+
+
+username_validator = RegexValidator(
+    regex=r'^[a-zA-Z0-9_.-]+$',
+    message='Username może zawierać tylko litery, cyfry, kropki, myślniki i podkreślenia.'
+)
+
+
 class CustomUser(AbstractUser):
     email = models.EmailField('email address', unique=True)
-    username = models.CharField(max_length=150, unique=True)
+    username = models.CharField(
+        max_length=150,
+        unique=True,  # To jest kluczowe!
+        validators=[username_validator],
+        help_text='Tylko alfanumeryczne znaki, kropki, myślniki i podkreślenia',
+        error_messages={
+            'unique': "Użytkownik z taką nazwą już istnieje.",
+        },
+    )
     phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Numer telefonu")  # NOWE POLE
 
     USERNAME_FIELD = 'email'

@@ -160,6 +160,19 @@
                         Kopiuj
                     </button>
                 </div>
+                 <div class="input-group">
+                <input
+                    type="text"
+                    class="form-control share-input"
+                    readonly
+                    value="{{ request.scheme }}://{{ request.get_host }}/{{ user.username }}/"
+                    id="calendar-url-username"
+                >
+                <button class="btn btn-outline-secondary copy-btn"
+                        onclick="copyToClipboard('calendar-url-username')">
+                    Kopiuj link z nazwą użytkownika
+                </button>
+            </div>
             </div>
 
             <div style="flex: 1;">

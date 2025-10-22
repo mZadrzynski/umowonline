@@ -1,6 +1,9 @@
 from datetime import date, timedelta
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Booking, Calendar
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 def calculate_free_time_slots(availability, service_duration_minutes=15):
     """
@@ -93,3 +96,18 @@ def public_calendar_week(request, token):
         "week_offset": week_offset,
     }
     return render(request, "myschedule/public_calendar_week.html", context)
+
+
+def redirect_username_to_token(request, username):
+    """
+    Przekierowuje z /<username>/ na /public/<share_token>/
+    """
+    user = get_object_or_404(User, username__iexact=username)
+    calendar = get_object_or_404(Calendar, user=user)
+    
+    # Używamy pola share_token
+    return redirect(
+        'public_calendar_week',
+        token=calendar.share_token,
+        permanent=False
+    )

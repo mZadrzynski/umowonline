@@ -14,4 +14,7 @@ urlpatterns = [
     path('subscription/expired/', views.subscription_expired, name='subscription_expired'),
     path('booking/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
     path('calendar-booking/<int:booking_id>/cancel/', views.cancel_calendar_booking, name='cancel_calendar_booking'),
+
+    #path('<str:username>/', views_public.redirect_username_to_token, name='public_calendar_username'),
+
 ]
