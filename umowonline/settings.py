@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '217.154.245.148',
     'ip217-154-245-148.pbiaas.com',
+    'localhost'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'captcha',
     'social_django',
     'myschedule',
