@@ -32,7 +32,8 @@ ALLOWED_HOSTS = [
     'ip217-154-245-148.pbiaas.com',
     'localhost'
 ]
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CSRF_TRUSTED_ORIGINS = [
     'https://umowzdalnie.pl',
     'https://www.umowzdalnie.pl',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'social_django',
     'myschedule',
     'schedule',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -174,7 +176,8 @@ AUTH_USER_MODEL = 'account.CustomUser'
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl'
+
 
 TIME_ZONE = 'UTC'
 
@@ -187,6 +190,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 STATIC_URL = '/static/'
 

@@ -57,6 +57,7 @@
                     <li><a href="{% url 'my_bookings' %}">Moje rezerwacje</a></li>
                     <li><a href="{% url 'favorite_calendars' %}">Ulubione</a></li>
                     <li><a href="/dashboard/instructions/">Pomoc</a></li>
+                    <li><a href="{% url 'blog:post_list' %}">Blog</a></li>
                     <!--<li><a href="/contact/">Blog</a></li>
                     <li><a href="{% url 'terms_of_service' %}">Regulamin</a></li>-->
                     <li><a href="/account/settings/">Ustawienia</a></li>
@@ -90,6 +91,7 @@
 <footer class="site-footer text-center text-white py-3">
     <a href="/" class="footer-link">Strona główna</a> |
     <a href="/dashboard/offert/" class="footer-link">Oferta</a> |
+    <a href="{% url 'blog:post_list' %}" class="footer-link">Blog</a> |
     <a href="{% url 'my_calendar_week' %}"class="footer-link">Mój kalendarz</a> |
     <a href="{% url 'my_bookings' %}" class="footer-link">Moje rezerwacje</a> |
     <a href="{% url 'favorite_calendars' %}" class="footer-link">Ulubione</a> |
@@ -100,9 +102,12 @@
     <a href="/account/settings/" class="footer-link">Ustawienia</a> |
     <a href="/dashboard/contact/" class="footer-link">Kontakt</a>
       <div class="social-icons">
-    znajdz nas na: <a href="https://www.instagram.com/umowzdalnie/" target="_blank" aria-label="Instagram">
+    znajdz nas na: <a href="https://www.instagram.com/umowzdalnie/" target="_blank" aria-label="Instagram"> 
       <i class="fab fa-instagram"></i>
     </a>
+    <a href="https://www.facebook.com/profile.php?id=61582742347198" target="_blank" aria-label="Facebook">
+        <i class="fab fa-facebook"></i>
+    </a>    
   </div>
      &copy; 2025 umowzdalnie.pl wszelkie prawa zastrzeżone
 </footer>

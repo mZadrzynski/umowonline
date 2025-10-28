@@ -28,7 +28,7 @@ h4 { font-size: 18px; }
 h5 { font-size: 16px; }
 h6 { font-size: 14px; }
 p { margin: 0 0 16px 0; }
-a { color: #15acc0; text-decoration: none; transition: color 150ms ease; }
+a { color: #15acc0; text-decoration: none !important; transition: color 150ms ease; }
 a:hover { color: #1d7480; }
 
 .container-custom {
@@ -307,9 +307,9 @@ s {
 
 .site-footer a.footer-link {
   color: white;
-  text-decoration: underline;
   margin: 0 0.5rem;
 }
+
 
 .site-footer a.footer-link:hover {
   color: #f09e40;
@@ -467,3 +467,4 @@ s {
   color: #E4405F; /* kolor Instagrama */
   transform: translateY(-5px); /* lekkie uniesienie przy hoverze */
 }
+

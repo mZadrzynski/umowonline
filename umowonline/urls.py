@@ -1,19 +1,3 @@
-"""
-URL configuration for umowonline project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from . import views
@@ -21,6 +5,9 @@ from myschedule.views_public import redirect_username_to_token, public_calendar_
 from django.contrib.sitemaps.views import sitemap
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 # Importuj sitemaps
 from sitemaps import StaticSitemap
@@ -49,6 +36,7 @@ Sitemap: https://umowzdalnie.pl/sitemap.xml
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('blog/', include('blog.urls')),
 
     # SITEMAP I ROBOTS - DODAJ TUTAJ
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
@@ -60,10 +48,12 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path("myschedule/", include("myschedule.urls")),
     path('captcha/', include('captcha.urls')),
-
+   
     path(
         'social-auth/',
         include('social_django.urls', namespace='social')
     ),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

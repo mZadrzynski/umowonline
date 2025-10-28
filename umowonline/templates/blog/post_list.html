@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+<title>umow-zdalnie-blog</title>
+{% load static %}
+{% block content %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/blog.css' %}">
+</head>
+
+<div class="blog-container">
+    <div class="blog-header">
+        <h1>Blog umowzdalnie.pl</h1>
+        <p>Porady, automatyzacje i nowości dla Twojego kalendarza online</p>
+    </div>
+    <ul class="blog-post-list">
+        {% for post in posts %}
+        <li class="blog-post-preview">
+            {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="blog-preview-img">
+            {% endif %}
+            <a href="{% url 'blog:post_detail' post.slug %}" class="blog-title">{{ post.title }}</a>
+            <div class="blog-meta">{{ post.created_at|date:"d M Y" }} | dodane przez: {{ post.author.get_full_name|default:post.author.username }}</div>
+            <div class="blog-excerpt">{{ post.excerpt|default:post.content|truncatewords:28 }}</div>
+            <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn--primary btn--lg">Czytaj dalej</a>
+        </li>
+        {% empty %}
+        <li>Brak artykułów.</li>
+        {% endfor %}
+    </ul>
+
+
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">← Poprzednia</a>
+        {% endif %}
+        <span>Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Następna →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>  
+
+{% endblock %}
+
+
