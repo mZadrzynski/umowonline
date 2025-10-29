@@ -21,7 +21,7 @@ class Post(models.Model):
 
 
     featured_image = models.ImageField(
-        upload_to='media/blog/images/',  # ← Musi być DOKŁADNIE tak
+        upload_to='blog/images/',  # ← Musi być DOKŁADNIE tak
         blank=True,
         null=True,
         verbose_name="Zdjęcie wyróżniające"
