@@ -1,27 +1,33 @@
 {% extends 'base.html' %}
-
-<title>umow-zdalnie-blog</title>
-
 {% load static %}
+
+{% block title %}{{ post.title }} - Blog - Umowzdalnie.pl{% endblock %}
+
 {% block content %}
-<head>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/blog.css' %}">
-</head>
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
 
 <div class="blog-container">
     <article class="blog-post-detail">
         <h1>{{ post.title }}</h1>
         <div class="blog-meta">{{ post.created_at|date:"d M Y" }} | {{ post.author.get_full_name|default:post.author.username }}</div>
+        
         {% if post.featured_image %}
         <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
         {% endif %}
-        <div>
-            {{ post.content|linebreaks }}
+        
+        {# ← ZMIEŃ TĘ LINIĘ: #}
+        <div class="blog-post-content">
+            {{ post.content|safe }}
         </div>
-        <a href="{% url 'blog:post_list' %}" class="blog-btn">← Wszystkie artykuły</a>
+        
+        <div class="cta-box">
+            <h3>Wypróbuj Umowzdalnie.pl za darmo</h3>
+            <p>System do umawiania wizyt online dla Twojej firmy</p>
+            <a href="/" class="btn btn-primary">Zaznij teraz</a>
+        </div>
+        
+        <a href="{% url 'blog:post_list' %}">← Wszystkie artykuły</a>
     </article>
 </div>
+
 {% endblock %}
-
-

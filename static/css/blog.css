@@ -62,14 +62,14 @@ body {
 }
 
 .blog-title {
-  font-size: 1.5em;
+  font-size: 1.0em;
   color: var(--primary);
   margin: 0 0 6px 0;
   font-weight: 700;
 }
 
 .blog-meta {
-  font-size: 0.98em;
+  font-size: 1.00em;
   color: #5681c8;
 }
 
@@ -106,13 +106,13 @@ body {
 }
 
 .blog-post-detail h1 {
-  font-size: 2em;
+  font-size: 1.3em;
   color: var(--primary);
 }
 
 .blog-post-detail {
   line-height: 1.75;
-  font-size: 1.13em;
+  font-size: 0.9em;
   background: var(--secondary);
   padding: 32px;
   border-radius: var(--radius);
@@ -125,7 +125,80 @@ body {
     padding: 9vw 5vw;
     box-shadow: none;
   }
-  .blog-header h1, .blog-post-detail h1 {
-    font-size: 1.25em;
-  }
+}
+
+.blog-post-content {
+    line-height: 1.8;
+    font-size: 1.0em;
+    color: var(--text);
+}
+
+.blog-post-content h2 {
+    font-size: 1.2em;
+    color: var(--primary);
+    margin-top: 2em;
+    margin-bottom: 0.8em;
+    font-weight: 700;
+}
+
+.blog-post-content h3 {
+    font-size: 1.15em;
+    color: var(--primary);
+    margin-top: 1.5em;
+    margin-bottom: 0.6em;
+    font-weight: 600;
+}
+
+.blog-post-content h4 {
+    font-size: 1.1em;
+    color: var(--text);
+    margin-top: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.blog-post-content p {
+    margin-bottom: 1.1em;
+}
+
+.blog-post-content ul,
+.blog-post-content ol {
+    margin-bottom: 1.2em;
+    padding-left: 2em;
+}
+
+.blog-post-content li {
+    margin-bottom: 0.6em;
+}
+
+.blog-post-content strong {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.blog-post-content a {
+    color: var(--primary);
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.blog-post-content a:hover {
+    color: #1855c7;
+}
+
+.blog-post-content code {
+    background: var(--secondary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+}
+
+@media (max-width: 768px) {
+    .blog-post-content h2 {
+        font-size: 1.5em;
+    }
+    
+    .blog-post-content h3 {
+        font-size: 1.2em;
+    }
 }

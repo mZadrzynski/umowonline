@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
 ]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 CSRF_TRUSTED_ORIGINS = [
     'https://umowzdalnie.pl',
     'https://www.umowzdalnie.pl',
@@ -55,7 +56,17 @@ INSTALLED_APPS = [
     'myschedule',
     'schedule',
     'blog',
+    'tinymce',
 ]
+
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 400,
+    'width': '100%',
+    'plugins': 'link image code lists',
+    'toolbar': 'bold italic underline strikethrough | h2 h3 h4 | bullist numlist | link image code',
+    'menubar': 'file edit view insert format tools',
+    'statusbar': True,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -190,9 +201,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 STATIC_URL = '/static/'
