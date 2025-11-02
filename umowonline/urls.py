@@ -7,10 +7,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.conf.urls.static import static
-
-
-# Importuj sitemaps
-from sitemaps import StaticSitemap
+from sitemaps import StaticSitemap, BlogPostSitemap
 
 # Sitemaps
 sitemaps = {
@@ -34,6 +31,11 @@ Sitemap: https://umowzdalnie.pl/sitemap.xml
 """
     return HttpResponse(content, content_type='text/plain')
 
+sitemaps = {
+    'static': StaticSitemap,
+    'blog': BlogPostSitemap,
+}
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls')),
@@ -54,5 +56,7 @@ urlpatterns = [
         include('social_django.urls', namespace='social')
     ),
 ]
+
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
