@@ -188,7 +188,7 @@ class BulkAvailabilityForm(forms.Form):
 
 class BookingForm(forms.ModelForm):
     service_type = forms.ModelChoiceField(
-        queryset=ServiceType.objects.all(),
+        queryset=ServiceType.objects.none(),
         empty_label="Wybierz rodzaj wizyty",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
@@ -219,14 +219,22 @@ class BookingForm(forms.ModelForm):
         fields = ['service_type', 'start_time', 'client_phone', 'client_note']
     
     def __init__(self, *args, **kwargs):
+        service_types = kwargs.pop('service_types', None)  # ← NOWY PARAMETR
         self.availability = kwargs.pop('availability', None)
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        
+        # Ustaw service_type z parametru, który przejdzie z widoku
+        if service_types is not None:
+            self.fields['service_type'].queryset = service_types  # ← USTAW QUERYSET
+        else:
+            self.fields['service_type'].queryset = ServiceType.objects.none()
         
         # Automatycznie uzupełnij telefon z profilu użytkownika
         if user and hasattr(user, 'phone_number') and user.phone_number:
             self.fields['client_phone'].initial = user.phone_number
         
+
         # NOWE: Ustaw dostępne czasy na podstawie availability i service_type
         if self.availability:
             # Domyślnie użyj 15 minut, może być później zaktualizowane przez JavaScript

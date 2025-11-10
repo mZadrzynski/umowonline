@@ -1,4 +1,4 @@
-import calendar
+import calendar as py_calendar
 from datetime import date, datetime, timedelta, time
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -7,7 +7,7 @@ from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm
 from datetime import timedelta
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
-from .models import Availability, Booking, ServiceType
+from .models import Availability, Booking, ServiceType, Calendar
 from django.contrib import messages
 from django.urls import reverse
 from account.models import Subscription
@@ -294,7 +294,7 @@ def handle_regular_booking(request, availability):
     from django.contrib import messages
     from django.utils import timezone
     
-    # Wyczyść niechciane komunikaty (np. o ulubionych)
+    # Wyczyść niechciane komunikaty
     storage = messages.get_messages(request)
     storage.used = True
 
@@ -302,56 +302,55 @@ def handle_regular_booking(request, availability):
     if Booking.objects.filter(availability=availability, user=request.user, status='active').exists():
         return render(request, "myschedule/already_booked.html", {"availability": availability})
 
+    # ✅ POBIERZ USŁUGI
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
 
     if request.method == "POST":
-        form = BookingForm(request.POST, user=request.user, availability=availability)
-        form.fields['service_type'].queryset = service_types
+        # ✅ PRZEKAŻ service_types DO FORMULARZA
+        form = BookingForm(
+            request.POST, 
+            user=request.user, 
+            availability=availability,
+            service_types=service_types  # ← DODAJ
+        )
         
         # Pobierz service_type żeby wygenerować odpowiednie czasy
         service_type_id = form.data.get('service_type')
         if service_type_id:
             try:
                 service_obj = ServiceType.objects.get(id=service_type_id)
-                # Aktualizuj dostępne czasy dla wybranej usługi
                 available_times = generate_available_start_times(availability, service_obj.duration_minutes)
                 if available_times:
                     form.fields['start_time'].choices = available_times
                 else:
                     form.fields['start_time'].choices = [('', 'Brak dostępnych godzin')]
             except ServiceType.DoesNotExist:
-                # Fallback na 15 minut
                 available_times = generate_available_start_times(availability, 15)
                 form.fields['start_time'].choices = available_times
         else:
-            # Brak service_type - ustaw domyślne czasy
             available_times = generate_available_start_times(availability, 15)
             form.fields['start_time'].choices = available_times
 
         if form.is_valid():
-            # Walidacja: czy wybrano usługę
             service_type = form.cleaned_data.get('service_type')
             if not service_type:
                 form.add_error('service_type', "Wybierz rodzaj usługi.")
             else:
-                # Parsowanie godziny
                 start_time_str = form.cleaned_data.get('start_time')
                 if not start_time_str:
                     form.add_error('start_time', "Wybierz godzinę rozpoczęcia.")
                 else:
                     start_time = datetime.strptime(start_time_str, '%H:%M').time()
-                    
-                    # Utwórz timezone-aware datetime
                     start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
                     
-                    # Sprawdź czy wybrany czas jest nadal dostępny (dodatkowa walidacja)
+                    # Dodatkowa walidacja dostępności
                     available_times = generate_available_start_times(availability, service_type.duration_minutes)
                     available_time_strings = [time_tuple[0] for time_tuple in available_times]
                     
                     if start_time_str not in available_time_strings:
                         form.add_error('start_time', "Wybrany termin nie jest już dostępny.")
                     else:
-                        # Utwórz rezerwację
+                        # ✅ UTWÓRZ REZERWACJĘ
                         Booking.objects.create(
                             availability=availability,
                             user=request.user,
@@ -364,13 +363,13 @@ def handle_regular_booking(request, availability):
                         )
                         messages.success(request, f"Zarezerwowano wizytę {service_type.name} na {start_time.strftime('%H:%M')}")
                         return redirect("my_bookings")
-
-        # Jeżeli formularz ma błędy, zostanie ponownie wyrenderowany poniżej
     else:
-        # GET: wstępne przygotowanie formularza
-        form = BookingForm(user=request.user, availability=availability)
-        form = BookingForm(None, user=request.user, availability=availability)
-
+        # ✅ GET: PRZEKAŻ service_types DO FORMULARZA
+        form = BookingForm(
+            user=request.user, 
+            availability=availability,
+            service_types=service_types  # ← DODAJ
+        )
         
         # Ustaw domyślne dostępne czasy (15 minut)
         available_times = generate_available_start_times(availability, 15)
@@ -454,7 +453,7 @@ def my_calendar(request):
     year = today.year + (today.month - 1 + month_offset) // 12
     month = (today.month - 1 + month_offset) % 12 + 1
     start_of_month = date(year, month, 1)
-    last_day = calendar.monthrange(year, month)[1]
+    last_day = py_calendar.monthrange(year, month)[1]
     end_of_month = date(year, month, last_day)
     
     # siatka dni
