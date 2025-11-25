@@ -1,6 +1,7 @@
 .env
 docker-compose.yml
 sqlite3
+staticfiles/
 
 
 # Django migrations
