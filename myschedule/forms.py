@@ -81,15 +81,17 @@ def generate_available_times(availability, service_duration_minutes=15):
 class ServiceTypeForm(forms.ModelForm):
     class Meta:
         model = ServiceType
-        fields = ['name', 'duration_minutes', 'description']
+        fields = ['name', 'duration_minutes', 'price', 'description']
         labels = {
             'name': 'Nazwa',
             'duration_minutes': 'Czas trwania uslugi (minuty)',
+            'price': 'cena uslugi',
             'description': 'Opis uslugi',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'duration_minutes': forms.NumberInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
         

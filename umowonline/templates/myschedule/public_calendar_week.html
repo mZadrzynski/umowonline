@@ -2,6 +2,13 @@
 {% block title %}Kalendarz – {{ calendar_owner.username }}{% endblock %}
 {% block content %}
 {% load static %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 <head>
     <link rel="stylesheet" href="{% static 'css/calendar_public.css' %}">
 </head>
@@ -114,7 +121,23 @@
         {% endfor %}
     </div>
 </div>
-
-
-
+<div class="services-section">
+    <h3>Dostępne usługi:</h3>
+    <div class="services-table">
+        {% for service in services %}
+            <div class="service-item">
+                <div class="service-info">
+                    <h4>{{ service.name }}</h4>
+                    <p class="description">{{ service.description }}</p>
+                </div>
+                <div class="service-meta">
+                    <span class="duration">⏱️ {{ service.duration_minutes }} min</span>
+                    {% if service.price %}
+                        <span class="price">{{ service.price }} PLN</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

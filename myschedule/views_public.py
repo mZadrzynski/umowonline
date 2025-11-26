@@ -94,6 +94,7 @@ def public_calendar_week(request, token):
         "availabilities_by_day_items": [(d, avail_by_day[d]) for d in week_days],
         "calendar_owner": calendar.user,
         "week_offset": week_offset,
+        "services": calendar.servicetype_set.all(), 
     }
     return render(request, "myschedule/public_calendar_week.html", context)
 

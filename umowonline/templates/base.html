@@ -43,7 +43,7 @@
     </div>
     
     <ul class="menu">
-        <!-- Moje kalendarze - DROPDOWN -->
+        <!-- umowzdalnie - DROPDOWN -->
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" id="calendarsDropdown" 
                data-bs-toggle="dropdown" aria-expanded="false">
@@ -65,6 +65,7 @@
                 <i class="bi bi-calendar3"></i> Moje kalendarze</a>
             <ul class="dropdown-menu" aria-labelledby="calendarsDropdown">
                 <li><a class="dropdown-item" href="{% url 'my_calendar_week' %}">Mój kalendarz</a></li>
+                <li><a class="dropdown-item" href="{% url 'calendar_bookings' %}">Moje wizyty</a></li>
                 <li><a class="dropdown-item" href="/dashboard/instructions/">Pomoc</a></li>
             </ul>
         </li>

@@ -24,6 +24,12 @@
     margin: 0 auto;
 }
 
+.month-nav {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 17px;
+}
+
 .calendar-cell .owner-action {
   margin-top: 6px;    /* odstęp od wizyt */
   clear: both;        /* usuwa wpływ floatów */

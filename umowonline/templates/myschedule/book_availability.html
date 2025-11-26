@@ -73,9 +73,16 @@
                         </div>
                         
                         <div class="form-actions">
+                             <!-- ✅ WYŁĄCZ PRZYCISK jeśli brak dostępnych czasów -->
+                            {% if form.fields.start_time.choices|length > 1 %}
                             <button type="submit" class="btn btn-primary btn-lg mr-2">
                                 📝 Zarezerwuj wizytę
-                            </button>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn--secondary" disabled>
+                                    Brak dostępnych terminów
+                                </button>
+                            {% endif %}
                             <a href="javascript:history.back()" class="btn btn-secondary">
                                 ← Anuluj
                             </a>
