@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Usuń Serwis{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body p-5">
+                    <h3 class="text-danger mb-4">⚠️ Potwierdź Usunięcie</h3>
+
+                    <div class="alert alert-warning">
+                        <p class="mb-0">
+                            Czy na pewno chcesz usunąć serwis <strong>{{ service_type.name }}</strong>?
+                        </p>
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5">Nazwa:</dt>
+                                <dd class="col-sm-7"><strong>{{ service_type.name }}</strong></dd>
+
+                                <dt class="col-sm-5">Czas trwania:</dt>
+                                <dd class="col-sm-7">{{ service_type.duration_minutes }} minut</dd>
+
+                                {% if service_type.price %}
+                                    <dt class="col-sm-5">Cena:</dt>
+                                    <dd class="col-sm-7">{{ service_type.price }} zł</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+
+                    <p class="text-muted">
+                        <small>⚠️ <strong>Uwaga:</strong> Ta operacja nie może być cofnięta. Wszystkie historyczne rezerwacje z tym serwisem pozostaną w systemie.</small>
+                    </p>
+
+                    <div class="d-flex gap-2">
+                        <form method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-lg w-100">
+                                🗑️ Usuń Serwis
+                            </button>
+                        </form>
+                        <a href="{% url 'service_types_list' %}" class="btn btn-secondary btn-lg">
+                            Anuluj
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

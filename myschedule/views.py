@@ -13,7 +13,7 @@ from django.urls import reverse
 from account.models import Subscription
 import holidays
 from django.utils import timezone
-
+from django.views.decorators.http import require_http_methods
 
 
 @login_required
@@ -136,7 +136,90 @@ def add_service(request):
     else:
         form = ServiceTypeForm()
     
-    return render(request, "myschedule/add_service.html", {"form": form})
+    return render(request, "myschedule/service_type_form.html", {"form": form})
+
+@login_required
+def service_type_edit(request, pk):
+    """Edytuj istniejący serwis"""
+    try:
+        calendar = request.user.calendar
+    except Calendar.DoesNotExist:
+        messages.error(request, "Nie masz kalendarza")
+        return redirect("my_calendar_week")
+    
+    service_type = get_object_or_404(ServiceType, pk=pk, calendar=calendar)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        duration_minutes = request.POST.get('duration_minutes', '')
+        description = request.POST.get('description', '').strip()
+        price = request.POST.get('price', '')
+        
+        # Walidacja
+        if not name:
+            messages.error(request, "Nazwa serwisu jest wymagana")
+            return render(request, 'myschedule/service_type_form.html', {
+                'service_type': service_type,
+                'calendar': calendar
+            })
+        
+        if not duration_minutes or int(duration_minutes) <= 0:
+            messages.error(request, "Czas trwania musi być większy od 0")
+            return render(request, 'myschedule/service_type_form.html', {
+                'service_type': service_type,
+                'calendar': calendar
+            })
+        
+        service_type.name = name
+        service_type.duration_minutes = int(duration_minutes)
+        service_type.description = description
+        service_type.price = price if price else None
+        service_type.save()
+        
+        messages.success(request, f"Serwis '{name}' został zaktualizowany")
+        return redirect('service_types_list')
+    
+    return render(request, 'myschedule/service_type_form.html', {
+        'service_type': service_type,
+        'calendar': calendar
+    })
+@login_required
+def service_types_list(request):
+    """Lista serwisów dla zalogowanego użytkownika"""
+    try:
+        calendar = request.user.calendar
+    except Calendar.DoesNotExist:
+        messages.error(request, "Nie masz kalendarza")
+        return redirect("my_calendar_week")
+    
+    service_types = ServiceType.objects.filter(calendar=calendar).order_by('-id')
+    
+    return render(request, 'myschedule/service_types_list.html', {
+        'service_types': service_types,
+        'calendar': calendar
+    })
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def service_type_delete(request, pk):
+    """Usuń serwis"""
+    try:
+        calendar = request.user.calendar
+    except Calendar.DoesNotExist:
+        messages.error(request, "Nie masz kalendarza")
+        return redirect("my_calendar_week")
+    
+    service_type = get_object_or_404(ServiceType, pk=pk, calendar=calendar)
+    
+    if request.method == 'POST':
+        service_name = service_type.name
+        service_type.delete()
+        messages.success(request, f"Serwis '{service_name}' został usunięty")
+        return redirect('service_types_list')
+    
+    return render(request, 'myschedule/service_type_confirm_delete.html', {
+        'service_type': service_type
+    })
 
 @login_required
 def calendar_bookings(request):

@@ -1,0 +1,110 @@
+{% extends "myschedule/calendar_sidemenu.html" %}
+
+{% block title %}{% if service_type %}Edytuj{% else %}Dodaj{% endif %} Serwis{% endblock %}
+
+{% block calendar %}
+{% load static %}
+
+<div class="container_service">
+    <div>
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="mb-4">
+                        {% if service_type %}
+                            <i class="bi bi-pencil-square"></i> Edytuj Serwis
+                        {% else %}
+                            <i class="bi bi-plus-square"></i> Dodaj Nowy Serwis
+                        {% endif %}
+                    </h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">
+                                <strong>Nazwa Serwisu</strong> <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="name" 
+                                name="name"
+                                value="{% if service_type %}{{ service_type.name }}{% endif %}"
+                                placeholder="np. Wizyta u fryzjera"
+                                maxlength="100"
+                                required>
+                            <small class="text-muted">Maksymalnie 100 znaków</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="duration_minutes" class="form-label">
+                                <strong>Czas Trwania (minuty)</strong> <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                id="duration_minutes" 
+                                name="duration_minutes"
+                                value="{% if service_type %}{{ service_type.duration_minutes }}{% endif %}"
+                                min="1"
+                                step="1"
+                                placeholder="np. 30"
+                                required>
+                            <small class="text-muted">Ile czasu zajmuje ta usługa?</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Cena (PLN)</label>
+                            <div class="input-group">
+                                <input 
+                                    type="number" 
+                                    class="form-control" 
+                                    id="price" 
+                                    name="price"
+                                    value="{% if service_type %}{{ service_type.price }}{% endif %}"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="np. 99.99">
+                                <span class="input-group-text">zł</span>
+                            </div>
+                            <small class="text-muted">Opcjonalnie - możesz zostawić puste</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Opis Serwisu</label>
+                            <textarea 
+                                class="form-control" 
+                                id="description" 
+                                name="description"
+                                rows="4"
+                                placeholder="Dodatkowe informacje o serwisie...">{% if service_type %}{{ service_type.description }}{% endif %}</textarea>
+                            <small class="text-muted">Opcjonalnie - będzie widoczne dla klientów</small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                {% if service_type %}
+                                    <i class="bi bi-floppy"></i> Zaktualizuj Serwis
+                                {% else %}
+                                    <i class="bi bi-plus-circle"></i> Dodaj Serwis
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'service_types_list' %}" class="btn btn-secondary btn-lg">
+                                Anuluj
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}

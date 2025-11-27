@@ -1,5 +1,5 @@
 /* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; line-height: 1.5; cursor: pointer; transition: all 250ms ease; border: none; text-decoration: none; position: relative; }
+.btn { align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; line-height: 1.5; cursor: pointer; transition: all 250ms ease; border: none; text-decoration: none; position: relative; }
 .btn { background: #7c7e86; color: #ffffff; }
 .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.4); }
 .btn--primary { background: #3f62f0; color: #fcfcf9; }
@@ -166,8 +166,13 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 
 /* schedule service Section*/
 .schedule_service {text-align: left;}
-.schedule_service {margin: 0px 0px 0px 100px; /* góra, prawo, dół, lewo */}
-.schedule_service {margin: 0px 0px 0px 100px; /* góra, prawo, dół, lewo */}
+.schedule_service {margin: 0px 0px 0px 0px; /* góra, prawo, dół, lewo */}
+
+.container_service {
+    max-width: 500px !important;  /* lub %/vw */
+    margin-left: 0 !important;
+    width: 100%;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -198,7 +203,6 @@ form {
   max-width: 500px; /* maksymalna szerokość formularza */
   margin: 0 auto;   /* wyśrodkowanie na stronie */
   padding: 20px;    /* trochę przestrzeni wewnątrz */
-  background-color: #f9f9f9; /* opcjonalnie delikatne tł */
   border-radius: 8px; /* zaokrąglenie rogów */
   margin-left: 0;
 }

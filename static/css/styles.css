@@ -375,19 +375,6 @@ s {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-/* Ikony przed linkami (emoji) */
-.sidebar ul li:nth-child(1) a::before { content: '📅 '; }
-.sidebar ul li:nth-child(2) a::before { content: '🗓️ '; }
-.sidebar ul li:nth-child(3) a::before { content: '➕ '; }
-.sidebar ul li:nth-child(4) a::before { content: '🛠️ '; }
-.sidebar ul li:nth-child(5) a::before { content: '💳 '; }
-
-/* Przywróć z-index linków nad pseudo-elementem */
-.sidebar ul li a span,
-.sidebar ul li a::before {
-    position: relative;
-}
-
 /* RESPONSYWNOŚĆ dla mobilnych */
 @media (max-width: 768px) {
     .sidebar {

@@ -16,6 +16,11 @@ urlpatterns = [
     path('booking/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
     path('calendar-booking/<int:booking_id>/cancel/', views.cancel_calendar_booking, name='cancel_calendar_booking'),
 
+
+    path('services/', views.service_types_list, name='service_types_list'),
+    path('services/add/', views.add_service, name='add_service'),
+    path('services/<int:pk>/edit/', views.service_type_edit, name='service_type_edit'),
+    path('services/<int:pk>/delete/', views.service_type_delete, name='service_type_delete'),
     #path('<str:username>/', views_public.redirect_username_to_token, name='public_calendar_username'),
 
 ]
