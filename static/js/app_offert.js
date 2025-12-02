@@ -60,59 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Learn more button not found!');
     }
 
-    // Handle pricing plan button - use more specific selector
-    const pricingButtons = document.querySelectorAll('.pricing__card .btn');
-    console.log('Pricing buttons found:', pricingButtons.length);
-    
-    pricingButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Pricing button clicked');
-            alert('Doskonały wybór! Za chwilę zostaniesz przekierowany do rejestracji.\n\nPamiętaj: pierwsze 30 dni są całkowicie za darmo, bez żadnych zobowiązań.');
-            
-            // In a real application, this would redirect to registration page
-            // window.location.href = '/register';
-        });
-    });
+ 
 
-    // Also handle any button with specific text content as fallback
-    const allButtons = document.querySelectorAll('button, .btn');
-    allButtons.forEach(button => {
-        const buttonText = button.textContent.trim();
-        
-        if (buttonText === 'Rozpocznij za darmo' && !button.hasAttribute('data-handled')) {
-            button.setAttribute('data-handled', 'true');
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Fallback: Start trial button clicked');
-                alert('Świetnie! Za chwilę zostaniesz przekierowany do rejestracji i rozpoczniesz 30-dniowy okres próbny za darmo.\n\nPo zarejestrowaniu otrzymasz dostęp do pełnego systemu zarządzania kalendarzem i rezerwacjami.');
-            });
-        }
-        
-        if (buttonText === 'Wybierz plan' && !button.hasAttribute('data-handled')) {
-            button.setAttribute('data-handled', 'true');
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Fallback: Choose plan button clicked');
-                alert('Doskonały wybór! Za chwilę zostaniesz przekierowany do rejestracji.\n\nPamiętaj: pierwsze 30 dni są całkowicie za darmo, bez żadnych zobowiązań.');
-            });
-        }
-        
-        if (buttonText === 'Dowiedz się więcej' && !button.hasAttribute('data-handled')) {
-            button.setAttribute('data-handled', 'true');
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Fallback: Learn more button clicked');
-                const benefitsSection = document.getElementById('korzyści');
-                if (benefitsSection) {
-                    benefitsSection.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        }
-    });
 
     // Add animation on scroll for benefit cards
     const observeCards = () => {
@@ -150,15 +99,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add hover effect to pricing card
-    const pricingCard = document.querySelector('.pricing__card');
-    if (pricingCard) {
-        pricingCard.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.02)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-        
-        pricingCard.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
+    const pricingCards = document.querySelectorAll('.pricing__card'); 
+    if (pricingCards.length > 0) {
+        pricingCards.forEach(function(card) {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
         });
     }
 

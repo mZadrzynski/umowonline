@@ -134,7 +134,16 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 .pricing-features { list-style: none; padding: 0; margin-bottom: 32px; }
 .pricing-features li { color: #626c71; margin-bottom: 12px; position: relative; padding-left: 24px; }
 .pricing-features li::before { content: ""; color: #21808d; font-weight: 600; position: absolute; left: 0; }
-
+.pricing__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  /* ← ZMIANA: 2 kolumny obok siebie */
+    gap: 15px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
 /* Benefits Section */
 .benefits { padding: 48px 0; background-color: #fffffd; }
 .benefits h2 { text-align: center; margin-bottom: 16px; color: #13343b; font-size: 28px; }

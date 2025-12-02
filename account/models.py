@@ -33,6 +33,58 @@ class CustomUser(AbstractUser):
     
 User = get_user_model()
 
+
+class SubscriptionPlan(models.Model):
+    """Model opisujący dostępne plany subskrypcji"""
+    PLAN_CHOICES = [
+        ('basic', 'Podstawowy'),
+        ('sms', 'SMS'),
+    ]
+    
+    name = models.CharField(max_length=50, choices=PLAN_CHOICES, unique=True)
+    display_name = models.CharField(max_length=100, help_text="Nazwa wyświetlana na stronie")
+    description = models.TextField(help_text="Opis planu")
+    price_monthly = models.DecimalField(max_digits=6, decimal_places=2, help_text="Cena za miesiąc w PLN")
+    
+    # SMS specific
+    sms_included = models.IntegerField(default=0, help_text="Liczba SMS-ów w planie (0 = brak)")
+    sms_price_per_extra = models.DecimalField(max_digits=4, decimal_places=2, default=0.10, help_text="Cena za dodatkowy SMS")
+    
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Plan subskrypcji"
+        verbose_name_plural = "Plany subskrypcji"
+        ordering = ['price_monthly']
+    
+    def __str__(self):
+        return f"{self.display_name} ({self.price_monthly} PLN)"
+
+
+# ========== NOWY MODEL: SMSUsage ==========
+class SMSUsage(models.Model):
+    """Śledzenie liczby SMS-ów wysłanych w danym miesiącu"""
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='sms_usage')
+    year = models.IntegerField()
+    month = models.IntegerField()
+    sms_count = models.IntegerField(default=0)
+    extra_sms_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, help_text="Koszt SMS-ów poza planem")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Użycie SMS"
+        verbose_name_plural = "Użycie SMS"
+        unique_together = ('subscription', 'year', 'month')
+        ordering = ['-year', '-month']
+    
+    def __str__(self):
+        return f"{self.subscription.user.username} - {self.month}/{self.year} ({self.sms_count} SMS)"
+    
+
 class UserNotificationSettings(models.Model):
     """Model przechowujący ustawienia powiadomień użytkownika"""
     user = models.OneToOneField(
@@ -62,6 +114,12 @@ class UserNotificationSettings(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    sms_reminders_enabled = models.BooleanField(
+        default=True,
+        verbose_name="Powiadomienia SMS",
+        help_text="Wysyłaj SMS-y przed wizytami (wymaga planu SMS)"
+    )
     
     class Meta:
         verbose_name = "Ustawienia powiadomień użytkownika"
@@ -81,6 +139,7 @@ class Subscription(models.Model):
     # Użyj get_user_model() zamiast bezpośredniego importu User
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='subscription')
     start_date = models.DateTimeField(default=timezone.now)
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.SET_NULL, null=True, related_name='subscriptions')
     end_date = models.DateTimeField()
     status = models.CharField(max_length=20, choices=SUBSCRIPTION_STATUS, default='active')
     hotpay_transaction_id = models.CharField(max_length=100, blank=True, null=True)
@@ -89,10 +148,41 @@ class Subscription(models.Model):
     
     def is_active(self):
         return (
-            self.status == 'active' and 
+            self.status == 'active' and
             timezone.now() <= self.end_date
         )
     
+    def has_sms_plan(self):
+        """Sprawdź czy user ma plan z SMS"""
+        return self.plan and self.plan.name == 'sms'
+    
+    def get_sms_monthly_usage(self):
+        """Pobierz bieżące użycie SMS w tym miesiącu"""
+        now = timezone.now()
+        try:
+            usage = SMSUsage.objects.get(
+                subscription=self,
+                year=now.year,
+                month=now.month
+            )
+            return usage.sms_count
+        except SMSUsage.DoesNotExist:
+            return 0
+    
+    def get_sms_monthly_limit(self):
+        """Pobierz limit SMS dla tego planu w tym miesiącu"""
+        if self.has_sms_plan():
+            return self.plan.sms_included
+        return 0
+    
+    def can_send_sms(self):
+        """Sprawdź czy można wysłać SMS (czy limit nie został przekroczony)"""
+        if not self.has_sms_plan():
+            return False
+        current_usage = self.get_sms_monthly_usage()
+        limit = self.get_sms_monthly_limit()
+        return current_usage < limit
+
     def extend_subscription(self, days=30):
         if self.is_active():
             self.end_date += timedelta(days=days)
@@ -102,8 +192,35 @@ class Subscription(models.Model):
             self.status = 'active'
         self.save()
     
+    def log_sms_usage(self, sms_count=1):
+        """Zaloguj wysłanie SMS-ów"""
+        if not self.has_sms_plan():
+            return False
+        
+        now = timezone.now()
+        usage, created = SMSUsage.objects.get_or_create(
+            subscription=self,
+            year=now.year,
+            month=now.month,
+            defaults={'sms_count': 0, 'extra_sms_cost': 0.00}
+        )
+        
+        included = self.plan.sms_included
+        current_total = usage.sms_count + sms_count
+        
+        # Oblicz koszt SMS-ów poza planem
+        if current_total > included:
+            extra_sms = current_total - included
+            usage.extra_sms_cost = extra_sms * self.plan.sms_price_per_extra
+        
+        usage.sms_count = current_total
+        usage.save()
+        
+        return True
+
     def __str__(self):
-        return f"{self.user.username} - {self.status}"
+        plan_name = self.plan.display_name if self.plan else "Brak planu"
+        return f"{self.user.username} - {plan_name} - {self.status}"
     
 
 class FavoriteCalendar(models.Model):

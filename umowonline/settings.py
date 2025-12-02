@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 from decouple import config
 from pathlib import Path
+from dotenv import load_dotenv
+from celery.schedules import crontab
 import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
     'schedule',
     'blog',
     'tinymce',
+    'appointments',
 ]
 
 TINYMCE_DEFAULT_CONFIG = {
@@ -253,5 +257,34 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+    },
+}
+
+#wysylanie sms
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
+# ===== CELERY CONFIGURATION =====
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_TIMEZONE = os.getenv('CELERY_TIMEZONE', 'Europe/Warsaw')
+CELERY_ENABLE_UTC = True
+
+# ===== TWILLO CONFIGURATION =====
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_MESSAGING_SERVICE_SID = os.getenv('TWILIO_MESSAGING_SERVICE_SID')
+
+# ===== REMINDER SETTINGS =====
+SEND_REMINDER_HOURS_BEFORE = int(os.getenv('SEND_REMINDER_HOURS_BEFORE', '24'))
+REMINDER_CHECK_HOUR = int(os.getenv('REMINDER_CHECK_HOUR', '9'))
+REMINDER_CHECK_MINUTE = int(os.getenv('REMINDER_CHECK_MINUTE', '0'))
+
+# ===== CELERY BEAT SCHEDULE =====
+
+
+CELERY_BEAT_SCHEDULE = {
+    'send-appointment-reminders': {
+        'task': 'appointments.tasks.send_appointment_reminders',
+        'schedule': crontab(hour=REMINDER_CHECK_HOUR, minute=REMINDER_CHECK_MINUTE),
     },
 }

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Wybierz Plan - UmowZdalnie.pl{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Wybierz Plan Subskrypcji</h2>
+    
+    {% if has_active_subscription %}
+        <div class="alert alert-info">
+            <strong>Twój aktualny plan:</strong> 
+            {% if current_plan %}
+                {{ current_plan.display_name }} ({{ current_plan.price_monthly }} zł/miesiąc)
+            {% else %}
+                Plan aktywny
+            {% endif %}
+            <br>
+            <strong>Ważny do:</strong> {{ current_subscription.end_date|date:"d.m.Y" }}
+            <br>
+            <small class="text-muted">
+                Możesz przedłużyć obecny plan lub zmienić na inny.
+            </small>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            Nie masz aktywnej subskrypcji. Wybierz plan, aby kontynuować.
+        </div>
+    {% endif %}
+
+    <div class="row">
+        {% for plan in plans %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 {% if current_plan and current_plan.id == plan.id %}border-primary shadow{% endif %}">
+                <div class="card-header {% if current_plan and current_plan.id == plan.id %}bg-primary text-white{% else %}bg-light{% endif %}">
+                    <h3 class="mb-0">{{ plan.display_name }}</h3>
+                    {% if current_plan and current_plan.id == plan.id %}
+                        <span class="badge badge-light">Twój obecny plan</span>
+                    {% endif %}
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title text-center mb-4">
+                        <strong>{{ plan.price_monthly }} zł</strong> / miesiąc
+                    </h4>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">✓ Nieograniczone terminy</li>
+                        <li class="mb-2">✓ Powiadomienia email</li>
+                        <li class="mb-2">✓ Zarządzanie klientami</li>
+                        <li class="mb-2">✓ Publiczny link do rezerwacji</li>
+                        
+                        {% if plan.plan_code == 'sms' %}
+                            <li class="mb-2"><strong>✓ {{ plan.sms_monthly_limit }} SMS miesięcznie</strong></li>
+                            <li class="mb-2"><strong>✓ Automatyczne przypomnienia SMS</strong></li>
+                        {% else %}
+                            <li class="mb-2 text-muted">✗ Brak SMS</li>
+                        {% endif %}
+                    </ul>
+                    
+                    <div class="mt-auto">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="plan_id" value="{{ plan.id }}">
+                            
+                            {% if current_plan and current_plan.id == plan.id %}
+                                <!-- Ten sam plan - opcja przedłużenia -->
+                                <input type="hidden" name="action" value="extend">
+                                <button type="submit" class="btn btn-success btn-block btn-lg">
+                                    🔄 Przedłuż o 30 dni
+                                </button>
+                                <small class="text-muted d-block mt-2 text-center">
+                                    Przedłuż do 
+                                    {% if current_subscription %}
+                                        {{ current_subscription.end_date|date:"d.m.Y" }}
+                                    {% endif %}
+                                    + 30 dni
+                                </small>
+                                
+                            {% elif has_active_subscription and current_plan %}
+                                <!-- Inny plan - zmiana planu -->
+                                <input type="hidden" name="action" value="change">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                                    ↔️ Zmień plan
+                                </button>
+                                <small class="text-muted d-block mt-2 text-center">
+                                    Aktywny od {{ current_subscription.end_date|date:"d.m.Y" }}
+                                </small>
+                                
+                            {% elif has_active_subscription %}
+                                <!-- Ma subskrypcję ale nie ma przypisanego planu - pozwól wybrać -->
+                                <input type="hidden" name="action" value="change">
+                                <button type="submit" class="btn btn-warning btn-block btn-lg">
+                                    ⚙️ Ustaw jako mój plan
+                                </button>
+                                
+                            {% else %}
+                                <!-- Brak subskrypcji - zakup -->
+                                <input type="hidden" name="action" value="buy">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                                    🛒 Wybierz plan
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if has_active_subscription %}
+    <div class="alert alert-secondary mt-4">
+        <h5>❓ Jak działa zmiana planu?</h5>
+        <ul class="mb-0">
+            <li><strong>Przedłużenie obecnego planu:</strong> Dodaje 30 dni do obecnej subskrypcji</li>
+            <li><strong>Zmiana na inny plan:</strong> Nowy plan będzie aktywny po zakończeniu obecnego okresu rozliczeniowego</li>
+        </ul>
+    </div>
+    {% endif %}
+    
+    <!-- DEBUG INFO - usuń to po naprawieniu -->
+    {% if user.is_staff or user.is_superuser %}
+    <div class="alert alert-dark mt-4">
+        <strong>DEBUG INFO:</strong><br>
+        has_active_subscription: {{ has_active_subscription }}<br>
+        current_plan: {{ current_plan }}<br>
+        current_plan.id: {{ current_plan.id|default:"None" }}<br>
+        current_plan.display_name: {{ current_plan.display_name|default:"None" }}<br>
+        Plans count: {{ plans|length }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -17,6 +17,7 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     #URL-E PŁATNOŚCI
+    path('subscription/choose-plan/', views.choose_plan, name='choose_plan'),
     path('payment/create/', views.create_payment, name='create_payment'),
     path('payment/webhook/', views.hotpay_webhook, name='hotpay_webhook'),
     path('payment/success/', views.payment_success, name='payment_success'),
