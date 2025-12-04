@@ -48,8 +48,8 @@
                         <li class="mb-2">✓ Zarządzanie klientami</li>
                         <li class="mb-2">✓ Publiczny link do rezerwacji</li>
                         
-                        {% if plan.plan_code == 'sms' %}
-                            <li class="mb-2"><strong>✓ {{ plan.sms_monthly_limit }} SMS miesięcznie</strong></li>
+                        {% if plan.name == 'sms' %} 
+                            <li class="mb-2"><strong>✓ {{ plan.sms_included }} SMS miesięcznie</strong></li>
                             <li class="mb-2"><strong>✓ Automatyczne przypomnienia SMS</strong></li>
                         {% else %}
                             <li class="mb-2 text-muted">✗ Brak SMS</li>

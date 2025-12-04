@@ -285,6 +285,9 @@ REMINDER_CHECK_MINUTE = int(os.getenv('REMINDER_CHECK_MINUTE', '0'))
 CELERY_BEAT_SCHEDULE = {
     'send-appointment-reminders': {
         'task': 'appointments.tasks.send_appointment_reminders',
-        'schedule': crontab(hour=REMINDER_CHECK_HOUR, minute=REMINDER_CHECK_MINUTE),
+        'schedule': crontab(
+            minute='0,30',  # Co 30 minut
+            hour='8-21'     # Od 8:00 do 21:00
+        ),
     },
 }

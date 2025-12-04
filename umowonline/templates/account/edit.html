@@ -1,18 +1,106 @@
+<!-- account/templates/account/edit.html -->
+
 {% extends "base.html" %}
 
-{% block title %}Edit your account{% endblock %}
+{% block title %}Edycja profilu{% endblock %}
 
 {% block content %}
-<head>
-    
-    <link rel="stylesheet" type="text/css" href="{% static 'css/account.css' %}">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>✏️ Edycja profilu</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Komunikaty -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
 
-</head>
-    <h1>Edit your account</h1>
-    <p>You can edit your account using the following form:</p>
-    <form method="post" enctype="multipart/form-data">
-        {{ user_form.as_p }}
-        {% csrf_token %}
-        <p><input type="submit" value="Save changes"></p>
-    </form>
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Imię -->
+                        <div class="form-group">
+                            <label for="{{ user_form.first_name.id_for_label }}" class="font-weight-bold">
+                                {{ user_form.first_name.label }}
+                            </label>
+                            {{ user_form.first_name }}
+                            {% if user_form.first_name.errors %}
+                                <div class="text-danger">{{ user_form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Nazwisko -->
+                        <div class="form-group">
+                            <label for="{{ user_form.last_name.id_for_label }}" class="font-weight-bold">
+                                {{ user_form.last_name.label }}
+                            </label>
+                            {{ user_form.last_name }}
+                            {% if user_form.last_name.errors %}
+                                <div class="text-danger">{{ user_form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email (tylko do odczytu) -->
+                        <div class="form-group">
+                            <label for="{{ user_form.email.id_for_label }}" class="font-weight-bold">
+                                {{ user_form.email.label }}
+                            </label>
+                            {{ user_form.email }}
+                            {% if user_form.email.help_text %}
+                                <small class="form-text text-muted">{{ user_form.email.help_text }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Numer telefonu -->
+                        <div class="form-group">
+                            <label for="{{ user_form.phone_number.id_for_label }}" class="font-weight-bold">
+                                {{ user_form.phone_number.label }}
+                                <span class="text-muted">(opcjonalne)</span>
+                            </label>
+                            {{ user_form.phone_number }}
+                            {% if user_form.phone_number.help_text %}
+                                <small class="form-text text-muted">
+                                    📱 {{ user_form.phone_number.help_text }}
+                                </small>
+                            {% endif %}
+                            {% if user_form.phone_number.errors %}
+                                <div class="text-danger">{{ user_form.phone_number.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Przyciski -->
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                💾 Zapisz zmiany
+                            </button>
+                            <a href="/" class="btn btn-secondary btn-lg ml-2">
+                                ❌ Anuluj
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="alert alert-info mt-4">
+                <h5>ℹ️ Informacje</h5>
+                <ul class="mb-0">
+                    <li><strong>Email</strong> jest przypisany do konta i nie może być zmieniony</li>
+                    <li><strong>Numer telefonu</strong> jest opcjonalny i musi być polski (+48)</li>
+                    <li>Przykłady poprawnych numerów: <code>+48501234567</code>, <code>48501234567</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

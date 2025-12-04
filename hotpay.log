@@ -56,3 +56,9 @@ User: marcin, Subscription ID: 1, Plan: Plan Podstawowy (20.00 PLN)
 Created Payment: payment_id=659d7aa5-35d1-4c1b-b0d6-b621c51f2f99, plan=Plan Podstawowy, amount=20.00, action=buy
 User: marcin, Subscription ID: 1, Plan: Plan Podstawowy (20.00 PLN)
 Context: {'plans': <QuerySet [<SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, <SubscriptionPlan: Plan z SMS (29.00 PLN)>]>, 'current_subscription': <Subscription: marcin - Plan Podstawowy - active>, 'current_plan': <SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, 'has_active_subscription': True}
+User: marcin, Subscription ID: 1, Plan: Plan Podstawowy (20.00 PLN)
+Context: {'plans': <QuerySet [<SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, <SubscriptionPlan: Plan z SMS (29.00 PLN)>]>, 'current_subscription': <Subscription: marcin - Plan Podstawowy - active>, 'current_plan': <SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, 'has_active_subscription': True}
+User: marcin, Subscription ID: 1, Plan: Plan Podstawowy (20.00 PLN)
+User marcin changing plan to Plan z SMS
+Created Payment: payment_id=1be48661-f0a1-42bb-b72e-591da0a75e1d, plan=Plan z SMS, amount=29.00, action=change
+Context: {'plans': <QuerySet [<SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, <SubscriptionPlan: Plan z SMS (29.00 PLN)>]>, 'current_subscription': <Subscription: tester - Brak planu - active>, 'current_plan': None, 'has_active_subscription': False}

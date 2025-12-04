@@ -101,16 +101,20 @@ def edit(request):
     
         if user_form.is_valid():
             user_form.save()
+            messages.success(request, '✅ Profil został zaktualizowany.')
+            return redirect('edit')  # lub inna strona
+        else:
+            messages.error(request, '❌ Popraw błędy w formularzu.')
     else:
         user_form = UserEditForm(instance=request.user)
 
     return render(
-            request,
-            'account/edit.html',
-            {
+        request,
+        'account/edit.html',
+        {
             'user_form': user_form,
-            }
-        )
+        }
+    )
 
 @login_required
 def choose_plan(request):
@@ -173,6 +177,7 @@ def choose_plan(request):
     logger.info(f"Context: {context}")
     
     return render(request, 'account/choose_plan.html', context)
+
 @login_required
 def favorite_calendars(request):
     """Lista ulubionych kalendarzy użytkownika"""
