@@ -1,19 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import FavoriteCalendar
-from .models import UserNotificationSettings
-from django.core.validators import RegexValidator 
-import re
+from .models import FavoriteCalendar, UserNotificationSettings
+from .utils import validate_and_normalize_polish_phone
 
-
-
-
-phone_validator = RegexValidator(
-    regex=r'^\+?48\d{9}$',
-    message='Numer telefonu musi być w formacie: +48501234567 (9 cyfr po 48)'
-)
 
 class LoginForm(forms.Form):
+    """Formularz logowania użytkownika"""
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-control form-control-lg',
@@ -29,6 +21,7 @@ class LoginForm(forms.Form):
 
 
 class UserRegistrationForm(forms.ModelForm):
+    """Formularz rejestracji nowego użytkownika"""
     password = forms.CharField(
         label='Hasło',
         widget=forms.PasswordInput(attrs={
@@ -66,7 +59,7 @@ class UserRegistrationForm(forms.ModelForm):
             }),
             'phone_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-lg',
-                'placeholder': 'Numer telefonu (opcjonalne)'
+                'placeholder': '+48501234567 (opcjonalne)'
             }),
         }
         labels = {
@@ -78,34 +71,46 @@ class UserRegistrationForm(forms.ModelForm):
         }
 
     def clean_password2(self):
+        """Sprawdź czy hasła są identyczne"""
         cd = self.cleaned_data
         if cd['password'] != cd['password2']:
             raise forms.ValidationError("Hasła nie są identyczne.")
         return cd['password2']
+    
+    def clean_phone_number(self):
+        """Walidacja i normalizacja numeru telefonu"""
+        phone = self.cleaned_data.get('phone_number', '').strip()
+        is_valid, normalized, error = validate_and_normalize_polish_phone(phone)
+        
+        if not is_valid:
+            raise forms.ValidationError(error)
+        
+        return normalized
+
 
 class UserEditForm(forms.ModelForm):
-    phone_number = forms.CharField(
-        max_length=20,
-        required=False,  # Opcjonalne
-        validators=[phone_validator],
-        label='Numer telefonu',
-        help_text='Format: +48501234567 lub 48501234567',
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': '+48501234567'
-        })
-    )
+    """Formularz edycji profilu użytkownika"""
     
     class Meta:
         model = get_user_model()
         fields = ['first_name', 'last_name', 'email', 'phone_number']
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Imię'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nazwisko'
+            }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
-                'readonly': 'readonly',  # ← Email tylko do odczytu
-                'disabled': 'disabled'   # ← Nie można edytować
+                'readonly': 'readonly',
+                'disabled': 'disabled'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '+48501234567'
             }),
         }
         labels = {
@@ -114,37 +119,31 @@ class UserEditForm(forms.ModelForm):
             'email': 'Email',
             'phone_number': 'Numer telefonu',
         }
+        help_texts = {
+            'phone_number': 'Format: +48501234567 lub 48501234567 (opcjonalne)',
+        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Email nie może być zmieniony
         self.fields['email'].disabled = True
         self.fields['email'].help_text = '🔒 Email nie może być zmieniony'
+        # Phone number jest opcjonalne
+        self.fields['phone_number'].required = False
     
     def clean_phone_number(self):
         """Walidacja i normalizacja numeru telefonu"""
         phone = self.cleaned_data.get('phone_number', '').strip()
+        is_valid, normalized, error = validate_and_normalize_polish_phone(phone)
         
-        if not phone:
-            return ''  # Puste jest OK (opcjonalne)
+        if not is_valid:
+            raise forms.ValidationError(error)
         
-        # Usuń wszystkie znaki oprócz cyfr i +
-        clean_phone = re.sub(r'[^\d+]', '', phone)
-        
-        # Usuń + żeby sprawdzić cyfry
-        digits_only = clean_phone.lstrip('+')
-        
-        # Sprawdź format: 48 + 9 cyfr = 11 cyfr
-        if not digits_only.startswith('48') or len(digits_only) != 11:
-            raise forms.ValidationError(
-                'Numer telefonu musi zaczynać się od 48 i mieć 9 cyfr (np. +48501234567)'
-            )
-        
-        # Zwróć znormalizowany format z +
-        normalized = '+' + digits_only if not clean_phone.startswith('+') else clean_phone
         return normalized
 
+
 class FavoriteCalendarForm(forms.ModelForm):
+    """Formularz dodawania ulubionego kalendarza"""
     class Meta:
         model = FavoriteCalendar
         fields = ['calendar_url', 'calendar_name', 'owner_name']
@@ -165,21 +164,25 @@ class FavoriteCalendarForm(forms.ModelForm):
         }
         
     def clean_calendar_url(self):
+        """Sprawdź czy URL zawiera prawidłowy token"""
         url = self.cleaned_data['calendar_url']
-        # Sprawdź czy URL zawiera prawidłowy token
         import re
         if not re.search(r'/public/[a-zA-Z0-9]+/?', url):
-            raise forms.ValidationError("Nieprawidłowy link do kalendarza. URL powinien zawierać /public/TOKEN/")
+            raise forms.ValidationError(
+                "Nieprawidłowy link do kalendarza. URL powinien zawierać /public/TOKEN/"
+            )
         return url
 
 
 class NotificationSettingsForm(forms.ModelForm):
+    """Formularz ustawień powiadomień użytkownika"""
     class Meta:
         model = UserNotificationSettings
         fields = [
             'booking_created_notifications',
             'booking_cancelled_notifications', 
-            'own_booking_confirmations'
+            'own_booking_confirmations',
+            'sms_reminders_enabled'  # Dodaj jeśli masz to pole w modelu
         ]
         widgets = {
             'booking_created_notifications': forms.CheckboxInput(attrs={
@@ -191,4 +194,13 @@ class NotificationSettingsForm(forms.ModelForm):
             'own_booking_confirmations': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
+            'sms_reminders_enabled': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+        labels = {
+            'booking_created_notifications': 'Powiadomienia o nowych wizytach',
+            'booking_cancelled_notifications': 'Powiadomienia o anulowanych wizytach',
+            'own_booking_confirmations': 'Potwierdzenia moich wizyt',
+            'sms_reminders_enabled': 'Wysyłaj przypomnienia SMS do klientów',
         }

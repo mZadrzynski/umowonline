@@ -276,12 +276,8 @@ TWILIO_MESSAGING_SERVICE_SID = os.getenv('TWILIO_MESSAGING_SERVICE_SID')
 
 # ===== REMINDER SETTINGS =====
 SEND_REMINDER_HOURS_BEFORE = int(os.getenv('SEND_REMINDER_HOURS_BEFORE', '24'))
-REMINDER_CHECK_HOUR = int(os.getenv('REMINDER_CHECK_HOUR', '9'))
-REMINDER_CHECK_MINUTE = int(os.getenv('REMINDER_CHECK_MINUTE', '0'))
 
-# ===== CELERY BEAT SCHEDULE =====
-
-
+# ===== CELERY BEAT SCHEDULE ===
 CELERY_BEAT_SCHEDULE = {
     'send-appointment-reminders': {
         'task': 'appointments.tasks.send_appointment_reminders',

@@ -10,7 +10,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3>✏️ Edycja profilu</h3>
+                    <h3><i class="bi bi-pencil-square"></i> Edycja profilu</h3>
                 </div>
                 <div class="card-body">
                     <!-- Komunikaty -->
@@ -57,7 +57,7 @@
                             </label>
                             {{ user_form.email }}
                             {% if user_form.email.help_text %}
-                                <small class="form-text text-muted">{{ user_form.email.help_text }}</small>
+                                <small class="form-text text-muted"> <i class="bi bi-lock"></i> {{ user_form.email.help_text }}</small>
                             {% endif %}
                         </div>
 
@@ -70,7 +70,7 @@
                             {{ user_form.phone_number }}
                             {% if user_form.phone_number.help_text %}
                                 <small class="form-text text-muted">
-                                    📱 {{ user_form.phone_number.help_text }}
+                                    {{ user_form.phone_number.help_text }}
                                 </small>
                             {% endif %}
                             {% if user_form.phone_number.errors %}
@@ -81,10 +81,10 @@
                         <!-- Przyciski -->
                         <div class="form-group mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                💾 Zapisz zmiany
+                                <i class="bi bi-floppy"></i> Zapisz zmiany
                             </button>
                             <a href="/" class="btn btn-secondary btn-lg ml-2">
-                                ❌ Anuluj
+                                <i class="bi bi-x-square"></i> Anuluj
                             </a>
                         </div>
                     </form>
@@ -93,7 +93,7 @@
 
             <!-- Info -->
             <div class="alert alert-info mt-4">
-                <h5>ℹ️ Informacje</h5>
+                <h5><i class="bi bi-info-square"></i> Informacje</h5>
                 <ul class="mb-0">
                     <li><strong>Email</strong> jest przypisany do konta i nie może być zmieniony</li>
                     <li><strong>Numer telefonu</strong> jest opcjonalny i musi być polski (+48)</li>

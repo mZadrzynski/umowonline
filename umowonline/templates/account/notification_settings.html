@@ -8,17 +8,17 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h4 class="mb-0">📊 Status Konta</h4>
+                    <h4 class="mb-0"><i class="bi bi-file-bar-graph"></i> Status Konta</h4>
                 </div>
                 <div class="card-body">
                     {% if subscription %}
                         {% if subscription.is_active %}
                             <div class="alert alert-success">
-                                <h5>✅ Konto aktywne</h5>
+                                <h5><i class="bi bi-check-square"></i> Konto aktywne</h5>
                                 {% if is_trial %}
                                     <p><strong>Typ konta:</strong> 30-dniowy okres testowy</p>
                                     <p><strong>Pozostało dni:</strong> {{ days_left }}</p>
-                                    <p class="text-alert">⚠️ Po zakończeniu okresu testowego nie bedziesz mógl korzystać ze swojego kalendarza</p>
+                                    <p class="text-alert"><i class="bi bi-exclamation-square"></i> Po zakończeniu okresu testowego nie bedziesz mógl korzystać ze swojego kalendarza</p>
                                 {% else %}
                                     <p><strong>Typ konta:</strong> Premium (płatne)</p>
                                     <p><strong>Pozostało dni:</strong> {{ days_left }}</p>
@@ -27,13 +27,13 @@
                             </div>
                         {% else %}
                             <div class="alert alert-danger">
-                                <h5>❌ Subskrypcja wygasła</h5>
+                                <h5><i class="bi bi-x-square-fill"></i> Subskrypcja wygasła</h5>
                                 <p>Twoja subskrypcja wygasła: {{ subscription.end_date|date:"d.m.Y" }}</p>
                             </div>
                         {% endif %}
                     {% else %}
                         <div class="alert alert-warning">
-                            <h5>⚠️ Brak subskrypcji</h5>
+                            <h5><i class="bi bi-exclamation-square"></i> Brak subskrypcji</h5>
                             <p>Nie masz aktywnej subskrypcji</p>
                         </div>
                     {% endif %}
@@ -42,11 +42,11 @@
                     <div class="mt-3">
                         {% if not subscription or not subscription.is_active %}
                             <a href="{% url 'create_payment' %}" class="btn btn-primary">
-                                💳 Aktywuj Premium (20 PLN / 30 dni)
+                                <i class="bi bi-arrow-down-square"></i> Aktywuj Premium (20 PLN / 30 dni)
                             </a>
                         {% else %}
                             <a href="{% url 'create_payment' %}" class="btn btn-success">
-                                ➕ Przedłuż o 30 dni (20 PLN)
+                                <i class="bi bi-arrow-down-square"></i> Przedłuż o 30 dni (20 PLN)
                             </a>
                         {% endif %}
                     </div>
@@ -54,7 +54,7 @@
                     <!-- Info o płatnościach -->
                     <div class="mt-3">
                         <small class="text-muted">
-                            💡 <strong>Informacja:</strong> Każda płatność przedłuża subskrypcję o 30 dni od daty wygaśnięcia.
+                            <i class="bi bi-info-square"></i> <strong>Informacja:</strong> Każda płatność przedłuża subskrypcję o 30 dni od daty wygaśnięcia.
                         </small>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">🔔 Ustawienia Powiadomień Email</h4>
+                    <h4 class="mb-0"><i class="bi bi-bell"></i> Ustawienia Powiadomień Email</h4>
                     <small>Zarządzaj powiadomieniami o wizytach</small>
                 </div>
                 <div class="card-body">
@@ -75,8 +75,8 @@
                         {% csrf_token %}
                         
                         <div class="form-group mb-4">
-                            <h5>📅 Nowe wizyty</h5>
-                            <div class="custom-control custom-switch">
+                            <h5><i class="bi bi-calendar-check"></i> Nowe wizyty</h5>
+                            <div class="custom -control custom-switch">
                                 {{ form.booking_created_notifications }}
                                 <label class="custom-control-label" for="{{ form.booking_created_notifications.id_for_label }}">
                                     <strong>{{ form.booking_created_notifications.label }}</strong>
@@ -86,7 +86,7 @@
                         </div>
                         
                         <div class="form-group mb-4">
-                            <h5>❌ Anulowane wizyty</h5>
+                            <h5><i class="bi bi-x-square"></i> Anulowane wizyty</h5>
                             <div class="custom-control custom-switch">
                                 {{ form.booking_cancelled_notifications }}
                                 <label class="custom-control-label" for="{{ form.booking_cancelled_notifications.id_for_label }}">
@@ -97,7 +97,7 @@
                         </div>
                         
                         <div class="form-group mb-4">
-                            <h5>✅ Potwierdzenia</h5>
+                            <h5><i class="bi bi-check-square"></i> Potwierdzenia</h5>
                             <div class="custom-control custom-switch">
                                 {{ form.own_booking_confirmations }}
                                 <label class="custom-control-label" for="{{ form.own_booking_confirmations.id_for_label }}">
@@ -107,11 +107,11 @@
                             <small class="text-muted">{{ form.own_booking_confirmations.help_text }}</small>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">💾 Zapisz ustawienia</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-floppy"></i> Zapisz ustawienia</button>
                     </form>
                     
                     <div class="alert alert-info mt-4">
-                        <h6>ℹ️ Informacja</h6>
+                        <h6><i class="bi bi-info-square"></i> Informacja</h6>
                         <p class="mb-0">Powiadomienia są wysyłane na adres email przypisany do Twojego konta. 
                         Możesz je w każdej chwili włączyć lub wyłączyć.</p>
                     </div>

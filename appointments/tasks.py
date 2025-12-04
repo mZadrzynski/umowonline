@@ -1,12 +1,13 @@
-# appointments/tasks.py
+# appointments/tasks.py (fragment - tylko zmień validate_polish_phone)
 
 import re
 from celery import shared_task
 from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
-from myschedule.models import Booking  # ← ZMIANA: używaj Booking
+from myschedule.models import Booking
 from account.models import Subscription, UserNotificationSettings
+from account.utils import validate_and_normalize_polish_phone  # ← IMPORT Z UTILS
 import logging
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
@@ -14,27 +15,9 @@ from twilio.base.exceptions import TwilioRestException
 logger = logging.getLogger(__name__)
 
 
-def validate_polish_phone(phone_number):
-    """
-    Sprawdza czy numer jest z Polski: +48 i 9 cyfr
-    Zwraca tuple (is_valid, normalized_number)
-    """
-    if not phone_number:
-        return False, None
-    
-    # Usuń wszystkie znaki oprócz cyfr i +
-    clean_number = re.sub(r'[^\d+]', '', phone_number)
-    
-    # Usuń + żeby policzyć cyfry
-    digits_only = clean_number.lstrip('+')
-    
-    # Sprawdź format: 48 + 9 cyfr = 11 cyfr
-    if digits_only.startswith('48') and len(digits_only) == 11:
-        normalized = '+' + digits_only if not clean_number.startswith('+') else clean_number
-        return True, normalized
-    
-    logger.warning(f"Invalid phone format: {phone_number} (cleaned: {clean_number})")
-    return False, None
+# ❌ USUŃ STARY validate_polish_phone() - już nie potrzebny!
+# def validate_polish_phone(phone_number):
+#     ...
 
 
 @shared_task
@@ -48,12 +31,11 @@ def send_appointment_reminders():
     tomorrow_start = now + timedelta(hours=hours_before - 2)
     tomorrow_end = now + timedelta(hours=hours_before + 2)
     
-    # ✅ DODAJ reminder_sent=False:
     bookings = Booking.objects.filter(
         start_datetime__gte=tomorrow_start,
         start_datetime__lte=tomorrow_end,
         status='active',
-        reminder_sent=False  # ← DODAJ TO!
+        reminder_sent=False
     ).select_related(
         'availability__calendar__user',
         'availability__calendar__user__subscription',
@@ -81,7 +63,7 @@ def send_appointment_reminders():
             try:
                 subscription = owner.subscription
             except Subscription.DoesNotExist:
-                logger.info(f"Owner {owner.username} (ID: {owner.id}) has no subscription - skipping booking {booking.id}")
+                logger.info(f"Owner {owner.username} has no subscription - skipping booking {booking.id}")
                 skipped_count += 1
                 continue
             
@@ -99,7 +81,7 @@ def send_appointment_reminders():
             
             # Sprawdź limit SMS
             if not subscription.can_send_sms():
-                logger.warning(f"Owner {owner.username} exceeded SMS limit ({subscription.get_sms_monthly_usage()}/{subscription.get_sms_monthly_limit()}) - skipping booking {booking.id}")
+                logger.warning(f"Owner {owner.username} exceeded SMS limit - skipping booking {booking.id}")
                 skipped_count += 1
                 continue
             
@@ -116,14 +98,14 @@ def send_appointment_reminders():
             # Pobierz numer telefonu klienta
             client_phone = booking.client_phone
             if not client_phone:
-                logger.warning(f"Booking {booking.id} has no client phone number - skipping")
+                logger.warning(f"Booking {booking.id} has no client phone - skipping")
                 failed_count += 1
                 continue
             
-            # Walidacja numeru telefonu
-            is_valid, normalized_phone = validate_polish_phone(client_phone)
+            # ✅ WALIDACJA NUMERU TELEFONU (używa funkcji z utils.py)
+            is_valid, normalized_phone, error = validate_and_normalize_polish_phone(client_phone)
             if not is_valid:
-                logger.warning(f"Invalid phone number for booking {booking.id}: '{client_phone}' - skipping")
+                logger.warning(f"Invalid phone for booking {booking.id}: '{client_phone}' - {error}")
                 failed_count += 1
                 continue
             
@@ -134,29 +116,34 @@ def send_appointment_reminders():
             
             # Wysyłaj SMS
             try:
-                send_sms_reminder(normalized_phone, client_name, booking.start_datetime, booking.service_type.name)
+                send_sms_reminder(
+                    normalized_phone, 
+                    client_name, 
+                    booking.start_datetime, 
+                    booking.service_type.name
+                )
                 
-                # Zaloguj użycie SMS (odliczane z konta właściciela)
+                # Zaloguj użycie SMS
                 subscription.log_sms_usage(sms_count=1)
                 
-                # ✅ OZNACZ JAKO WYSŁANE (zapobiega duplikatom!):
+                # Oznacz jako wysłane
                 booking.reminder_sent = True
                 booking.reminder_sent_at = now
                 booking.save(update_fields=['reminder_sent', 'reminder_sent_at'])
                 
                 success_count += 1
-                logger.info(f"✓ SMS sent for booking {booking.id} to {normalized_phone}, reminder_sent=True")
+                logger.info(f"✓ SMS sent for booking {booking.id} to {normalized_phone}")
                 
             except TwilioRestException as e:
-                logger.error(f"✗ Twilio error for booking {booking.id} (phone: {normalized_phone}): {e.code} - {e.msg}")
+                logger.error(f"✗ Twilio error for booking {booking.id}: {e.code} - {e.msg}")
                 failed_count += 1
                 
             except Exception as e:
-                logger.error(f"✗ Unexpected error sending SMS for booking {booking.id}: {str(e)}")
+                logger.error(f"✗ Error sending SMS for booking {booking.id}: {str(e)}")
                 failed_count += 1
         
         except Exception as e:
-            logger.error(f"✗ Unexpected error processing booking {booking.id}: {str(e)}", exc_info=True)
+            logger.error(f"✗ Error processing booking {booking.id}: {str(e)}", exc_info=True)
             failed_count += 1
     
     result = {
@@ -171,10 +158,7 @@ def send_appointment_reminders():
 
 
 def send_sms_reminder(phone_number, client_name, appointment_time, service_name):
-    """
-    Wysyła SMS via Twilio
-    phone_number MUSI być w formacie +48XXXXXXXXX
-    """
+    """Wysyła SMS via Twilio"""
     try:
         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
         
@@ -193,13 +177,13 @@ def send_sms_reminder(phone_number, client_name, appointment_time, service_name)
             to=phone_number
         )
         
-        logger.info(f"✓ SMS sent via Twilio: SID={msg.sid}, to={phone_number}, status={msg.status}")
+        logger.info(f"✓ SMS sent: SID={msg.sid}, to={phone_number}, status={msg.status}")
         return msg.sid
         
     except TwilioRestException as e:
-        logger.error(f"✗ Twilio API error: code={e.code}, msg={e.msg}, status={e.status}")
+        logger.error(f"✗ Twilio error: code={e.code}, msg={e.msg}")
         raise
         
     except Exception as e:
-        logger.error(f"✗ Unexpected error in send_sms_reminder: {str(e)}")
+        logger.error(f"✗ Error in send_sms_reminder: {str(e)}")
         raise

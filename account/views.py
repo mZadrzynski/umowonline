@@ -99,8 +99,11 @@ def edit(request):
             data=request.POST
         )
     
+
         if user_form.is_valid():
             user_form.save()
+            storage = messages.get_messages(request)
+            storage.used = True
             messages.success(request, '✅ Profil został zaktualizowany.')
             return redirect('edit')  # lub inna strona
         else:

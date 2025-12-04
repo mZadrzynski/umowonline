@@ -3,6 +3,10 @@
 {% block title %}Wybierz Plan - UmowZdalnie.pl{% endblock %}
 
 {% block content %}
+{% load static %}
+>
+
+
 <div class="container mt-4">
     <h2 class="mb-4">Wybierz Plan Subskrypcji</h2>
     
@@ -65,7 +69,7 @@
                                 <!-- Ten sam plan - opcja przedłużenia -->
                                 <input type="hidden" name="action" value="extend">
                                 <button type="submit" class="btn btn-success btn-block btn-lg">
-                                    🔄 Przedłuż o 30 dni
+                                   <i class="bi bi-arrow-up-right-square"></i> Przedłuż o 30 dni
                                 </button>
                                 <small class="text-muted d-block mt-2 text-center">
                                     Przedłuż do 
@@ -79,7 +83,7 @@
                                 <!-- Inny plan - zmiana planu -->
                                 <input type="hidden" name="action" value="change">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg">
-                                    ↔️ Zmień plan
+                                    <i class="bi bi-arrow-left-right"></i> Zmień plan
                                 </button>
                                 <small class="text-muted d-block mt-2 text-center">
                                     Aktywny od {{ current_subscription.end_date|date:"d.m.Y" }}
@@ -89,14 +93,14 @@
                                 <!-- Ma subskrypcję ale nie ma przypisanego planu - pozwól wybrać -->
                                 <input type="hidden" name="action" value="change">
                                 <button type="submit" class="btn btn-warning btn-block btn-lg">
-                                    ⚙️ Ustaw jako mój plan
+                                    <i class="bi bi-arrow-down-square"></i> Ustaw jako mój plan
                                 </button>
                                 
                             {% else %}
                                 <!-- Brak subskrypcji - zakup -->
                                 <input type="hidden" name="action" value="buy">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg">
-                                    🛒 Wybierz plan
+                                    <i class="bi bi-arrow-down-square"></i> Wybierz plan
                                 </button>
                             {% endif %}
                         </form>
@@ -109,8 +113,8 @@
     
     {% if has_active_subscription %}
     <div class="alert alert-secondary mt-4">
-        <h5>❓ Jak działa zmiana planu?</h5>
-        <ul class="mb-0">
+        <h5>Jak działa zmiana planu?</h5>
+        <ul>
             <li><strong>Przedłużenie obecnego planu:</strong> Dodaje 30 dni do obecnej subskrypcji</li>
             <li><strong>Zmiana na inny plan:</strong> Nowy plan będzie aktywny po zakończeniu obecnego okresu rozliczeniowego</li>
         </ul>
