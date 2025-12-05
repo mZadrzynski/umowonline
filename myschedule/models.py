@@ -88,7 +88,6 @@ class Booking(models.Model):
         verbose_name="Dodane przez"
     )
     
-    # ✅ DODAJ TE 2 POLA:
     reminder_sent = models.BooleanField(
         default=False,
         verbose_name="SMS reminder wysłany"
@@ -101,6 +100,7 @@ class Booking(models.Model):
     
     class Meta:
         ordering = ['-start_datetime']
+        
     
     @property
     def provider(self):
