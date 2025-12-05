@@ -713,31 +713,26 @@ def handle_regular_booking(request, availability):
     from django.contrib import messages
     from django.utils import timezone
     from datetime import datetime, timedelta
-    from django.db import transaction, IntegrityError  # ✅ DODANE
+    from django.db import transaction, IntegrityError
     
-    # Wyczyść niechciane komunikaty
     storage = messages.get_messages(request)
     storage.used = True
 
-    # ✅ WALIDACJA: Czy cały termin nie minął?
     now = timezone.now()
     availability_end_dt = timezone.make_aware(
         datetime.combine(availability.date, availability.end_time)
     )
     
     if availability_end_dt <= now:
-        messages.error(request, "❌ Ten termin już minął. Nie można rezerwować.")
+        messages.error(request, "❌ Ten termin już minął.")
         return redirect("my_calendar_week")
 
-    # Sprawdzenie, czy użytkownik już zarezerwował tę availability
     if Booking.objects.filter(availability=availability, user=request.user, status='active').exists():
         return render(request, "myschedule/already_booked.html", {"availability": availability})
 
-    # ✅ POBIERZ USŁUGI
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
 
     if request.method == "POST":
-        # ✅ PRZEKAŻ service_types DO FORMULARZA
         form = BookingForm(
             request.POST, 
             user=request.user, 
@@ -745,7 +740,6 @@ def handle_regular_booking(request, availability):
             service_types=service_types
         )
         
-        # Pobierz service_type żeby wygenerować odpowiednie czasy
         service_type_id = form.data.get('service_type')
         if service_type_id:
             try:
@@ -774,34 +768,37 @@ def handle_regular_booking(request, availability):
                     start_time = datetime.strptime(start_time_str, '%H:%M').time()
                     start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
                     
-                    # ✅ DODATKOWA WALIDACJA: Czy slot nie jest w przeszłości?
                     if start_dt <= now:
-                        form.add_error('start_time', "❌ Ten termin już minął. Wybierz inny.")
+                        form.add_error('start_time', "❌ Ten termin już minął.")
                     else:
-                        # ✅ NOWY KOD: Transakcja atomowa z ponownym sprawdzeniem
                         try:
                             with transaction.atomic():
-                                # Oblicz koniec nowej wizyty
                                 end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
                                 
-                                # Pobierz wszystkie aktywne wizyty
-                                conflicting = Booking.objects.filter(
+                                # ✅ POPRAWIONE: Sprawdź nakładanie
+                                has_conflict = False
+                                conflicting_bookings = Booking.objects.filter(
                                     availability=availability,
                                     status='active'
                                 )
                                         
-                                # Sprawdź każdą osobno
-                                for existing_booking in conflicting:
+                                for existing_booking in conflicting_bookings:
                                     existing_end = existing_booking.start_datetime + timedelta(
                                         minutes=existing_booking.service_type.duration_minutes
                                     )
                                     
-                                    # Nakładanie?
-                                    if start_dt < existing_end and end_dt > existing_booking.start_datetime and start_dt != existing_end:
-                                        form.add_error('start_time', "❌ Nakładanie!")
+                                    # ✅ Nakładanie: nowy start < istniejący koniec AND nowy koniec > istniejący start
+                                    # ALE pozwalaj na wizyty back-to-back (koniec jednej = start drugiej)
+                                    if start_dt < existing_end and end_dt > existing_booking.start_datetime:
+                                        has_conflict = True
+                                        form.add_error('start_time', 
+                                            f"❌ Ten termin nakłada się z wizytą "
+                                            f"{existing_booking.start_datetime.strftime('%H:%M')}-"
+                                            f"{existing_end.strftime('%H:%M')}"
+                                        )
                                         break
-                                else:
-                                    # ✅ UTWÓRZ REZERWACJĘ tylko jeśli nie ma konfliktu
+                                
+                                if not has_conflict:
                                     Booking.objects.create(
                                         availability=availability,
                                         user=request.user,
@@ -816,17 +813,14 @@ def handle_regular_booking(request, availability):
                                     return redirect("my_bookings")
                                     
                         except IntegrityError:
-                            # ✅ Backup: Jeśli constraint na DB złapie duplikat
                             form.add_error('start_time', "❌ Ten slot został właśnie zarezerwowany. Spróbuj ponownie.")
     else:
-        # ✅ GET: PRZEKAŻ service_types DO FORMULARZA
         form = BookingForm(
             user=request.user, 
             availability=availability,
             service_types=service_types
         )
         
-        # Ustaw domyślne dostępne czasy (15 minut)
         available_times = generate_available_start_times(availability, 15)
         if available_times:
             form.fields['start_time'].choices = available_times
@@ -839,10 +833,12 @@ def handle_regular_booking(request, availability):
         "service_types": service_types
     })
 
+
 @login_required
 def handle_owner_booking(request, availability):
     from django.utils import timezone
-    from django.db import transaction, IntegrityError  # ✅ DODANE
+    from django.db import transaction, IntegrityError
+    from datetime import datetime, timedelta
     
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
     
@@ -850,11 +846,10 @@ def handle_owner_booking(request, availability):
         form = OwnerBookingForm(request.POST)
         form.fields['service_type'].queryset = service_types
         
-        # Pobierz service_type żeby wygenerować odpowiednie czasy
-        service_type = form.data.get('service_type')
-        if service_type:
+        service_type_id = form.data.get('service_type')
+        if service_type_id:
             try:
-                service_obj = ServiceType.objects.get(id=service_type)
+                service_obj = ServiceType.objects.get(id=service_type_id)
                 form.update_available_times(availability, service_obj.duration_minutes)
             except ServiceType.DoesNotExist:
                 form.update_available_times(availability, 15)
@@ -869,33 +864,34 @@ def handle_owner_booking(request, availability):
                 start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
                 start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
                 
-                # ✅ NOWY KOD: Transakcja atomowa z ponownym sprawdzeniem
                 try:
                     with transaction.atomic():
-                            # Oblicz koniec nowej wizyty
                         end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
                         
-                        # Pobierz wszystkie aktywne wizyty
-                        conflicting = Booking.objects.filter(
+                        # ✅ POPRAWIONE: Sprawdź nakładanie
+                        has_conflict = False
+                        conflicting_bookings = Booking.objects.filter(
                             availability=availability,
                             status='active'
                         )
                         
-                        # Sprawdź każdą osobno
-                        for existing_booking in conflicting:
+                        for existing_booking in conflicting_bookings:
                             existing_end = existing_booking.start_datetime + timedelta(
                                 minutes=existing_booking.service_type.duration_minutes
                             )
                             
-                            # Nakładanie?
-                            if start_dt < existing_end and end_dt > existing_booking.start_datetime and start_dt != existing_end:
-                                form.add_error('start_time', "❌ Nakładanie!")
-                                break         
-
-                        if conflicting:
-                            form.add_error('start_time', "❌ Ten slot został właśnie zarezerwowany. Odśwież listę i wybierz inny termin.")
-                        else:
-                            # ✅ Utwórz booking tylko jeśli nie ma konfliktu
+                            # ✅ Nakładanie - pozwalaj na back-to-back
+                            if start_dt < existing_end and end_dt > existing_booking.start_datetime:
+                                has_conflict = True
+                                form.add_error('start_time', 
+                                    f"❌ Ten termin nakłada się z wizytą "
+                                    f"{existing_booking.start_datetime.strftime('%H:%M')}-"
+                                    f"{existing_end.strftime('%H:%M')}"
+                                )
+                                break
+                        
+                        # ✅ UTWÓRZ BOOKING tylko jeśli nie ma konfliktu
+                        if not has_conflict:
                             Booking.objects.create(
                                 availability=availability,
                                 user=None,
@@ -907,18 +903,16 @@ def handle_owner_booking(request, availability):
                                 booked_by=request.user,
                                 status='active'
                             )
-                            
                             messages.success(request, f"✅ Dodano wizytę dla {form.cleaned_data['client_name']} na {start_time.strftime('%H:%M')}")
                             return redirect("my_calendar_week")
                             
                 except IntegrityError:
-                    # ✅ Backup: Jeśli constraint na DB złapie duplikat
                     form.add_error('start_time', "❌ Ten slot został właśnie zarezerwowany. Spróbuj ponownie.")
                     
     else:
         form = OwnerBookingForm()
         form.fields['service_type'].queryset = service_types
-        form.update_available_times(availability, 15)  # Domyślnie 15 minut
+        form.update_available_times(availability, 15)
     
     return render(request, "myschedule/owner_book_availability.html", {
         "availability": availability,
