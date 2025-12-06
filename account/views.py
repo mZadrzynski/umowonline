@@ -99,7 +99,6 @@ def edit(request):
             data=request.POST
         )
     
-
         if user_form.is_valid():
             user_form.save()
             storage = messages.get_messages(request)
@@ -339,7 +338,7 @@ def hotpay_webhook(request):
         # Pobierz dane z POST
         kwota = request.POST.get('KWOTA')
         id_platnosci = request.POST.get('ID_PLATNOSCI')
-        id_zamowienia = request.POST.get('ID_ZAMOWIENIA', '')
+        id_zamowienia = request.POST.get('ID_ZAMOWIENIA', '').strip("'\"")  # ✅ Usuń cudzysłowy
         status = request.POST.get('STATUS')
         sekret = request.POST.get('SEKRET')
         received_hash = request.POST.get('HASH')
@@ -363,6 +362,11 @@ def hotpay_webhook(request):
             logger.error(f"Payment not found: {id_zamowienia}")
             return HttpResponse('Payment not found', status=404)
         
+        # ✅ Sprawdź czy payment ma subscription
+        if not payment.subscription:
+            logger.error(f"Payment {id_zamowienia} has no subscription")
+            return HttpResponse('No subscription', status=400)
+        
         # Aktualizuj status płatności
         payment.hotpay_response = dict(request.POST)
         
@@ -378,7 +382,9 @@ def hotpay_webhook(request):
             subscription.hotpay_transaction_id = payment.hotpay_payment_id
             subscription.save()
             
-            logger.info(f"Payment successful for user {payment.user.username} - {subscription.plan.display_name} subscription extended by 30 days")
+            # ✅ Bezpieczne logowanie - sprawdź czy plan istnieje
+            plan_name = subscription.plan.display_name if subscription.plan else "Brak planu"
+            logger.info(f"Payment successful for user {payment.user.username} - {plan_name} subscription extended by 30 days")
             
         elif status == 'FAILED':
             payment.status = 'failed'
@@ -388,7 +394,7 @@ def hotpay_webhook(request):
         return HttpResponse('OK')
         
     except Exception as e:
-        logger.error(f"Webhook processing error: {str(e)}")
+        logger.error(f"Webhook processing error: {str(e)}", exc_info=True)  # ✅ Dodano exc_info=True
         return HttpResponse(f'Error: {str(e)}', status=500)
     
 
