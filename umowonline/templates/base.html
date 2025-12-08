@@ -72,14 +72,16 @@
         
         <!-- Moje rezerwacje - DROPDOWN -->
         <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" id="helpDropdown" 
-               data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="#" class="nav-link dropdown-toggle" id="bookingsDropdown" 
+            data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-calendar2-x"></i> Moje rezerwacje</a>
-            <ul class="dropdown-menu" aria-labelledby="helpDropdown">
+            <ul class="dropdown-menu" aria-labelledby="bookingsDropdown">
                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">Moje rezerwacje</a></li>
-                <li><a class="dropdown-item" href="{% url 'favorite_calendars' %}">Ulubione</a></li>
-                <li><a class="dropdown-item" href="/dashboard/instructions/">Pomoc</a></li>
+                <li><a class="dropdown-item" href="{% url 'favorite_calendars' %}">Ulubione kalendarze</a></li>
+                <li><hr class="dropdown-divider"></li>
+
             </ul>
+        </li>
 
  
         <!-- Konto użytkownika - DROPDOWN -->

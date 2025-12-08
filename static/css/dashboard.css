@@ -101,8 +101,12 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 .block { display: block; }
 .hidden { display: none; }
 
-/* Hero Section */
-.hero { background-color: rgba(59, 130, 246, 0.08); padding: 32px 0; display: flex; align-items: center; }
+/* new sections containe */
+.grey_bg { background-color: rgba(59, 130, 246, 0.08); padding: 32px 0; display: flex; align-items: center; }
+.white_bg { padding: 32px 0; background-color: #fffffd; }
+
+
+
 .hero-content { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
 .hero-text h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.2; color: #13343b; }
 .hero-subtitle { font-size: 16px; margin-bottom: 24px; text-align: justify; line-height: 1.5; }
@@ -112,10 +116,10 @@ select.form-control { padding: 8px 12px; -webkit-appearance: none; -moz-appearan
 .hero-image img { width: 100%; max-width: 500px; height: auto; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02); object-fit: cover; display: block; margin: 0 auto; }
 
 /* Features Section */
-.features { padding: 32px 0; background-color: #fffffd; }
+
 .features h2 { text-align: center; margin-bottom: 32px; color: #13343b; }
 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-.feature-card { background-color: #fcfcf9; padding: 24px; border-radius: 12px; border: 1px solid rgba(94, 82, 64, 0.12); text-align: center; transition: transform 250ms ease; }
+.feature-card { background-color: #c1c1ad41; padding: 24px; border-radius: 12px; border: 1px solid rgba(94, 82, 64, 0.12); text-align: center; transition: transform 250ms ease; }
 .feature-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02); }
 .feature-icon { font-size: 30px; margin-bottom: 16px; }
 .feature-card h3 { margin-bottom: 12px; color: #13343b; }
@@ -215,5 +219,3 @@ form {
   border-radius: 8px; /* zaokrąglenie rogów */
   margin-left: 0;
 }
-
-
