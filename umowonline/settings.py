@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'blog',
     'tinymce',
     'appointments',
+    'catalog',
 ]
 
 TINYMCE_DEFAULT_CONFIG = {

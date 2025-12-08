@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Moje Profile Biznesowe{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">📊 Moje Profile Biznesowe</h1>
+        <a href="{% url 'catalog:business_create' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nowy Profil
+        </a>
+    </div>
+
+    {% if businesses %}
+        <div class="row g-4">
+            {% for business in businesses %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <!-- Cover -->
+                        {% if business.cover_image %}
+                            <img src="{{ business.cover_image.url }}" class="card-img-top" 
+                                 alt="Cover" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light" style="height: 200px;"></div>
+                        {% endif %}
+
+                        <div class="card-body">
+                            <div class="d-flex gap-2 mb-2">
+                                {% if business.logo %}
+                                    <img src="{{ business.logo.url }}" alt="Logo" 
+                                         class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% endif %}
+                                <div>
+                                    <h5 class="card-title mb-0">{{ business.business_name }}</h5>
+                                    <small class="text-muted">{{ business.owner_name }}</small>
+                                </div>
+                            </div>
+
+                            <p class="card-text small text-muted mb-3">
+                                {{ business.description|truncatewords:15 }}
+                            </p>
+
+                            <!-- Stats -->
+                            <div class="row text-center mb-3 small">
+                                <div class="col">
+                                    <strong>{{ business.services.count }}</strong><br>
+                                    <small class="text-muted">Usługi</small>
+                                </div>
+                                <div class="col">
+                                    <strong>{{ business.reviews.count }}</strong><br>
+                                    <small class="text-muted">Opinie</small>
+                                </div>
+                                <div class="col">
+                                    <strong>{% if business.is_active %}✅{% else %}❌{% endif %}</strong><br>
+                                    <small class="text-muted">Status</small>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="btn-group w-100" role="group">
+                                <a href="{% url 'catalog:business_detail' business.slug %}" 
+                                   class="btn btn-outline-primary btn-sm" title="Podgląd">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'catalog:business_edit' business.pk %}" 
+                                   class="btn btn-outline-primary btn-sm" title="Edytuj">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'catalog:business_delete' business.pk %}" 
+                                   class="btn btn-outline-danger btn-sm" title="Usuń">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+
+                            <!-- Services & Review Buttons -->
+                            <div class="mt-2">
+                                <a href="{% url 'catalog:service_create' business.pk %}" 
+                                   class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                                    <i class="bi bi-plus"></i> Dodaj Usługę
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+            <h4 class="mt-3">Brak profili biznesowych</h4>
+            <p class="mb-3">Zacznij od dodania nowego profilu do katalogu!</p>
+            <a href="{% url 'catalog:business_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Dodaj Profil
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

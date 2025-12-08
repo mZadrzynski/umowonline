@@ -9,10 +9,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from sitemaps import StaticSitemap, BlogPostSitemap
 
-# Sitemaps
-sitemaps = {
-    'static': StaticSitemap(),
-}
 # Robots.txt view
 @require_http_methods(["GET"])
 def robots_txt(request):
@@ -45,6 +41,7 @@ urlpatterns = [
     path('robots.txt', robots_txt, name='robots'),
     
     path('', views.home, name='home'),
+    path('catalog/', include('catalog.urls')),
     path('<str:username>/', redirect_username_to_token, name='public_calendar_username'),
     path('account/', include('account.urls')),
     path('dashboard/', include('dashboard.urls')),
@@ -60,3 +57,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

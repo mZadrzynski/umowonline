@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Katalog Firm{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="mb-5">
+        <h1 class="h2 mb-2">🏢 Katalog Firm</h1>
+        <p class="text-muted">Odkryj profesjonalnych usługodawców w Twojej okolicy</p>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" name="q" class="form-control" 
+                           placeholder="Szukaj firmy, usługi..." 
+                           value="{{ search_query }}">
+                </div>
+                
+                <div class="col-md-4">
+                    <select name="sort" class="form-select">
+                        <option value="-is_featured" {% if current_sort == "-is_featured" %}selected{% endif %}>
+                            Wyróżnione
+                        </option>
+                        <option value="-created_at" {% if current_sort == "-created_at" %}selected{% endif %}>
+                            Najnowsze
+                        </option>
+                        <option value="business_name" {% if current_sort == "business_name" %}selected{% endif %}>
+                            Nazwa (A-Z)
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Szukaj
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Businesses Grid -->
+    {% if businesses %}
+        <div class="row g-4">
+            {% for business in businesses %}
+                <div class="col-md-6 col-lg-4">
+                    {% include "catalog/includes/business_card.html" with business=business %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">Pierwsza</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                ← Poprzednia
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                Następna →
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                                Ostatnia
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+            <h4 class="mt-3">Brak wyników</h4>
+            <p>Nie znaleziono firm spełniających kryteria wyszukiwania.</p>
+        </div>
+    {% endif %}
+
+    <!-- CTA Button -->
+    {% if user.is_authenticated %}
+        <div class="text-center mt-5 pt-4 border-top">
+            <p class="text-muted mb-3">Jesteś usługodawcą?</p>
+            <a href="{% url 'catalog:business_create' %}" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Dodaj swój profil
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

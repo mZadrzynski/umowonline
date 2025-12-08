@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ business.business_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Cover Image -->
+    {% if business.cover_image %}
+        <div class="mb-4" style="height: 300px; overflow: hidden; border-radius: 12px;">
+            <img src="{{ business.cover_image.url }}" alt="Cover" 
+                 class="w-100 h-100 object-fit-cover">
+        </div>
+    {% endif %}
+
+    <!-- Header Section -->
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <div class="d-flex gap-3 align-items-start mb-3">
+                {% if business.logo %}
+                    <img src="{{ business.logo.url }}" alt="Logo" 
+                         class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 100px; height: 100px;">
+                        <i class="bi bi-building" style="font-size: 2rem;"></i>
+                    </div>
+                {% endif %}
+                
+                <div>
+                    <h1 class="h3 mb-1">{{ business.business_name }}</h1>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-person"></i> {{ business.owner_name }}
+                    </p>
+                    
+                    <!-- Rating -->
+                    {% if average_rating %}
+                        <div class="mb-2">
+                            {% for i in "12345" %}
+                                {% if i|add:"0" <= average_rating %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% elif i|add:"0" == average_rating|add:"1" and average_rating|divisibleby:"1" != True %}
+                                    <i class="bi bi-star-half text-warning"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-warning"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ms-2 text-muted">({{ business.reviews.count }} opinii)</span>
+                        </div>
+                    {% endif %}
+
+                    {% if business.owner == user %}
+                        <div class="mt-3">
+                            <a href="{% url 'catalog:business_edit' business.pk %}" 
+                               class="btn btn-sm btn-primary">
+                                <i class="bi bi-pencil"></i> Edytuj
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Contact Card -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Kontakt</h5>
+                    
+                    {% if business.email %}
+                        <p class="mb-2">
+                            <i class="bi bi-envelope"></i>
+                            <a href="mailto:{{ business.email }}">{{ business.email }}</a>
+                        </p>
+                    {% endif %}
+                    
+                    {% if business.phone %}
+                        <p class="mb-2">
+                            <i class="bi bi-telephone"></i>
+                            <a href="tel:{{ business.phone }}">{{ business.phone }}</a>
+                        </p>
+                    {% endif %}
+                    
+                    {% if business.website %}
+                        <p class="mb-2">
+                            <i class="bi bi-globe"></i>
+                            <a href="{{ business.website }}" target="_blank">Strona internetowa</a>
+                        </p>
+                    {% endif %}
+
+                    {% if calendar_url %}
+                        <a href="{{ calendar_url }}" class="btn btn-success btn-sm w-100 mt-3">
+                            <i class="bi bi-calendar-check"></i> Publiczny Kalendarz
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description & Services -->
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <h3 class="h4 mb-3">O Firmie</h3>
+            <p class="text-muted" style="white-space: pre-wrap;">{{ business.description }}</p>
+
+            <!-- Services -->
+            {% if business.services.all %}
+                <h3 class="h4 mt-5 mb-3">Usługi</h3>
+                <div class="row g-3">
+                    {% for service in business.services.all %}
+                        {% if service.is_active %}
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ service.name }}</h5>
+                                        {% if service.description %}
+                                            <p class="card-text small text-muted">{{ service.description }}</p>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-primary">⏱ {{ service.duration_minutes }} min</span>
+                                            {% if service.price %}
+                                                <span class="fw-bold text-success">{{ service.price }} PLN</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Reviews -->
+        <div class="col-md-4">
+            <h3 class="h4 mb-3">Opinie</h3>
+            
+            {% if user.is_authenticated and business.owner != user %}
+                <a href="{% url 'catalog:review_create' business.pk %}" class="btn btn-outline-primary btn-sm w-100 mb-3">
+                    <i class="bi bi-pencil"></i> Dodaj opinię
+                </a>
+            {% endif %}
+
+            {% if business.reviews.all %}
+                <div class="space-y-3">
+                    {% for review in business.reviews.all %}
+                        <div class="card border-0 bg-light mb-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <strong>{{ review.author.get_full_name|default:review.author.username }}</strong>
+                                    <div class="text-warning">
+                                        {% for i in "12345" %}
+                                            {% if i|add:"0" <= review.rating %}
+                                                ⭐
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <p class="small mb-0">{{ review.comment }}</p>
+                                <small class="text-muted d-block mt-2">{{ review.created_at|date:"d.m.Y" }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted text-center py-4">Brak opinii. Bądź pierwszym!</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -70,7 +70,7 @@
             </ul>
         </li>
         
-        <!-- Moje rezerwacje - DROPDOWN -->
+        <!-- Moje rezerwacje & Katalog - DROPDOWN -->
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" id="bookingsDropdown" 
             data-bs-toggle="dropdown" aria-expanded="false">
@@ -79,9 +79,11 @@
                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">Moje rezerwacje</a></li>
                 <li><a class="dropdown-item" href="{% url 'favorite_calendars' %}">Ulubione kalendarze</a></li>
                 <li><hr class="dropdown-divider"></li>
-
+                <li><a class="dropdown-item" href="{% url 'catalog:business_list' %}">Katalog Firm</a></li>
+                <li><a class="dropdown-item" href="{% url 'catalog:user_businesses' %}">Moje Profile</a></li>
             </ul>
         </li>
+
 
  
         <!-- Konto użytkownika - DROPDOWN -->
