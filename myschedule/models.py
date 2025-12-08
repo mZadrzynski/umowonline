@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta
 from django.core.exceptions import ValidationError
 
-import shortuuid
+import uuid
 
 def default_valid_until():
     return date.today() + timedelta(days=730)
 
 def generate_share_token():
-    return shortuuid.uuid()[:12]
+    return str(uuid.uuid4())[:12]
 
 class Calendar(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="calendar")
