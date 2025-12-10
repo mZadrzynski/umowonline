@@ -1,0 +1,85 @@
+[33me712d03[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{0}: reset: moving to e712d03
+[33me712d03[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{1}: reset: moving to HEAD~1
+[33me696e66[m HEAD@{2}: reset: moving to HEAD
+[33me696e66[m HEAD@{3}: commit: dodanie katalogu
+[33me712d03[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m HEAD@{4}: commit: cofniecie2
+[33m27434ca[m HEAD@{5}: commit: cofniecie
+[33md3704a8[m HEAD@{6}: reset: moving to d3704a8
+[33ma6b4a18[m HEAD@{7}: commit: katalog fix3
+[33mc5b5c7a[m HEAD@{8}: commit: katalog fix1
+[33m206a361[m HEAD@{9}: commit: dodanie katalogu
+[33md3704a8[m HEAD@{10}: commit: webhook fix
+[33m9b13dfe[m HEAD@{11}: commit: fix czasow 2
+[33m18fa47a[m HEAD@{12}: commit: fix czasow
+[33m047606e[m HEAD@{13}: commit: poprawki przedz pushem
+[33m0af30e3[m HEAD@{14}: commit: poprawki sms
+[33m3eca8a3[m HEAD@{15}: commit: dodanie sms oraz drugiej oferty
+[33mf9a14c8[m HEAD@{16}: commit: edycja seriwsow
+[33m7120185[m HEAD@{17}: commit: porawki+rozdzielnie umowionych wizyt na kalendarz i osobe
+[33m9c50ca5[m HEAD@{18}: commit: new menu
+[33mc092e36[m HEAD@{19}: commit: hotfix service
+[33m2fde48b[m HEAD@{20}: commit: korekta sitemaps
+[33m6fa3413[m HEAD@{21}: commit: dodanie bloga 3
+[33ma95f35f[m HEAD@{22}: commit: dodanie bloga 2
+[33m0540e05[m HEAD@{23}: commit: dodanie bloga
+[33mf6d9eb2[m HEAD@{24}: commit: dodanie sitemaps i robots
+[33maddceaf[m HEAD@{25}: commit: dropbne zmiany
+[33m5892c0c[m HEAD@{26}: commit: poprawki contact + insta2
+[33m1c56bb7[m HEAD@{27}: commit: poprawki contact + insta
+[33m67c772f[m HEAD@{28}: commit: hambureg menu change
+[33m8722728[m HEAD@{29}: commit: beta v2.0
+[33mfa2b161[m HEAD@{30}: commit: versja beta 2.0
+[33m040b8bd[m HEAD@{31}: commit: dodanie wizyt klienta4
+[33m4585642[m HEAD@{32}: commit: dodanie wizyt klienta4
+[33m95ac711[m HEAD@{33}: commit: dodanie wizyt klienta3
+[33me65fc9c[m HEAD@{34}: commit: dodanie wizyt klienta
+[33m31340ea[m HEAD@{35}: commit: dodanie wizyt klienta
+[33m8302c21[m HEAD@{36}: commit: dodawanie wizyt przez wlasciciela
+[33mf7f3634[m HEAD@{37}: commit: porawki wygladu
+[33m2689459[m HEAD@{38}: commit: beta version2
+[33m2e1ce0f[m HEAD@{39}: commit: beta version
+[33m3e201d0[m HEAD@{40}: commit: dodanie ustawien oraz moich wizyt oraz usuwania wizyt4
+[33m768ee5f[m HEAD@{41}: commit: dodanie ustawien oraz moich wizyt oraz usuwania wizyt3
+[33m022acef[m HEAD@{42}: commit: dodanie ustawien oraz moich wizyt oraz usuwania wizyt
+[33m0edd96e[m HEAD@{43}: commit: aktualizacja poprawki
+[33m90ef47a[m HEAD@{44}: commit: aktualizacja mail i czas
+[33m3f34281[m HEAD@{45}: commit: aktualizacja css/rules
+[33m03fb1f6[m HEAD@{46}: commit: aktualizacja header/footer
+[33ma2d187a[m HEAD@{47}: commit: aktualizacja google hp15
+[33m4c6ed66[m HEAD@{48}: commit: aktualizacja google hp14
+[33m1988020[m HEAD@{49}: commit: aktualizacja google hp13
+[33m2edeb17[m HEAD@{50}: commit: aktualizacja google hp12
+[33m19c1660[m HEAD@{51}: commit: aktualizacja google hp11
+[33m9cbae9b[m HEAD@{52}: commit: aktualizacja google hp10
+[33m6efb5ed[m HEAD@{53}: commit: aktualizacja google hp9
+[33m4a7fd38[m HEAD@{54}: commit: aktualizacja google hp8
+[33m6a0d4f1[m HEAD@{55}: commit: aktualizacja google anylils
+[33m5a42b68[m HEAD@{56}: commit: aktualizacja hotpay7
+[33md72cc23[m HEAD@{57}: commit: aktualizacja hotpay6
+[33md8d17e3[m HEAD@{58}: commit: aktualizacja hotpay5
+[33m12b430e[m HEAD@{59}: commit: aktualizacja hotpay4
+[33ma8964ae[m HEAD@{60}: commit: aktualizacja hotpay3
+[33mdd61f15[m HEAD@{61}: commit: aktualizacja hotpay2
+[33m41f628f[m HEAD@{62}: commit: aktualizacja hotpay
+[33me160af0[m HEAD@{63}: commit: aktualizacja settings
+[33m80208c5[m HEAD@{64}: commit: dodanie hotpay i regulaminow
+[33m2340591[m HEAD@{65}: commit: dodanie hotpay
+[33m3206938[m HEAD@{66}: commit: dodanie ulubonych2
+[33mdc1a070[m HEAD@{67}: commit: dodanie ulubonych
+[33mc30f4a3[m HEAD@{68}: commit: dodanie subksrybcii
+[33mf7bfb95[m HEAD@{69}: commit: drobne poprawki dla hotpay
+[33m4087dfa[m HEAD@{70}: commit: dodanie strony glownej i oferty2
+[33m257b32c[m HEAD@{71}: commit: dodanie strony glownej i oferty
+[33mbbb0e60[m HEAD@{72}: commit: dodanie regulaminu
+[33md16086a[m HEAD@{73}: commit: update kontakt2
+[33m542cc73[m HEAD@{74}: commit: update kontakt
+[33m49a04fa[m HEAD@{75}: commit: dodanie logowanie googla, maila
+[33me901238[m HEAD@{76}: commit: dodanie kalendarzy, funkcji umawiania wizyt
+[33m756507c[m HEAD@{77}: commit: tekstitp
+[33m7af8fd5[m HEAD@{78}: commit: dodanie hamburega
+[33m3cd3e2d[m HEAD@{79}: commit: dodanie komentarza itp
+[33m5907a63[m HEAD@{80}: commit: uwierzytelnianie
+[33mf4e2354[m HEAD@{81}: commit: setting update2
+[33md3cf0f9[m HEAD@{82}: commit: setting update
+[33m5d25cd5[m HEAD@{83}: commit: dodanie css
+[33ma62efea[m HEAD@{84}: commit (initial): first commit

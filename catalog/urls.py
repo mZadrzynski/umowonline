@@ -1,6 +1,6 @@
 # catalog/urls.py
 
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 app_name = 'catalog'
@@ -25,6 +25,6 @@ urlpatterns = [
     # REVIEWS
     path('business/<int:profile_id>/review/add/', views.ReviewCreateView.as_view(), name='review_create'),
     
-    # GENERIC - OSTATNI!
-    path('<slug:slug>/', views.BusinessDetailView.as_view(), name='business_detail'),
+    # GENERIC - OSTATNI! (z unicode support dla polskich znaków)
+    re_path(r'^(?P<slug>[\w-]+)/$', views.BusinessDetailView.as_view(), name='business_detail'),
 ]

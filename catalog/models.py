@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
 
+
 class BusinessProfile(models.Model):
     """Profil firmy w katalogu"""
     

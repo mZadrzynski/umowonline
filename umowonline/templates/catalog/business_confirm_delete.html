@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Usuń profil firmy</h1>
+  <p>Czy na pewno chcesz usunąć profil: <strong>{{ object }}</strong>?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Tak, usuń</button>
+    <a href="{{ object.get_absolute_url }}" class="btn btn-secondary">Anuluj</a>
+  </form>
+{% endblock %}

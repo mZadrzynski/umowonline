@@ -5,12 +5,12 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">📊 Moje Profile Biznesowe</h1>
-        <a href="{% url 'catalog:business_create' %}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Nowy Profil
+    {% if not user.business_profiles.exists %}
+        <a href="{% url 'catalog:business_create' %}" class="btn btn-primary">
+            + Utwórz profil biznesowy
         </a>
-    </div>
+    {% endif %}
+
 
     {% if businesses %}
         <div class="row g-4">
@@ -59,7 +59,7 @@
 
                             <!-- Actions -->
                             <div class="btn-group w-100" role="group">
-                                <a href="{% url 'catalog:business_detail' business.slug %}" 
+                                <a href="/catalog/{{ business.slug }}/"
                                    class="btn btn-outline-primary btn-sm" title="Podgląd">
                                     <i class="bi bi-eye"></i>
                                 </a>
