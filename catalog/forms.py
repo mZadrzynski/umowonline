@@ -1,20 +1,34 @@
-# catalog/forms.py
-
 from django import forms
-from .models import BusinessProfile, Service, Review
+from .models import BusinessProfile, Review
 
 
 class BusinessProfileForm(forms.ModelForm):
     """Formularz do tworzenia/edytowania profilu"""
     
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # ✅ SECURITY: Filter calendars to only user's own calendars
+        if user:
+            from myschedule.models import Calendar
+            # Znajdź kalendarze przypisane do zalogowanego użytkownika
+            self.fields['calendar'].queryset = Calendar.objects.filter(user=user)
+            # Ale BusinessProfile ma pole 'owner', nie 'user'
+        
+        # Apply form-control class to all fields
+        for field_name, field in self.fields.items():
+            if field_name != 'is_active':  # Skip checkbox
+                if 'class' not in field.widget.attrs:
+                    field.widget.attrs['class'] = 'form-control'
+    
     class Meta:
         model = BusinessProfile
         fields = [
             'business_name', 'owner_name', 'description',
-            'address', 'postal_code', 'city',  # ✅ DODANE
+            'address', 'postal_code', 'city',
             'email', 'phone', 'website',
             'logo', 'cover_image', 
-            'calendar',  # ✅ DODANE - do przydzielenia kalendarza
+            'calendar',
             'is_active'
         ]
         widgets = {
@@ -31,7 +45,6 @@ class BusinessProfileForm(forms.ModelForm):
                 'rows': 5,
                 'placeholder': 'Opisz swoją działalność...'
             }),
-            # ✅ NOWE POLA ADRESU
             'address': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ulica i numer domu, np. ul. Mariacka 5'
@@ -56,7 +69,6 @@ class BusinessProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'https://example.com'
             }),
-            # ✅ NOWE POLE KALENDARZA
             'calendar': forms.Select(attrs={
                 'class': 'form-control'
             }),
@@ -70,7 +82,6 @@ class BusinessProfileForm(forms.ModelForm):
                 'class': 'form-check-input'
             }),
         }
-
 
 class ReviewForm(forms.ModelForm):
     """Formularz do opini"""

@@ -127,36 +127,34 @@ def user_businesses(request):
 
 # ===== CREATE / EDIT / DELETE =====
 
-class BusinessCreateView(LoginRequiredMixin, CreateView):
-    """Dodaj nowy profil biznesowy"""
+class BusinessCreateView(CreateView):
     model = BusinessProfile
     form_class = BusinessProfileForm
     template_name = 'catalog/business_form.html'
+    success_url = reverse_lazy('catalog:user_businesses')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
     
     def form_valid(self, form):
-        form.instance.owner = self.request.user
+        form.instance.owner = self.request.user  # ✅ OWNER nie USER
         return super().form_valid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Dodaj profil biznesowy'
-        return context
 
-
-class BusinessUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    """Edytuj profil biznesowy"""
+class BusinessUpdateView(UpdateView):
     model = BusinessProfile
     form_class = BusinessProfileForm
     template_name = 'catalog/business_form.html'
+    success_url = reverse_lazy('catalog:user_businesses')
     
-    def test_func(self):
-        business = self.get_object()
-        return business.owner == self.request.user
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Edytuj profil biznesowy'
-        return context
+    def get_queryset(self):
+        return BusinessProfile.objects.filter(owner=self.request.user)  # ✅ OWNER
 
 
 class BusinessDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
