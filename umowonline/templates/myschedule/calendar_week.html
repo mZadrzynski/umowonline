@@ -147,7 +147,7 @@
         <div style="display: flex; gap: 20px;">
             <div style="flex: 1;">
                 <h4>Udostępnij kalendarz</h4>
-                <p>Udostępnij swój kalendarz innym, kopiując poniższy adres:</p>
+                <p>Udostępnij swój kalendarz innym, kopiując jeden z ponizszych linków</p>
                 <div class="input-group">
                     <input type="text" 
                            class="form-control share-input" 
@@ -155,8 +155,7 @@
                            value="{{ public_calendar_url }}"
                            id="calendar-url">
                     <button class="btn btn-outline-secondary copy-btn" 
-                            type="button" 
-                            onclick="copyToClipboard()">
+                            onclick="copyToClipboard('calendar-url')">
                         Kopiuj
                     </button>
                 </div>
@@ -166,12 +165,11 @@
                     class="form-control share-input"
                     readonly
                     value="{{ request.scheme }}://{{ request.get_host }}/{{ user.username }}/"
-                    id="calendar-url-username"
-                >
+                    id="calendar-url-username">
                 <button class="btn btn-outline-secondary copy-btn"
                         onclick="copyToClipboard('calendar-url-username')">
-                    Kopiuj link z nazwą użytkownika
-                </button>
+                    Kopiuj
+                </button>           
             </div>
             </div>
 
@@ -200,18 +198,18 @@
 </div>
 
 <script>
-function copyToClipboard() {
-    const input = document.getElementById('calendar-url');
+function copyToClipboard(elementId) {
+    const input = document.getElementById(elementId);
     input.select();
-    input.setSelectionRange(0, 99999);
+    input.setSelectionRange(0, 99999); 
     document.execCommand('copy');
-    
+
     const button = event.target;
     const originalText = button.innerHTML;
     button.innerHTML = 'Skopiowano!';
     button.classList.remove('btn-outline-secondary');
     button.classList.add('btn-success');
-    
+
     setTimeout(() => {
         button.innerHTML = originalText;
         button.classList.remove('btn-success');

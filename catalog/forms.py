@@ -11,8 +11,11 @@ class BusinessProfileForm(forms.ModelForm):
         model = BusinessProfile
         fields = [
             'business_name', 'owner_name', 'description',
+            'address', 'postal_code', 'city',  # ✅ DODANE
             'email', 'phone', 'website',
-            'logo', 'cover_image', 'is_active'
+            'logo', 'cover_image', 
+            'calendar',  # ✅ DODANE - do przydzielenia kalendarza
+            'is_active'
         ]
         widgets = {
             'business_name': forms.TextInput(attrs={
@@ -28,6 +31,19 @@ class BusinessProfileForm(forms.ModelForm):
                 'rows': 5,
                 'placeholder': 'Opisz swoją działalność...'
             }),
+            # ✅ NOWE POLA ADRESU
+            'address': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ulica i numer domu, np. ul. Mariacka 5'
+            }),
+            'postal_code': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '31-999'
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Kraków'
+            }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'email@example.com'
@@ -40,42 +56,15 @@ class BusinessProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'https://example.com'
             }),
+            # ✅ NOWE POLE KALENDARZA
+            'calendar': forms.Select(attrs={
+                'class': 'form-control'
+            }),
             'logo': forms.FileInput(attrs={
                 'class': 'form-control'
             }),
             'cover_image': forms.FileInput(attrs={
                 'class': 'form-control'
-            }),
-            'is_active': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
-        }
-
-
-class ServiceForm(forms.ModelForm):
-    """Formularz do tworzenia/edytowania usługi"""
-    
-    class Meta:
-        model = Service
-        fields = ['name', 'description', 'duration_minutes', 'price', 'is_active']
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nazwa usługi'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-            }),
-            'duration_minutes': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': 15,
-                'step': 15
-            }),
-            'price': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': 0,
-                'step': 0.01
             }),
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'

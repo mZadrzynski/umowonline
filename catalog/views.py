@@ -6,9 +6,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from django.db.models import Q, Avg
 from .models import BusinessProfile, Service, Review
-from .forms import BusinessProfileForm, ServiceForm, ReviewForm
+from .forms import BusinessProfileForm, ReviewForm
 from django.urls import reverse
-
+from django.db.models import Avg
+from datetime import date, timedelta
 
 # ===== PUBLIC VIEWS =====
 
@@ -65,6 +66,9 @@ class BusinessDetailView(DetailView):
         # Dane biznesowe
         context['average_rating'] = business.reviews.aggregate(Avg('rating'))['rating__avg']
         
+        # DEBUGOWANIE - sprawdzenie czy kalendarz jest przydzielony
+        print(f"DEBUG: Business '{business.business_name}' - Calendar: {business.calendar}")
+        
         # KALENDARZ (jeśli istnieje)
         if business.calendar:
             calendar = business.calendar
@@ -95,15 +99,19 @@ class BusinessDetailView(DetailView):
             context['week_offset'] = week_offset
             context['services'] = calendar.servicetype_set.all()
         else:
-            # Brak kalendarza
+            # Brak kalendarza - DODANE INFO DEBUGOWANIA
+            print(f"WARNING: No calendar assigned to business '{business.business_name}'")
             context['week_days'] = []
             context['availabilities_by_day_items'] = []
             context['services'] = []
             context['calendar_owner'] = None
             context['week_offset'] = 0
             context['selected_week'] = None
+            context['no_calendar_message'] = "Ta firma nie ma jeszcze przydzielonego kalendarza."
         
         return context
+
+
 # ===== USER DASHBOARD =====
 
 @login_required
@@ -161,54 +169,6 @@ class BusinessDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         business = self.get_object()
         return business.owner == self.request.user
 
-
-# ===== SERVICES =====
-
-class ServiceCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    """Dodaj usługę do profilu"""
-    model = Service
-    form_class = ServiceForm
-    template_name = 'catalog/service_form.html'
-    
-    def test_func(self):
-        profile_id = self.kwargs.get('profile_id')
-        profile = get_object_or_404(BusinessProfile, id=profile_id)
-        return profile.owner == self.request.user
-    
-    def form_valid(self, form):
-        profile_id = self.kwargs.get('profile_id')
-        form.instance.profile_id = profile_id
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse_lazy('catalog:business_edit', kwargs={'pk': self.kwargs['profile_id']})
-
-
-class ServiceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    """Edytuj usługę"""
-    model = Service
-    form_class = ServiceForm
-    template_name = 'catalog/service_form.html'
-    
-    def test_func(self):
-        service = self.get_object()
-        return service.profile.owner == self.request.user
-    
-    def get_success_url(self):
-        return reverse_lazy('catalog:business_edit', kwargs={'pk': self.object.profile.id})
-
-
-class ServiceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """Usuń usługę"""
-    model = Service
-    template_name = 'catalog/service_confirm_delete.html'
-    
-    def test_func(self):
-        service = self.get_object()
-        return service.profile.owner == self.request.user
-    
-    def get_success_url(self):
-        return reverse_lazy('catalog:business_edit', kwargs={'pk': self.object.profile.id})
 
 
 # ===== REVIEWS =====

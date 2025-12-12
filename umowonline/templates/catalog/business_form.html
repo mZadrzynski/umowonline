@@ -47,6 +47,40 @@
                         </div>
                     </div>
                 </div>
+            
+            
+                <!-- Address -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Adres Firmy</h5>
+
+                        <div class="mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">
+                                Ulica i Numer Domu
+                            </label>
+                            {{ form.address }}
+                            <small class="form-text text-muted">np. ul. Mariacka 5</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.postal_code.id_for_label }}" class="form-label">
+                                    Kod Pocztowy
+                                </label>
+                                {{ form.postal_code }}
+                                <small class="form-text text-muted">np. 31-999</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.city.id_for_label }}" class="form-label">
+                                    Miasto
+                                </label>
+                                {{ form.city }}
+                                <small class="form-text text-muted">np. Kraków</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Contact -->
                 <div class="card shadow-sm border-0 mb-4">
@@ -105,6 +139,23 @@
                                     </div>
                                 {% endif %}
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Kalendarz</h5>
+
+                        <div class="mb-3">
+                            <label for="{{ form.calendar.id_for_label }}" class="form-label">
+                                Przydzielony Kalendarz
+                            </label>
+                            {{ form.calendar }}
+                            <small class="form-text text-muted">
+                                Wybierz kalendarz aby wyświetlać dostępne terminy
+                            </small>
                         </div>
                     </div>
                 </div>

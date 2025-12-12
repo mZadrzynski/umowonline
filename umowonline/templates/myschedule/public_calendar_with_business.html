@@ -31,7 +31,8 @@
       {% endif %}
       
       <div class="business-info">
-        <h1 class="business-name">{{ business.name }}</h1>
+        <h1 class="business-name">{{ business.business_name }}</h1>
+
         
         {% if business.categories.all %}
         <div class="business-categories">
@@ -45,11 +46,14 @@
         
         <div class="business-details">
           {% if business.full_address %}
-          <div class="business-detail-item">
-            <strong>📍 Adres:</strong><br>
-            {{ business.full_address }}
-          </div>
-          {% endif %}
+        <div class="business-detail-item">
+          <strong>📍 Adres:</strong><br>
+          <a href="https://maps.google.com/maps?q={{ business.full_address|urlencode }}" 
+            target="_blank" rel="noopener noreferrer" class="address-link">
+            <i class="fas fa-map-marker-alt"></i> {{ business.full_address }}
+          </a>
+        </div>
+        {% endif %}
           
           {% if business.phone %}
           <div class="business-detail-item">
@@ -91,6 +95,14 @@
         <p class="calendar-subtitle">Wybierz dogodny termin dla siebie</p>
     </div>
     
+    <!-- INFORMACJA O BRAKU KALENDARZA -->
+    {% if not calendar_owner %}
+    <div class="alert alert-warning" style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;">
+      <i class="fas fa-info-circle"></i>
+      <strong>⚠️ Brak dostępnego kalendarza</strong>
+      <p>{{ no_calendar_message }}</p>
+    </div>
+    {% endif %}
     <!-- Navigation -->
     <div class="week-navigation">
         <a href="?week={{ week_offset|add:'-1' }}" class="nav-btn prev-btn">

@@ -491,3 +491,23 @@
         height: 100px;
     }
 }
+
+/* Link do Google Maps */
+.address-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.address-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.address-link i {
+  font-size: 1.1em;
+}
