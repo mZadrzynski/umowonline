@@ -22,6 +22,8 @@ class Calendar(models.Model):
 
     def __str__(self):
         return f"Kalendarz {self.user.username}"
+    
+    
 
 class Availability(models.Model):
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, related_name="availabilities")

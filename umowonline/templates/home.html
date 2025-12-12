@@ -51,24 +51,90 @@
             </div>
         </div>
     </section>
+
+    <!-- Random Profiles Section -->
     <section class="white_bg">
         <div class="container">
-               <h2>Wszystko czego potrzebujesz do zarządzania wizytami</h2>
-                <div class="features-grid">
+            <h2>Chcesz umówić wizyte? Zobacz katalog!</h2>
+            <p class="section-subtitle">Przeglądaj katalog przedsiębiorców, którzy oszczędzają czas dzięki umowzdalnie.pl</p>
+            <div class="profiles-grid">
+                {% for business in random_businesses %}
                 <div class="feature-card">
-            asdfasfas
+                    {% if business.logo %}
+                    <div class="profile-logo">
+                        <img src="{{ business.logo.url }}" alt="{{ business.name }}">
+                    </div>
+                    {% else %}
+                    <div class="profile-logo-placeholder">
+                        {{ business.name|first }}
+                    </div>
+                    {% endif %}
+                    
+                    <h3>{{ business.name }}</h3>
+                    
+                    {% if business.categories.all %}
+                    <div class="profile-categories">
+                        {% for cat in business.categories.all %}
+                        <span class="category-badge">{{ cat.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <p class="profile-description">{{ business.description|truncatewords:15 }}</p>
+                    
+                    {% if business.full_address %}
+                    <p class="profile-address">📍 {{ business.full_address }}</p>
+                    {% endif %}
+                    
+                    <a href="{% url 'catalog:business_detail' business.slug %}" class="btn btn--primary btn--sm">
+                        Zobacz kalendarz →
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-=   </section>
+    </section>
 
+
+    <!-- Comparison Section -->
     <section class="grey_bg">
         <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                        tetset
+            <h2>Dlaczego umowzdalnie.pl?</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div class="comparison-icon">🚫</div>
+                    <h3>Bez reklam</h3>
+                    <p>Twoi klienci nie będą bombardowani reklamami konkurencji. Czysta, profesjonalna strona.</p>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-icon">⚖️</div>
+                    <h3>Równe szanse dla wszystkich</h3>
+                    <p>Niezależnie czy jesteś małą firmą czy średnią - masz dostęp do wszystkich funkcji.</p>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-icon">💰</div>
+                    <h3>Uczciwa, niska cena</h3>
+                    <p>20 PLN/miesiąc bez ukrytych kosztów. To, co widzisz, to wszystko co płacisz.</p>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-icon">⚡</div>
+                    <h3>Dużo funkcji</h3>
+                    <p>Wszystko czego potrzebujesz do zarządzania wizytami - bez dodatkowych opłat.</p>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-icon">🤝</div>
+                    <h3>Wsparcie techniczne</h3>
+                    <p>Problemów nie rozwiązujesz sam. Masz dostęp do wsparcia i porad.</p>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-icon">🔄</div>
+                    <h3>Ciągłe ulepszenia</h3>
+                    <p>Regularnie dodajemy nowe funkcje bazując na feedback użytkowników.</p>
                 </div>
             </div>
-            </div> 
+        </div>
     </section>
+
 
     <!-- Features Section -->
     <section class="white_bg">
@@ -82,7 +148,7 @@
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📧</div>
-                    <h3>Powiadomienia e-mail</h3>
+                    <h3>Powiadomienia e-mail i SMS</h3>
                     <p>Automatyczne przypomnienia dla Ciebie i Twoich klientów</p>
                 </div>
                 <div class="feature-card">
@@ -142,15 +208,15 @@
         <div class="container">
             <h2>Oszczędź czas i zacznij zarabiać więcej</h2>
             <div class="benefits-grid">
-                <div class="benefit-item">
+                <div class="feature-card">
                     <h3>⏱️ Zaoszczędź czas</h3>
                     <p>Koniec z odbieraniem telefonów tylko po to, żeby umówić wizytę. Twoi klienci zrobią to sami online.</p>
                 </div>
-                <div class="benefit-item">
+                <div class="feature-card">
                     <h3>📞 Mniej nieodebranych połączeń</h3>
                     <p>Klienci mogą się umówić nawet gdy jesteś zajęty. Nie tracisz już potencjalnych zleceń.</p>
                 </div>
-                <div class="benefit-item">
+                <div class="feature-card">
                     <h3>💼 Profesjonalny wizerunek</h3>
                     <p>Pokażesz klientom, że idziesz z duchem czasu i ułatwiasz im życie.</p>
                 </div>
@@ -163,7 +229,7 @@
         <div class="container">
             <div class="cta-content">
                 <h2>Gotowy na zmianę?</h2>
-                <p>Dołącz do tysięcy przedsiębiorców, którzy już oszczędzają czas dzięki UmówZdalnie.pl</p>
+                <p>Dołącz do przedsiębiorców, którzy już oszczędzają czas dzięki umowzdalnie.pl</p>
                 <a href="{% url 'login' %}" class="btn btn--primary btn--lg">Rozpocznij darmowy okres próbny</a>
                 <p class="cta-note">Pierwszych 30 dni to 0 PLN. Możesz zrezygnować w każdej chwili.</p>
             </div>

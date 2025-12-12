@@ -47,6 +47,22 @@ class BusinessProfile(models.Model):
     description = models.TextField(
         help_text="Opis usług, doświadczenia, itp."
     )
+
+    address = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Ulica i numer domu"
+    )
+    postal_code = models.CharField(
+        max_length=10,
+        blank=True,
+        help_text="Kod pocztowy (np. 31-999)"
+    )
+    city = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Miasto/Miejscowość"
+    )
     
     # Kontakt
     email = models.EmailField()
@@ -97,10 +113,19 @@ class BusinessProfile(models.Model):
         verbose_name = "Profil biznesowy"
         verbose_name_plural = "Profile biznesowe"
         indexes = [
-            models.Index(fields=['owner', 'is_active']),
             models.Index(fields=['slug']),
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['owner']),
+            models.Index(fields=['city']),  # NOWY
         ]
-    
+
+    @property
+    def full_address(self):
+        """Zwróć pełny adres"""
+        parts = [self.address, self.postal_code, self.city]
+        return ', '.join(filter(None, parts))
+        
+
     def save(self, *args, **kwargs):
         # Auto-generuj slug z business_name
         if not self.slug:

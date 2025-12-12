@@ -352,3 +352,142 @@
         gap: 20px;
     }
 }
+
+/* Wrapper dla całości */
+.business-calendar-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Biała karta - uniwersalna */
+.white-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.card-content {
+    padding: 2rem;
+}
+
+/* Profil biznesowy */
+.business-profile-card .business-cover {
+    height: 200px;
+    margin: -2rem -2rem 2rem -2rem;
+    overflow: hidden;
+}
+
+.business-profile-card .business-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.business-content {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.business-logo {
+    flex-shrink: 0;
+}
+
+.business-logo img {
+    width: 128px;
+    height: 128px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.business-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.business-name {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    color: #1f2937;
+}
+
+.business-categories {
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.business-category {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.business-description {
+    color: #4b5563;
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
+.business-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.business-detail-item {
+    font-size: 0.9rem;
+}
+
+.business-detail-item strong {
+    color: #374151;
+}
+
+.business-detail-item a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.business-detail-item a:hover {
+    text-decoration: underline;
+}
+
+/* Karta kalendarza - bez dodatkowego paddingu dla calendar-container */
+.calendar-card .calendar-container {
+    padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .business-calendar-wrapper {
+        padding: 1rem;
+    }
+    
+    .card-content {
+        padding: 1.5rem;
+    }
+    
+    .business-name {
+        font-size: 1.5rem;
+    }
+    
+    .business-logo img {
+        width: 100px;
+        height: 100px;
+    }
+}

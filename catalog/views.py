@@ -1,18 +1,13 @@
 from django.shortcuts import render
-
-# Create your views here.
-# catalog/views.py
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.http import HttpResponseForbidden
 from django.db.models import Q, Avg
-
 from .models import BusinessProfile, Service, Review
 from .forms import BusinessProfileForm, ServiceForm, ReviewForm
+from django.urls import reverse
 
 
 # ===== PUBLIC VIEWS =====
@@ -52,7 +47,7 @@ class BusinessListView(ListView):
 class BusinessDetailView(DetailView):
     """Szczegóły profilu firmy (publiczny)"""
     model = BusinessProfile
-    template_name = 'catalog/business_detail.html'
+    template_name = 'myschedule/public_calendar_with_business.html'  # ZMIENIONE
     context_object_name = 'business'
     slug_field = 'slug'
     
@@ -60,13 +55,55 @@ class BusinessDetailView(DetailView):
         return BusinessProfile.objects.filter(is_active=True).prefetch_related('services', 'reviews')
     
     def get_context_data(self, **kwargs):
+        from django.urls import reverse
+        from datetime import date, timedelta
+        from myschedule.views_public import calculate_free_time_slots
+        
         context = super().get_context_data(**kwargs)
         business = self.get_object()
+        
+        # Dane biznesowe
         context['average_rating'] = business.reviews.aggregate(Avg('rating'))['rating__avg']
-        context['calendar_url'] = business.calendar.get_absolute_url() if business.calendar else None
+        
+        # KALENDARZ (jeśli istnieje)
+        if business.calendar:
+            calendar = business.calendar
+            
+            today = date.today()
+            week_offset = int(self.request.GET.get('week', 0))
+            start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+            end_of_week = start_of_week + timedelta(days=6)
+            week_days = [start_of_week + timedelta(days=i) for i in range(7)]
+
+            availabilities = calendar.availabilities.filter(
+                date__range=[start_of_week, end_of_week]
+            ).order_by('date', 'start_time')
+
+            # Użyj free_slots
+            avail_by_day = {day: [] for day in week_days}
+            for availability in availabilities:
+                free_slots = calculate_free_time_slots(availability)
+                avail_by_day[availability.date].append({
+                    "availability": availability,
+                    "free_slots": free_slots
+                })
+
+            context['week_days'] = week_days
+            context['selected_week'] = start_of_week
+            context['availabilities_by_day_items'] = [(d, avail_by_day[d]) for d in week_days]
+            context['calendar_owner'] = calendar.user
+            context['week_offset'] = week_offset
+            context['services'] = calendar.servicetype_set.all()
+        else:
+            # Brak kalendarza
+            context['week_days'] = []
+            context['availabilities_by_day_items'] = []
+            context['services'] = []
+            context['calendar_owner'] = None
+            context['week_offset'] = 0
+            context['selected_week'] = None
+        
         return context
-
-
 # ===== USER DASHBOARD =====
 
 @login_required

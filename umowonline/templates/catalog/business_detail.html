@@ -88,11 +88,12 @@
                         </p>
                     {% endif %}
 
-                    {% if calendar_url %}
-                        <a href="{{ calendar_url }}" class="btn btn-success btn-sm w-100 mt-3">
+                    {% if object.calendar %}
+                        <a href="{% url 'public_calendar_with_business' object.calendar.share_token %}" class="btn btn-success btn-sm w-100 mt-3">
                             <i class="bi bi-calendar-check"></i> Publiczny Kalendarz
                         </a>
                     {% endif %}
+
                 </div>
             </div>
         </div>

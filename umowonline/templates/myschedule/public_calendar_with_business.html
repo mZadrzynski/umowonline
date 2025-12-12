@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  {% if business %}{{ business.name }} - Kalendarz{% else %}Kalendarz{% endif %}
+{% endblock %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/calendar_public.css' %}">
+</head>
+
+<div class="business-calendar-wrapper">
+
+<!-- BIAŁA KARTA - PROFIL BIZNESOWY -->
+{% if business %}
+<div class="white-card business-profile-card">
+  <div class="card-content">
+    
+    {% if business.cover_image %}
+    <div class="business-cover">
+      <img src="{{ business.cover_image.url }}" alt="{{ business.name }}">
+    </div>
+    {% endif %}
+    
+    <div class="business-content">
+      {% if business.logo %}
+      <div class="business-logo">
+        <img src="{{ business.logo.url }}" alt="{{ business.name }}">
+      </div>
+      {% endif %}
+      
+      <div class="business-info">
+        <h1 class="business-name">{{ business.name }}</h1>
+        
+        {% if business.categories.all %}
+        <div class="business-categories">
+          {% for cat in business.categories.all %}
+          <span class="business-category">{{ cat.name }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        
+        <p class="business-description">{{ business.description }}</p>
+        
+        <div class="business-details">
+          {% if business.full_address %}
+          <div class="business-detail-item">
+            <strong>📍 Adres:</strong><br>
+            {{ business.full_address }}
+          </div>
+          {% endif %}
+          
+          {% if business.phone %}
+          <div class="business-detail-item">
+            <strong>📞 Telefon:</strong><br>
+            <a href="tel:{{ business.phone }}">{{ business.phone }}</a>
+          </div>
+          {% endif %}
+          
+          {% if business.email %}
+          <div class="business-detail-item">
+            <strong>✉️ Email:</strong><br>
+            <a href="mailto:{{ business.email }}">{{ business.email }}</a>
+          </div>
+          {% endif %}
+          
+          {% if business.website %}
+          <div class="business-detail-item">
+            <strong>🌐 Strona:</strong><br>
+            <a href="{{ business.website }}" target="_blank">Odwiedź</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- BIAŁA KARTA - KALENDARZ -->
+<div class="white-card calendar-card">
+  <div class="card-content">
+    
+    <!-- Header -->
+    <div class="calendar-header">
+        <h1 class="calendar-title">
+            <i class="fas fa-calendar-alt"></i>
+            Kalendarz {% if business %}{{ business.name }}{% else %}{{ calendar_owner.username }}{% endif %}
+        </h1>
+        <p class="calendar-subtitle">Wybierz dogodny termin dla siebie</p>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="week-navigation">
+        <a href="?week={{ week_offset|add:'-1' }}" class="nav-btn prev-btn">
+            <i class="fas fa-chevron-left"></i> << Poprzedni tydzień
+        </a>
+        <div class="current-week">
+            <i class="fas fa-calendar-week"></i>
+            {{ selected_week|date:"m.Y" }}
+        </div>
+        <a href="?week={{ week_offset|add:'1' }}" class="nav-btn next-btn">
+            Następny tydzień >> <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+        {% for day in week_days %}
+        <div class="day-column">
+            <!-- Day Header -->
+            <div class="day-header">
+                <div class="day-name">
+                {% with day|date:"D" as day_short %}
+                {% if day_short == "Mon" %}Pon{% elif day_short == "Tue" %}Wt{% elif day_short == "Wed" %}Śr{% elif day_short == "Thu" %}Czw{% elif day_short == "Fri" %}Pt{% elif day_short == "Sat" %}Sob{% elif day_short == "Sun" %}Niedz{% endif %}
+                {% endwith %}
+                </div>
+                <div class="day-date">{{ day|date:"d.m" }}</div>
+            </div>
+            
+            <!-- Day Content -->
+            <div class="day-content">
+                {% for item in availabilities_by_day_items %}
+                  {% if item.0 == day %}
+                    {% if item.1 %}
+                      {% for info in item.1 %}
+                      <div class="availability-card">
+                          {% if info.availability.title %}
+                          <div class="availability-title">
+                              <i class="fas fa-tag"></i>
+                              {{ info.availability.title }}
+                          </div>
+                          {% endif %}
+                          
+                          {% if info.free_slots %}
+                          <div class="time-slots">
+                              <div class="slots-label">
+                                  <i class="fas fa-clock text-success"></i>
+                                  Dostępne terminy:
+                              </div>
+                              <div class="slots-container">
+                                  {% for start, end in info.free_slots %}
+                                  <span class="time-slot free">{{ start }}–{{ end }}</span>
+                                  {% endfor %}
+                              </div>
+                          </div>
+                          {% else %}
+                          <div class="no-slots">
+                              <i class="fas fa-times-circle text-muted"></i>
+                              Brak wolnych terminów
+                          </div>
+                          {% endif %}
+                      </div>
+                      {% endfor %}
+                    {% else %}
+                      <div class="no-availability">
+                          <i class="fas fa-moon"></i>
+                          <p>Dzień wolny</p>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+            </div>
+            
+            <!-- Book Button -->
+            <div class="day-footer">
+                {% for item in availabilities_by_day_items %}
+                  {% if item.0 == day and item.1 %}
+                    {% for info in item.1 %}
+                      {% if info.free_slots %}
+                      <a href="{% url 'book_availability' info.availability.id %}" 
+                         class="book-btn available">
+                          <i class="fas fa-calendar-plus"></i>
+                          Zarezerwuj wizytę
+                      </a>
+                      {% else %}
+                      <button class="book-btn unavailable" disabled>
+                          <i class="fas fa-ban"></i>
+                          Brak miejsc
+                      </button>
+                      {% endif %}
+                    {% endfor %}
+                  {% elif item.0 == day %}
+                    <button class="book-btn unavailable" disabled>
+                        <i class="fas fa-moon"></i>
+                        Dzień wolny
+                    </button>
+                  {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- SEKCJA USŁUG -->
+    <div class="services-section">
+        <h3>Dostępne usługi:</h3>
+        <div class="services-table">
+            {% for service in services %}
+                <div class="service-item">
+                    <div class="service-info">
+                        <h4>{{ service.name }}</h4>
+                        <p class="description">{{ service.description }}</p>
+                    </div>
+                    <div class="service-meta">
+                        <span class="duration">⏱️ {{ service.duration_minutes }} min</span>
+                        {% if service.price %}
+                            <span class="price">{{ service.price }} PLN</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+  </div>
+</div>
+
+</div>
+{% endblock %}

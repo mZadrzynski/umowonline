@@ -2,8 +2,69 @@ from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Booking, Calendar
 from django.contrib.auth import get_user_model
+from catalog.models import BusinessProfile
+
 
 User = get_user_model()
+
+def public_calendar_with_business(request, token=None, slug=None):
+    """
+    Publiczny kalendarz + wizytówka
+    Działa z tokenem (URL: /myschedule/public/{token}/business/)
+    i ze slugiem (URL: /catalog/{slug}/)
+    """
+    from catalog.models import BusinessProfile
+    
+    if slug:
+        # Wersja dla katalogu
+        business = get_object_or_404(BusinessProfile, slug=slug)
+        calendar = business.calendar
+    else:
+        # Wersja dla publicznego kalendarza
+        calendar = get_object_or_404(Calendar, share_token=token)
+        business = BusinessProfile.objects.filter(calendar=calendar).first()
+    
+    if not calendar:
+        context = {
+            "business": business,
+            "week_days": [],
+            "availabilities_by_day_items": [],
+            "calendar_owner": None,
+            "selected_week": None,
+            "week_offset": 0,
+            "services": [],
+        }
+        return render(request, "myschedule/public_calendar_with_business.html", context)
+    
+    today = date.today()
+    week_offset = int(request.GET.get('week', 0))
+    start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+    end_of_week = start_of_week + timedelta(days=6)
+    week_days = [start_of_week + timedelta(days=i) for i in range(7)]
+
+    availabilities = calendar.availabilities.filter(
+        date__range=[start_of_week, end_of_week]
+    ).order_by('date', 'start_time')
+
+    avail_by_day = {day: [] for day in week_days}
+    for availability in availabilities:
+        free_slots = calculate_free_time_slots(availability)
+        avail_by_day[availability.date].append({
+            "availability": availability,
+            "free_slots": free_slots
+        })
+
+    context = {
+        "business": business,
+        "week_days": week_days,
+        "availabilities_by_day_items": [(d, avail_by_day[d]) for d in week_days],
+        "calendar_owner": calendar.user,
+        "selected_week": start_of_week,
+        "week_offset": week_offset,
+        "services": calendar.servicetype_set.all(),
+    }
+    return render(request, "myschedule/public_calendar_with_business.html", context)
+
 
 def calculate_free_time_slots(availability, service_duration_minutes=15):
     """
@@ -103,6 +164,7 @@ def redirect_username_to_token(request, username):
     """
     Przekierowuje z /<username>/ na /public/<share_token>/
     """
+    
     user = get_object_or_404(User, username__iexact=username)
     calendar = get_object_or_404(Calendar, user=user)
     

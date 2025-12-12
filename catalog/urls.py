@@ -2,6 +2,7 @@
 
 from django.urls import path, re_path
 from . import views
+from myschedule.views_public import public_calendar_with_business
 
 app_name = 'catalog'
 
@@ -26,5 +27,6 @@ urlpatterns = [
     path('business/<int:profile_id>/review/add/', views.ReviewCreateView.as_view(), name='review_create'),
     
     # GENERIC - OSTATNI! (z unicode support dla polskich znaków)
-    re_path(r'^(?P<slug>[\w-]+)/$', views.BusinessDetailView.as_view(), name='business_detail'),
+    re_path(r'^(?P<slug>[\w-]+)/$', public_calendar_with_business, name='business_detail'),
+
 ]
