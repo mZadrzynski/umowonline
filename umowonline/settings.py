@@ -282,8 +282,8 @@ CELERY_BEAT_SCHEDULE = {
     'send-appointment-reminders': {
         'task': 'appointments.tasks.send_appointment_reminders',
         'schedule': crontab(
-            minute='0,30',  # Co 30 minut
-            hour='8-21'     # Od 8:00 do 21:00
+            minute='0,15',  # Co 30 minut
+            hour='8-23'     # Od 8:00 do 21:00
         ),
     },
 }
