@@ -93,13 +93,24 @@ def send_appointment_reminders():
             client_name = booking.client_name or "Klient"
             service_name = booking.service_type.name if booking.service_type else "Wizyta"
             
-            # Konwersja czasu wizyty na Polski do treści SMS
-            booking_time_pl = booking.start_datetime.astimezone(pl_tz)
+                      # --- KONWERSJA CZASU (POPRAWKA) ---
+            # Pobieramy czas z bazy
+            dt = booking.start_datetime
             
+            # Jeśli czas nie ma strefy (jest 'naive'), uznajemy że to UTC
+            if timezone.is_naive(dt):
+                dt = timezone.make_aware(dt, timezone.utc)
+            
+            # Konwertujemy na Warsaw
+            booking_time_pl = dt.astimezone(pl_tz)
+
+            # DEBUG: Wypisz w logach co wysyłamy
+            logger.info(f"DEBUG CZASU: Baza={booking.start_datetime} -> PL={booking_time_pl}")
+
             send_sms_reminder(
                 normalized_phone, 
                 client_name, 
-                booking_time_pl, # Przekazujemy czas PL
+                booking_time_pl, 
                 service_name
             )
             
