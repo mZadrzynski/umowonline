@@ -2,8 +2,8 @@ from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Booking, Calendar
 from django.contrib.auth import get_user_model
+from myschedule.models import CalendarAlias
 from catalog.models import BusinessProfile
-
 
 User = get_user_model()
 
@@ -13,7 +13,7 @@ def public_calendar_with_business(request, token=None, slug=None):
     Działa z tokenem (URL: /myschedule/public/{token}/business/)
     i ze slugiem (URL: /catalog/{slug}/)
     """
-    from catalog.models import BusinessProfile
+    
     
     if slug:
         # Wersja dla katalogu
@@ -174,3 +174,24 @@ def redirect_username_to_token(request, username):
         token=calendar.share_token,
         permanent=False
     )
+
+def public_calendar_by_username(request, username_slug: str):
+    """
+    Publiczny widok po username/alias.
+    
+    /marcin       -> alias.index=1 -> alias.calendar.share_token -> istniejąca logika
+    /marcin2      -> alias.index=2 -> drugi kalendarz
+    /marcin3      -> alias.index=3 -> trzeci kalendarz
+    
+    Przekazuje do istniejącej funkcji public_calendar_with_business,
+    używając share_token z kalendarza.
+    """
+    # Znajdź alias po slug
+    alias = get_object_or_404(CalendarAlias, slug=username_slug)
+    
+    # Pobierz token z kalendarza
+    token = alias.calendar.share_token
+    
+    # Deleguj do istniejącej funkcji (bezpośrednio, bez re-redirectu)
+    # To jakby direct call do public_calendar_with_business(request, token)
+    return public_calendar_with_business(request, token=token)

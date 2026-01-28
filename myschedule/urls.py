@@ -10,6 +10,7 @@ urlpatterns = [
     path('book/<int:availability_id>/', views.book_availability, name='book_availability'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('calendar-bookings/', views.calendar_bookings, name='calendar_bookings'),
+    path('<str:username_slug>/', views_public.public_calendar_by_username, name='public_calendar_by_username'),
     path('public/<str:token>/business/', views_public.public_calendar_with_business, name='public_calendar_with_business'),
     path('public/<str:token>/', views_public.public_calendar_with_business, name='public_calendar_week'),
     path('availability/delete/<int:availability_id>/', views.delete_availability, name='delete_availability'),
