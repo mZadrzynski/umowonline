@@ -3,6 +3,12 @@ from . import views
 from . import views_public
 
 urlpatterns = [
+    # Calendar management
+    path('calendars/', views.calendar_list, name='calendar_list'),
+    path('calendars/create/', views.calendar_create, name='calendar_create'),
+    path('calendars/<int:calendar_id>/set-active/', views.calendar_set_active, name='calendar_set_active'),
+    
+    # Calendar views
     path("calendar/", views.my_calendar, name="my_calendar"),
     path("calendar_week/", views.my_calendar_week, name="my_calendar_week"),
     path("calendar/add/", views.add_availability, name="add_availability"),
@@ -18,13 +24,9 @@ urlpatterns = [
     path('booking/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
     path('calendar-booking/<int:booking_id>/cancel/', views.cancel_calendar_booking, name='cancel_calendar_booking'),
 
-
-
-
+    # Services management
     path('services/', views.service_types_list, name='service_types_list'),
     path('services/add/', views.add_service, name='add_service'),
     path('services/<int:pk>/edit/', views.service_type_edit, name='service_type_edit'),
     path('services/<int:pk>/delete/', views.service_type_delete, name='service_type_delete'),
-    #path('<str:username>/', views_public.redirect_username_to_token, name='public_calendar_username'),
-
 ]
