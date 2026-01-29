@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}umow zdalnie{% endblock %}</title>
+    <title>{% block title %}umów zdalnie{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
@@ -64,6 +64,8 @@
                data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-calendar3"></i> Moje kalendarze</a>
             <ul class="dropdown-menu" aria-labelledby="calendarsDropdown">
+                <li><a class="dropdown-item" href="{% url 'calendar_list' %}"><i class="bi bi-collection"></i> Zarządzaj kalendarzami</a></li>
+                <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'my_calendar_week' %}">Mój kalendarz</a></li>
                 <li><a class="dropdown-item" href="{% url 'calendar_bookings' %}">Moje wizyty</a></li>
                 <li><a class="dropdown-item" href="/dashboard/instructions/">Pomoc</a></li>
