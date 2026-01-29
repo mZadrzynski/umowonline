@@ -7,7 +7,7 @@ from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm
 from datetime import timedelta
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
-from .models import Availability, Booking, ServiceType, Calendar
+from .models import Availability, Booking, ServiceType, Calendar, CalendarAlias
 from django.contrib import messages
 from django.urls import reverse
 from account.models import Subscription
@@ -15,11 +15,88 @@ import holidays
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
+@login_required
+def calendar_list(request):
+    """
+    Lista wszystkich kalendarzy użytkownika
+    """
+    calendars = request.user.calendars.all().order_by('id')
+    
+    return render(request, 'myschedule/calendar_list.html', {
+        'calendars': calendars,
+    })
+
+
+@login_required
+def calendar_create(request):
+    """
+    Stwórz nowy kalendarz
+    """
+    if request.method == 'POST':
+        name = request.POST.get('name', 'Nowy kalendarz')
+        
+        # Stwórz Calendar
+        calendar = Calendar.objects.create(
+            user=request.user,
+            name=name,
+            share_token=f"token_{request.user.id}_{Calendar.objects.filter(user=request.user).count() + 1}"
+        )
+        
+        # Stwórz alias (index = liczba kalendarzy)
+        index = request.user.calendars.count()
+        slug = CalendarAlias.build_slug(request.user.username, index)
+        
+        CalendarAlias.objects.create(
+            user=request.user,
+            calendar=calendar,
+            index=index,
+            slug=slug
+        )
+        
+        messages.success(request, f"Kalendarz '{name}' został utworzony!")
+        return redirect('calendar_list')
+    
+    return render(request, 'myschedule/calendar_create.html')
+
+
+@login_required
+def calendar_set_active(request, calendar_id):
+    """
+    Ustaw kalendarz jako aktywny w sesji
+    """
+    calendar = get_object_or_404(Calendar, id=calendar_id, user=request.user)
+    request.session['active_calendar_id'] = calendar.id
+    
+    messages.success(request, f"Przełączono na kalendarz: {calendar.name}")
+    return redirect('calendar_list')
+
+
+def get_active_calendar(request):
+    """
+    Helper: pobierz aktywny kalendarz użytkownika
+    Jeśli brak w sesji - zwróć pierwszy
+    """
+    if not request.user.is_authenticated:
+        return None
+    
+    calendar_id = request.session.get('active_calendar_id')
+    
+    if calendar_id:
+        calendar = Calendar.objects.filter(id=calendar_id, user=request.user).first()
+        if calendar:
+            return calendar
+    
+    # Fallback: pierwszy kalendarz
+    return request.user.calendars.first()
+
 
 @login_required
 def add_availability(request):
-    if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza (tylko Premium może dodać dostępność)")
+    calendar = get_active_calendar(request)
+    
+    if not calendar:
+        messages.error(request, "Nie masz kalendarza")
+        return redirect("my_calendar_week")
     
     single_form = SingleAvailabilityForm(prefix='single', calendar=request.user.calendar)
     bulk_form = BulkAvailabilityForm(prefix='bulk')
@@ -100,6 +177,8 @@ def add_availability(request):
     return render(request, "myschedule/add_availability.html", {
         "single_form": single_form,
         "bulk_form": bulk_form,
+        'current_calendar': calendar,
+        'user_calendars': request.user.calendars.all(),
     })
 
 
@@ -123,8 +202,11 @@ def delete_availability(request, availability_id):
 
 @login_required
 def add_service(request):
-    if not hasattr(request.user, "calendar"):
-        return HttpResponse("Nie masz kalendarza (tylko Premium może dodać wydarzenia)")
+    calendar = get_active_calendar(request)
+    
+    if not calendar:
+        messages.error(request, "Nie masz kalendarza")
+        return redirect("my_calendar_week")
     
     if request.method == "POST":
         form = ServiceTypeForm(request.POST)
@@ -136,7 +218,11 @@ def add_service(request):
     else:
         form = ServiceTypeForm()
     
-    return render(request, "myschedule/service_type_form.html", {"form": form})
+    return render(request, "myschedule/service_type_form.html", {
+        "form": form,
+        "current_calendar": calendar,
+        'user_calendars': request.user.calendars.all(),
+        })
 
 @login_required
 def service_type_edit(request, pk):
@@ -223,23 +309,27 @@ def service_type_delete(request, pk):
 
 @login_required
 def calendar_bookings(request):
-    # Rezerwacje w kalendarzu użytkownika (rezerwacje innych u niego)
-    calendar_bookings = []
-    if hasattr(request.user, 'calendar'):
-        calendar_bookings = Booking.objects.filter(
-            availability__calendar=request.user.calendar,
-            status='active'
-        ).select_related('user', 'service_type').order_by('-booked_at')
-
-
+    calendar = get_active_calendar(request)
+    
+    if not calendar:
+        return render(request, "dashboard/no_calendar.html")
+    
+    calendar_bookings = Booking.objects.filter(
+        availability__calendar=calendar,  # ← ZMIANA
+        status='active'
+    ).select_related('user', 'service_type').order_by('-booked_at')
+    
     for booking in calendar_bookings:
         start = booking.start_datetime
         duration = booking.service_type.duration_minutes
         booking.end_datetime = start + timedelta(minutes=duration)
-
+    
     return render(request, "myschedule/calendar_bookings.html", {
-        "calendar_bookings": calendar_bookings,  # Rezerwacje w kalendarzu użytkownika
+        "bookings": calendar_bookings,
+        "current_calendar": calendar,
+        'user_calendars': request.user.calendars.all(),
     })
+
 
 @login_required
 def my_bookings(request):
@@ -444,9 +534,9 @@ def my_calendar_week(request):
         subscription = request.user.subscription
         if not subscription.is_active():
             return render(request, "dashboard/subscription_expired.html")
-            
-        # Sprawdź czy kalendarz istnieje (twój oryginalny kod)
-        if not hasattr(request.user, "calendar"):
+    
+        calendar = get_active_calendar(request)
+        if not calendar:
             return render(request, "dashboard/no_calendar.html")
         today = date.today()
         week_offset = int(request.GET.get("week", 0))
@@ -504,6 +594,8 @@ def my_calendar_week(request):
             "week_offset": week_offset,
             "now_time": now.time(),
             "today": now.date(), 
+            "current_calendar": calendar, 
+            "user_calendars": request.user.calendars.all(),
         })
     
     except Subscription.DoesNotExist:
