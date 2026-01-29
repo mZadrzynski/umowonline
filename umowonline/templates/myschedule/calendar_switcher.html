@@ -1,0 +1,71 @@
+<!-- CALENDAR SWITCHER COMPONENT -->
+<!-- Umieść to w szablonach gdzie chcesz aby użytkownik mógł przełączać kalendarze -->
+
+{% if user.is_authenticated and user.calendars.count > 0 %}
+    <div class="card border-info shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="card-title mb-2">
+                        <i class="bi bi-calendar3"></i> Aktywny kalendarz
+                    </h6>
+                    <p class="mb-0" id="active-calendar-name">
+                        <strong>{{ current_calendar.name|default:"Nie wybrany" }}</strong>
+                    </p>
+                </div>
+                
+                {% if user.calendars.count > 1 %}
+                    <form method="post" action="{% url 'calendar_set_active' %}" id="calendar-form" style="display: none;">
+                        {% csrf_token %}
+                        <select name="calendar_id" id="calendar-select" 
+                                class="form-select form-select-sm" 
+                                onchange="document.getElementById('calendar-form').submit()">
+                            <option value="">-- Wybierz kalendarz --</option>
+                            {% for cal in user.calendars %}
+                                <option value="{{ cal.id }}" 
+                                        data-name="{{ cal.name }}"
+                                        {% if cal == current_calendar %}selected{% endif %}>
+                                    {{ cal.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-arrow-left-right"></i> Przełącz
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for cal in user.calendars %}
+                                <li>
+                                    <form method="post" action="{% url 'calendar_set_active' cal.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            {% if cal == current_calendar %}
+                                                <i class="bi bi-check-circle-fill text-success"></i>
+                                            {% else %}
+                                                <i class="bi bi-circle"></i>
+                                            {% endif %}
+                                            {{ cal.name }}
+                                        </button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'calendar_list' %}">
+                                    <i class="bi bi-gear"></i> Zarządzaj kalendarzami
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'calendar_list' %}" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-plus-circle"></i> Dodaj kalendarz
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
