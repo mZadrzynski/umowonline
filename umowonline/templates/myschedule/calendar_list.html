@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Moje Kalendarze{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <h1 class="mb-4">📅 Moje Kalendarze</h1>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if calendars %}
+                <div class="row">
+                    {% for calendar in calendars %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="card-title mb-1">{{ calendar.name }}</h5>
+                                            <small class="text-muted">Slug: <code>/{{ calendar.alias_set.first.slug }}</code></small>
+                                        </div>
+                                        {% if calendar.user == request.user %}
+                                            <span class="badge bg-success">Aktywny</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="row text-center mb-3">
+                                        <div class="col-4">
+                                            <div class="small text-muted">Dostępności</div>
+                                            <div class="h5">{{ calendar.availabilities.count }}</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small text-muted">Usługi</div>
+                                            <div class="h5">{{ calendar.servicetypes.count }}</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small text-muted">Rezerwacje</div>
+                                            <div class="h5">{{ calendar.availabilities.count }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2 d-sm-flex">
+                                        <form method="post" action="{% url 'calendar_set_active' calendar.id %}" style="flex: 1;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary w-100 btn-sm">
+                                                <i class="fas fa-check-circle"></i> Przełącz
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'my_calendar' %}?calendar={{ calendar.id }}" class="btn btn-info btn-sm" style="flex: 1;">
+                                            <i class="fas fa-calendar-alt"></i> Otwórz
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'calendar_create' %}" class="btn btn-lg btn-success">
+                        <i class="fas fa-plus-circle"></i> Stwórz nowy kalendarz
+                    </a>
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center" role="alert">
+                    <h4 class="alert-heading">Brak kalendarzy</h4>
+                    <p>Nie masz jeszcze żadnego kalendarza. Stwórz pierwszy aby zacząć.</p>
+                    <hr>
+                    <a href="{% url 'calendar_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Stwórz pierwszy kalendarz
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+    
+    code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.85em;
+    }
+</style>
+{% endblock %}
