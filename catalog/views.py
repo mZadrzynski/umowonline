@@ -73,7 +73,7 @@ class BusinessDetailView(DetailView):
             user_calendars = calendar_owner.calendars.all().order_by('id')
             context['available_calendars'] = user_calendars
             
-            # Sprawdź czy użytkownik wybrał konkretny kalendarz z URL (?calendar_id=X)
+            # Sprawdź czy użytkownik wybrał konkretny kalendarz z URL
             selected_calendar_id = self.request.GET.get('calendar_id')
             if selected_calendar_id:
                 try:
@@ -84,28 +84,8 @@ class BusinessDetailView(DetailView):
                 calendar = business.calendar
             
             context['selected_calendar'] = calendar
-            user_calendars = calendar_owner.calendars.all().order_by('id')
-            context['available_calendars'] = user_calendars
             
-            # Sprawdzaj czy użytkownik wybrał konkretny kalendarz z URL (?calendar_id=X)
-            selected_calendar_id = self.request.GET.get('calendar_id')
-            if selected_calendar_id:
-                try:
-                    calendar = Calendar.objects.get(id=selected_calendar_id, user=calendar_owner)
-                except Calendar.DoesNotExist:
-                    calendar = business.calendar
-            else:
-                calendar = business.calendar
-            
-            context['selected_calendar'] = calendar
-        else:
-            context['available_calendars'] = []
-            context['selected_calendar'] = None
-        
-        # KALENDARZ
-        if business.calendar and context.get('selected_calendar'):
-            calendar = context['selected_calendar']
-            
+            # ✅ DANE KALENDARZA
             today = date.today()
             week_offset = int(self.request.GET.get('week', 0))
             start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
@@ -130,7 +110,11 @@ class BusinessDetailView(DetailView):
             context['availabilities_by_day_items'] = [(d, avail_by_day[d]) for d in week_days]
             context['calendar_owner'] = calendar.user
             context['week_offset'] = week_offset
+            context['services'] = calendar.servicetype_set.all()  # ✅ DODANO!
         else:
+            # Brak kalendarza
+            context['available_calendars'] = []
+            context['selected_calendar'] = None
             context['week_days'] = []
             context['availabilities_by_day_items'] = []
             context['services'] = []
@@ -139,7 +123,23 @@ class BusinessDetailView(DetailView):
             context['selected_week'] = None
             context['no_calendar_message'] = "Ta firma nie ma jeszcze przydzielonego kalendarza."
         
+        # 🐛 DEBUG
+        print("=" * 50)
+        print(f"🔍 Business: {business.business_name}")
+        print(f"🔍 Has calendar: {business.calendar is not None}")
+        if business.calendar:
+            print(f"🔍 Calendar owner: {calendar_owner.username}")
+            print(f"🔍 User calendars count: {user_calendars.count()}")
+            print(f"🔍 Available calendars in context: {context.get('available_calendars')}")
+            print(f"🔍 Available calendars LENGTH: {len(context.get('available_calendars', []))}")
+            for cal in context.get('available_calendars', []):
+                print(f"   - {cal.name} (ID: {cal.id})")
+            print(f"🔍 Selected calendar: {context.get('selected_calendar')}")
+            print(f"🔍 Services count: {len(context.get('services', []))}")
+        print("=" * 50)
+        
         return context
+
 
 
 

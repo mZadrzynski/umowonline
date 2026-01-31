@@ -126,7 +126,7 @@
                                         <!-- Zwykły użytkownik -->
                                         {% if info.availability.date > today or info.availability.date == today and info.availability.start_time >= now_time %}
                                             <a href="{% url 'book_availability' info.availability.id %}" 
-                                            class="book-link available">
+                                            class="book-link owner">
                                                 📅 Zarezerwuj wizytę
                                             </a>
                                         {% else %}

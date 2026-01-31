@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% load static %}
-
+<!-- 🐛 DEBUG -->
+{% if available_calendars %}
+  <div style="background: yellow; padding: 10px; margin: 10px; border: 2px solid orange;">
+    <strong>DEBUG: available_calendars istnieje, długość: {{ available_calendars|length }}</strong>
+    <br>
+    {% for cal in available_calendars %}
+      - {{ cal.name }} (ID: {{ cal.id }})<br>
+    {% endfor %}
+  </div>
+{% else %}
+  <div style="background: red; color: white; padding: 10px; margin: 10px; border: 2px solid darkred;">
+    <strong>DEBUG: available_calendars NIE ISTNIEJE lub jest puste!</strong>
+  </div>
+{% endif %}
 {% block title %}
   {% if business %}{{ business.name }} - Kalendarz{% else %}Kalendarz{% endif %}
 {% endblock %}
