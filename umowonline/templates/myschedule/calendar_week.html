@@ -5,8 +5,15 @@
 <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 
 <div class="calendar-container">
-    <div">
-        <h2>Kalendarz tygodniowy użytkownika {{ request.user.username }}</h2>
+    <!-- Header -->
+    <div class="calendar-header">
+        <h1 class="calendar-title">
+            <i class="fas fa-calendar-alt"></i>
+            Kalendarz tygodniowy – {{ request.user.username }} ({{ current_calendar.name }})
+        </h1>
+    </div>
+    
+    <!-- Navigation -->
         <div class="month-nav">
             <a href="?week={{ week_offset|add:-1 }}">
                 « Poprzedni tydzień

@@ -32,8 +32,23 @@
       
       <div class="business-info">
         <h1 class="business-name">{{ business.business_name }}</h1>
-
-        
+      
+      {% if available_calendars|length > 1 %}
+        <div class="calendar-selector" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <label for="calendar-select" style="font-weight: 600; margin-bottom: 8px; display: block;">
+                📅 Wybierz kalendarz:
+            </label>
+            <select id="calendar-select" class="form-select" 
+                    onchange="window.location.href='?calendar_id=' + this.value + '&week={{ week_offset }}'">
+                {% for cal in available_calendars %}
+                    <option value="{{ cal.id }}" {% if cal == selected_calendar %}selected{% endif %}>
+                        {{ cal.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+                
         {% if business.categories.all %}
         <div class="business-categories">
           {% for cat in business.categories.all %}
@@ -90,11 +105,32 @@
     <div class="calendar-header">
         <h1 class="calendar-title">
             <i class="fas fa-calendar-alt"></i>
-            Kalendarz {% if business %}{{ business.name }}{% else %}{{ calendar_owner.username }}{% endif %}
+            Kalendarz {% if business %}{{ business.business_name }}{% else %}{{ calendar_owner.username }}{% endif %}
         </h1>
         <p class="calendar-subtitle">Wybierz dogodny termin dla siebie</p>
+        
+        <!-- ✨ SELEKTOR KALENDARZY -->
+        {% if available_calendars|length > 1 %}
+        <div class="calendar-selector" style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+            <label for="calendar-select" style="font-weight: 600; margin-right: 10px; display: inline-block;">
+                📅 Wybierz kalendarz:
+            </label>
+            <select id="calendar-select" class="form-select" 
+                    onchange="window.location.href='?calendar_id=' + this.value + '&week={{ week_offset }}'" 
+                    style="display: inline-block; width: auto; max-width: 250px;">
+                {% for cal in available_calendars %}
+                    <option value="{{ cal.id }}" {% if cal == selected_calendar %}selected{% endif %}>
+                        {{ cal.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <small style="display: block; color: #666; margin-top: 8px;">
+                💡 Każdy kalendarz ma własne dostępności i usługi
+            </small>
+        </div>
+        {% endif %}
     </div>
-    
+
     <!-- INFORMACJA O BRAKU KALENDARZA -->
     {% if not calendar_owner %}
     <div class="alert alert-warning" style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;">

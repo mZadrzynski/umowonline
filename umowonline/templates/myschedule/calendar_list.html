@@ -1,9 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'myschedule/calendar_sidemenu.html' %}
+
 {% load static %}
 
 {% block title %}Moje Kalendarze{% endblock %}
 
-{% block content %}
+{% block calendar %}
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-10 mx-auto">
@@ -27,7 +28,7 @@
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
                                             <h5 class="card-title mb-1">{{ calendar.name }}</h5>
-                                            <small class="text-muted">Slug: <code>/{{ calendar.alias_set.first.slug }}</code></small>
+                                            <small class="text-muted">Token: <code>{{ calendar.share_token }}</code></small>
                                         </div>
                                         {% if calendar.user == request.user %}
                                             <span class="badge bg-success">Aktywny</span>
@@ -41,12 +42,12 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="small text-muted">Usługi</div>
-                                            <div class="h5">{{ calendar.servicetypes.count }}</div>
+                                            <div class="h5">{{ calendar.servicetype_set.count }}</div>
                                         </div>
                                         <div class="col-4">
                                             <div class="small text-muted">Rezerwacje</div>
-                                            <div class="h5">{{ calendar.availabilities.count }}</div>
-                                        </div>
+                                            <div class="h5">{{ calendar.bookings_count }}</div>
+                                        </div>      
                                     </div>
                                     
                                     <div class="d-grid gap-2 d-sm-flex">
@@ -58,6 +59,9 @@
                                         </form>
                                         <a href="{% url 'my_calendar' %}?calendar={{ calendar.id }}" class="btn btn-info btn-sm" style="flex: 1;">
                                             <i class="fas fa-calendar-alt"></i> Otwórz
+                                        </a>
+                                        <a href="{% url 'calendar_edit' calendar.id %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pencil"></i> Edytuj
                                         </a>
                                     </div>
                                 </div>

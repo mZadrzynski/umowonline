@@ -9,6 +9,44 @@
 <section id="sidebar" class="section">
   <div class="sidebar_container">
     <aside class="sidebar">
+      <!-- ✨ SELEKTOR KALENDARZY - NOWY -->
+      {% if user.is_authenticated and user.calendars.count > 0 %}
+      <div class="calendar-switcher-sidebar" style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;">
+        <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+          <i class="bi bi-calendar3"></i> Aktywny Kalendarz
+        </h4>
+        
+        {% if user.calendars.count > 1 %}
+          <!-- Dropdown z kalendarzami -->
+          <form method="post" id="calendar-switch-form" style="margin-bottom: 10px;">
+            {% csrf_token %}
+            <select name="calendar_id" id="calendar-select-sidebar" 
+                    class="form-select form-select-sm" 
+                    onchange="this.form.action = '/myschedule/calendars/' + this.value + '/set-active/'; this.form.submit();"
+                    style="background: rgba(255,255,255,0.95); border: none; font-weight: 500; color: #333;">
+              {% for cal in user.calendars.all %}
+                <option value="{{ cal.id }}" {% if cal == current_calendar %}selected{% endif %}>
+                  {{ cal.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+          <div style="font-size: 11px; opacity: 0.9; margin-top: 8px;">
+            <i class="bi bi-info-circle"></i> Przełącz aby zmienić kalendarz
+          </div>
+        {% else %}
+          <!-- Tylko jeden kalendarz - wyświetl nazwę -->
+          <div style="padding: 8px 12px; background: rgba(255,255,255,0.2); border-radius: 6px; font-weight: 600;">
+            {{ current_calendar.name|default:"Główny" }}
+          </div>
+        {% endif %}
+        
+        <a href="{% url 'calendar_list' %}" class="btn btn-sm btn-light" style="margin-top: 10px; width: 100%; font-size: 12px;">
+          <i class="bi bi-gear"></i> Zarządzaj kalendarzami
+        </a>
+      </div>
+      {% endif %}
+      
       <h3>Menu</h3>
       <ul>
         <li><a href="{% url 'my_calendar' %}"><i class="bi bi-calendar2-month"></i> Widok miesieczny</a></li>
@@ -16,7 +54,6 @@
         <li><a href="{% url 'add_availability' %}"> <i class="bi bi-calendar2-plus"></i> Dodaj dostępność</a></li>
         <li><a href="{% url 'service_types_list' %}"><i class="bi bi-tools"></i> Moje Serwisy</a></li>
         <li><a href="{% url 'create_payment' %}"><i class="bi bi-credit-card"></i> Opłać subskrypcję</a></li>
-
       </ul>
     </aside>
 
@@ -25,6 +62,5 @@
     </section>
   </div>
 </section>
-
 
 {% endblock %}

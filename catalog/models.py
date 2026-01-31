@@ -126,12 +126,25 @@ class BusinessProfile(models.Model):
         return ', '.join(filter(None, parts))
         
 
+    def _generate_unique_slug(self):
+        """Generuj unikalny slug - handle duplikatów"""
+        base_slug = slugify(self.business_name, allow_unicode=True)
+        slug = base_slug
+        counter = 2
+        
+        # Sprawdzaj czy slug już istnieje
+        while BusinessProfile.objects.filter(slug=slug).exclude(id=self.id).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        
+        return slug
+
     def save(self, *args, **kwargs):
-        # Auto-generuj slug z business_name
+        """Auto-generuj slug z business_name"""
         if not self.slug:
-            self.slug = slugify(self.business_name, allow_unicode=True)
+            self.slug = self._generate_unique_slug()
         super().save(*args, **kwargs)
-    
+        
     def get_absolute_url(self):
         """URL do szczegółów profilu"""
         return reverse('catalog:business_detail', kwargs={'slug': self.slug})

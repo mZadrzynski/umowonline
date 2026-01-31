@@ -9,7 +9,7 @@ from .models import BusinessProfile, Service, Review
 from .forms import BusinessProfileForm, ReviewForm
 from django.urls import reverse
 from django.db.models import Avg
-from datetime import date, timedelta
+from myschedule.models import Calendar
 
 # ===== PUBLIC VIEWS =====
 
@@ -59,6 +59,7 @@ class BusinessDetailView(DetailView):
         from django.urls import reverse
         from datetime import date, timedelta
         from myschedule.views_public import calculate_free_time_slots
+        from myschedule.models import Calendar
         
         context = super().get_context_data(**kwargs)
         business = self.get_object()
@@ -66,12 +67,44 @@ class BusinessDetailView(DetailView):
         # Dane biznesowe
         context['average_rating'] = business.reviews.aggregate(Avg('rating'))['rating__avg']
         
-        # DEBUGOWANIE - sprawdzenie czy kalendarz jest przydzielony
-        print(f"DEBUG: Business '{business.business_name}' - Calendar: {business.calendar}")
-        
-        # KALENDARZ (jeśli istnieje)
+        # ✅ KALENDARZ - obsługa wielu kalendarzy
         if business.calendar:
-            calendar = business.calendar
+            calendar_owner = business.calendar.user
+            user_calendars = calendar_owner.calendars.all().order_by('id')
+            context['available_calendars'] = user_calendars
+            
+            # Sprawdź czy użytkownik wybrał konkretny kalendarz z URL (?calendar_id=X)
+            selected_calendar_id = self.request.GET.get('calendar_id')
+            if selected_calendar_id:
+                try:
+                    calendar = Calendar.objects.get(id=selected_calendar_id, user=calendar_owner)
+                except Calendar.DoesNotExist:
+                    calendar = business.calendar
+            else:
+                calendar = business.calendar
+            
+            context['selected_calendar'] = calendar
+            user_calendars = calendar_owner.calendars.all().order_by('id')
+            context['available_calendars'] = user_calendars
+            
+            # Sprawdzaj czy użytkownik wybrał konkretny kalendarz z URL (?calendar_id=X)
+            selected_calendar_id = self.request.GET.get('calendar_id')
+            if selected_calendar_id:
+                try:
+                    calendar = Calendar.objects.get(id=selected_calendar_id, user=calendar_owner)
+                except Calendar.DoesNotExist:
+                    calendar = business.calendar
+            else:
+                calendar = business.calendar
+            
+            context['selected_calendar'] = calendar
+        else:
+            context['available_calendars'] = []
+            context['selected_calendar'] = None
+        
+        # KALENDARZ
+        if business.calendar and context.get('selected_calendar'):
+            calendar = context['selected_calendar']
             
             today = date.today()
             week_offset = int(self.request.GET.get('week', 0))
@@ -97,10 +130,7 @@ class BusinessDetailView(DetailView):
             context['availabilities_by_day_items'] = [(d, avail_by_day[d]) for d in week_days]
             context['calendar_owner'] = calendar.user
             context['week_offset'] = week_offset
-            context['services'] = calendar.servicetype_set.all()
         else:
-            # Brak kalendarza - DODANE INFO DEBUGOWANIA
-            print(f"WARNING: No calendar assigned to business '{business.business_name}'")
             context['week_days'] = []
             context['availabilities_by_day_items'] = []
             context['services'] = []
@@ -110,6 +140,7 @@ class BusinessDetailView(DetailView):
             context['no_calendar_message'] = "Ta firma nie ma jeszcze przydzielonego kalendarza."
         
         return context
+
 
 
 # ===== USER DASHBOARD =====
