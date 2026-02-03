@@ -1,27 +1,30 @@
 import calendar as py_calendar
 from datetime import date, datetime, timedelta, time
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm, BookingForm, OwnerBookingForm
-from datetime import timedelta
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import login_required
-from .models import Availability, Booking, ServiceType, Calendar, CalendarAlias
+from django.utils import timezone
 from django.contrib import messages
 from django.urls import reverse
-from account.models import Subscription
-import holidays
-from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from django.db.models import Count
+from django.db import transaction, IntegrityError
+import holidays
+
+from .forms import SingleAvailabilityForm, BulkAvailabilityForm, ServiceTypeForm, BookingForm, OwnerBookingForm
+from .models import Availability, Booking, ServiceType, Calendar, CalendarAlias
+from account.models import Subscription
+
+
 
 @login_required
 def calendar_list(request):
     """
     Lista wszystkich kalendarzy użytkownika
     """
-    from django.db.models import Count
     
+    storage = messages.get_messages(request)
+    storage.used = True 
     calendars = request.user.calendars.all().annotate(
         bookings_count=Count('availabilities__bookings', distinct=True)
     ).order_by('id')
@@ -33,6 +36,15 @@ def calendar_list(request):
 
 @login_required
 def calendar_create(request):
+    MAX_CALENDARS = 20
+    current_count = request.user.calendars.count()
+    
+    if current_count >= MAX_CALENDARS:
+        messages.error(request, 
+            f'❌ Osiągnąłeś limit {MAX_CALENDARS} kalendarzy. '
+            f'Usuń niepotrzebne kalendarze, aby dodać nowy.')
+        return redirect('calendar_list')
+    
     if request.method == 'POST':
         name = request.POST.get('name', 'Nowy kalendarz')
         calendar = Calendar.objects.create(
@@ -337,7 +349,6 @@ def generate_available_times(availability):
     return times
 
 def check_time_collision(availability, start_datetime, service_type):
-    from django.utils import timezone
     
     if timezone.is_naive(start_datetime):
         start_datetime = timezone.make_aware(start_datetime)
@@ -463,8 +474,7 @@ def subscription_expired(request):
     return render(request, "dashboard/subscription_expired.html", context)
 
 def calculate_free_time_slots(availability, service_duration_minutes=15):
-    from datetime import datetime, timedelta
-    from django.utils import timezone
+
     
     bookings = Booking.objects.filter(availability=availability, status='active').order_by('start_datetime')
     
@@ -546,7 +556,7 @@ def generate_available_start_times(availability, duration_minutes):
 
 @login_required
 def book_availability(request, availability_id):
-    from django.utils import timezone
+
     
     availability = get_object_or_404(Availability, id=availability_id)
     now = timezone.now()
@@ -569,8 +579,6 @@ def book_availability(request, availability_id):
 @login_required
 def handle_regular_booking(request, availability):
     from django.contrib import messages
-    from django.utils import timezone
-    from datetime import datetime, timedelta
     from django.db import transaction, IntegrityError
     
     storage = messages.get_messages(request)
@@ -657,10 +665,8 @@ def handle_regular_booking(request, availability):
 
 @login_required
 def handle_owner_booking(request, availability):
-    from django.utils import timezone
     from django.db import transaction, IntegrityError
-    from datetime import datetime, timedelta
-    
+
     service_types = ServiceType.objects.filter(calendar=availability.calendar)
     
     if request.method == "POST":
@@ -682,9 +688,9 @@ def handle_owner_booking(request, availability):
             if not service_type:
                 form.add_error('service_type', "Wybierz rodzaj usługi.")
             else:
+
                 start_time = datetime.strptime(form.cleaned_data['start_time'], '%H:%M').time()
                 start_dt = timezone.make_aware(datetime.combine(availability.date, start_time))
-                
                 try:
                     with transaction.atomic():
                         end_dt = start_dt + timedelta(minutes=service_type.duration_minutes)
@@ -714,3 +720,35 @@ def handle_owner_booking(request, availability):
         form.update_available_times(availability, 15)
     
     return render(request, "myschedule/owner_book_availability.html", {"availability": availability, "form": form, "service_types": service_types, "is_owner": True})
+
+
+@login_required
+def calendar_delete(request, calendar_id):
+    """Usuń kalendarz (zawsze zostaw minimum 1)"""
+    calendar = get_object_or_404(Calendar, id=calendar_id, user=request.user)
+    
+    # Sprawdź czy to nie jedyny kalendarz
+    user_calendars_count = request.user.calendars.count()
+    
+    if user_calendars_count <= 1:
+        messages.error(request, '❌ Nie możesz usunąć ostatniego kalendarza! Musisz mieć przynajmniej jeden.')
+        return redirect('calendar_list')
+    
+    if request.method == 'POST':
+        calendar_name = calendar.name
+        
+        # Sprawdź czy to główny kalendarz (przypisany do BusinessProfile)
+        business_profiles = calendar.businessprofile_set.all()
+        if business_profiles.exists():
+            messages.warning(request, 
+                f'⚠️ Kalendarz "{calendar_name}" jest przypisany do profilu biznesowego. '
+                f'Najpierw zmień kalendarz w profilu, a potem usuń ten kalendarz.')
+            return redirect('calendar_list')
+        
+        calendar.delete()
+        messages.success(request, f'✅ Kalendarz "{calendar_name}" został usunięty.')
+        return redirect('calendar_list')
+    
+    return render(request, 'myschedule/calendar_confirm_delete.html', {
+        'calendar': calendar
+    })

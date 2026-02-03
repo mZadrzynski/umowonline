@@ -55,8 +55,10 @@
     <!-- Random Profiles Section -->
     <section class="white_bg">
         <div class="container">
+            <a class="dropdown-item" href="{% url 'catalog:business_list' %}">
             <h2>Chcesz umówić wizyte? Zobacz katalog!</h2>
             <p class="section-subtitle">Przeglądaj katalog przedsiębiorców, którzy oszczędzają czas dzięki umowzdalnie.pl</p>
+            </a>
             <div class="profiles-grid">
                 {% for business in random_businesses %}
                 <div class="feature-card">

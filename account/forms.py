@@ -79,7 +79,9 @@ class UserRegistrationForm(forms.ModelForm):
     
     def clean_phone_number(self):
         """Walidacja i normalizacja numeru telefonu"""
-        phone = self.cleaned_data.get('phone_number', '').strip()
+        phone = self.cleaned_data.get('phone_number') or ''
+        phone = phone.strip() if phone else ''
+
         is_valid, normalized, error = validate_and_normalize_polish_phone(phone)
         
         if not is_valid:
@@ -133,7 +135,8 @@ class UserEditForm(forms.ModelForm):
     
     def clean_phone_number(self):
         """Walidacja i normalizacja numeru telefonu"""
-        phone = self.cleaned_data.get('phone_number', '').strip()
+        phone = self.cleaned_data.get('phone_number') or ''
+        phone = phone.strip() if phone else ''
         is_valid, normalized, error = validate_and_normalize_polish_phone(phone)
         
         if not is_valid:

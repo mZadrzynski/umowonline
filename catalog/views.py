@@ -56,6 +56,7 @@ class BusinessDetailView(DetailView):
         return BusinessProfile.objects.filter(is_active=True).prefetch_related('services', 'reviews')
     
     def get_context_data(self, **kwargs):
+        print("🚨 GET_CONTEXT_DATA WYWOŁANE!") 
         from django.urls import reverse
         from datetime import date, timedelta
         from myschedule.views_public import calculate_free_time_slots
@@ -122,21 +123,6 @@ class BusinessDetailView(DetailView):
             context['week_offset'] = 0
             context['selected_week'] = None
             context['no_calendar_message'] = "Ta firma nie ma jeszcze przydzielonego kalendarza."
-        
-        # 🐛 DEBUG
-        print("=" * 50)
-        print(f"🔍 Business: {business.business_name}")
-        print(f"🔍 Has calendar: {business.calendar is not None}")
-        if business.calendar:
-            print(f"🔍 Calendar owner: {calendar_owner.username}")
-            print(f"🔍 User calendars count: {user_calendars.count()}")
-            print(f"🔍 Available calendars in context: {context.get('available_calendars')}")
-            print(f"🔍 Available calendars LENGTH: {len(context.get('available_calendars', []))}")
-            for cal in context.get('available_calendars', []):
-                print(f"   - {cal.name} (ID: {cal.id})")
-            print(f"🔍 Selected calendar: {context.get('selected_calendar')}")
-            print(f"🔍 Services count: {len(context.get('services', []))}")
-        print("=" * 50)
         
         return context
 

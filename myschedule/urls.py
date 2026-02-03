@@ -37,5 +37,7 @@ urlpatterns = [
     path('<str:username_slug>/', views_public.public_calendar_by_username, name='public_calendar_by_username'),
     path('public/<str:token>/business/', views_public.public_calendar_with_business, name='public_calendar_with_business'),
     path('public/<str:token>/', views_public.public_calendar_with_business, name='public_calendar_week'),
+    
+    path('calendar/<int:calendar_id>/delete/', views.calendar_delete, name='calendar_delete'),
 
 ]

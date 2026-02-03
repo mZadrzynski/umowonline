@@ -126,7 +126,7 @@ class SingleAvailabilityForm(forms.ModelForm):
         date = cleaned_data.get('date')
 
         # Zamiana stringów z ChoiceField na obiekty czasu
-        from datetime import datetime
+        from django.utils import timezone
         if start_time:
             start_time = datetime.strptime(start_time, '%H:%M').time()
             cleaned_data['start_time'] = start_time

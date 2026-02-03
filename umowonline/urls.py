@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from myschedule.views_public import redirect_username_to_token, public_calendar_week
+from myschedule.views_public import redirect_username_to_token, public_calendar_week, public_calendar_by_username
 from django.contrib.sitemaps.views import sitemap
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods

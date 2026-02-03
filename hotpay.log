@@ -120,3 +120,5 @@ User: marcin, Subscription ID: 1, Plan: Plan z SMS (29.00 PLN)
 Context: {'plans': <QuerySet [<SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, <SubscriptionPlan: Plan z SMS (29.00 PLN)>]>, 'current_subscription': <Subscription: marcin - Plan z SMS - active>, 'current_plan': <SubscriptionPlan: Plan z SMS (29.00 PLN)>, 'has_active_subscription': True}
 User: marcin, Subscription ID: 1, Plan: Plan z SMS (29.00 PLN)
 Context: {'plans': <QuerySet [<SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, <SubscriptionPlan: Plan z SMS (29.00 PLN)>]>, 'current_subscription': <Subscription: marcin - Plan z SMS - active>, 'current_plan': <SubscriptionPlan: Plan z SMS (29.00 PLN)>, 'has_active_subscription': True}
+User: tester3, Subscription ID: 12, Plan: None
+Context: {'plans': <QuerySet [<SubscriptionPlan: Plan Podstawowy (20.00 PLN)>, <SubscriptionPlan: Plan z SMS (29.00 PLN)>]>, 'current_subscription': <Subscription: tester3 - Brak planu - active>, 'current_plan': None, 'has_active_subscription': True}

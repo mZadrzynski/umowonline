@@ -215,7 +215,6 @@ form {
   align-self: left;
   max-width: 500px; /* maksymalna szerokość formularza */
   margin: 0 auto;   /* wyśrodkowanie na stronie */
-  padding: 20px;    /* trochę przestrzeni wewnątrz */
   border-radius: 8px; /* zaokrąglenie rogów */
   margin-left: 0;
 }
