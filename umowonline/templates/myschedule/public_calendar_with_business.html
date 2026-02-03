@@ -46,22 +46,7 @@
       <div class="business-info">
         <h1 class="business-name">{{ business.business_name }}</h1>
       
-      {% if available_calendars|length > 1 %}
-        <div class="calendar-selector" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-            <label for="calendar-select" style="font-weight: 600; margin-bottom: 8px; display: block;">
-                📅 Wybierz kalendarz:
-            </label>
-            <select id="calendar-select" class="form-select" 
-                    onchange="window.location.href='?calendar_id=' + this.value + '&week={{ week_offset }}'">
-                {% for cal in available_calendars %}
-                    <option value="{{ cal.id }}" {% if cal == selected_calendar %}selected{% endif %}>
-                        {{ cal.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-        {% endif %}
-                
+
         {% if business.categories.all %}
         <div class="business-categories">
           {% for cat in business.categories.all %}

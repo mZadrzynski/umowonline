@@ -1,0 +1,31 @@
+{% extends 'myschedule/calendar_sidemenu.html' %}
+
+{% block calendar %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="text-danger">🗑️ Usuń kalendarz</h2>
+            <p class="lead">Czy na pewno chcesz usunąć kalendarz <strong>"{{ calendar.name }}"</strong>?</p>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ Uwaga!</strong> Ta operacja jest nieodwracalna. Zostaną usunięte:
+                <ul>
+                    <li>Wszystkie dostępności</li>
+                    <li>Wszystkie wizyty</li>
+                    <li>Wszystkie usługi</li>
+                </ul>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="fas fa-trash"></i> Tak, usuń kalendarz
+                </button>
+                <a href="{% url 'calendar_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Anuluj
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
