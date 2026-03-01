@@ -2,6 +2,10 @@
 docker-compose.yml
 sqlite3
 staticfiles/
+**/__pycache__/
+**/migrations/
+.coverage
+htmlcov/
 
 
 # Django migrations
