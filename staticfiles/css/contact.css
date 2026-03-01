@@ -1,4 +1,4 @@
-html, body {
+.contact-page {
     text-align: center;
     overflow-x: auto;
 }
@@ -12,7 +12,6 @@ html, body {
 
 .form-box {
     max-width: 400px;       /* ustawia maksymalną szerokość */
-    width: 50%;            /* wypełnia dostępne miejsce w granicach max-width */
     box-sizing: border-box; /* padding i border wliczony w max-width */
     word-break: break-word; /* łamanie wyrazów przy braku miejsca */
     overflow-wrap: break-word; /* wyrazy łamane zgodnie z szerokością */
@@ -36,6 +35,7 @@ form label[for="id_accept_terms"] {
   color: #000;         /* albo inny kolor, np. biały: #fff */
   font-weight: normal; /* dostosuj wagę czcionki */
 }
+
 .btn-custom-soft {
     background-color: #3d91da; /* stonowany szary */
     color: white;
@@ -70,4 +70,8 @@ p {
 
 ul {
      text-align: left !important;
+}
+
+h3 {
+        margin: 0 0 12px 0 !important;
 }
